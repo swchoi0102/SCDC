@@ -105,11 +105,11 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"/>
 
-<!--        <Button android:id="@+id/truncateDataButton"
+        <Button android:id="@+id/truncateDataButton"
                 android:layout_alignParentRight="true"
                 android:text="@string/truncate_bt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />-->
+                android:layout_height="wrap_content" />
 
       </RelativeLayout>
 
