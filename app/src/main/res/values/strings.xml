@@ -83,17 +83,18 @@
     <string name="label_alarm_content_info">Reminder</string>
     <string name="general_alarm_name">general</string>
     <string name="go_back_bt">Go back</string>
-    <string name="archive_bt">Upload data to server</string>
-    <string name="truncate_bt">Truncate</string>
-    <string name="sensor_bt">Sensor</string>
-    <string name="push_bt">Push</string>
-    <string name="user_name_tv">Name</string>
+    <string name="archive_bt">데이터 업로드</string>
+    <string name="truncate_bt">데이터 삭제</string>
+    <string name="edit_bt">데이터 수정</string>
+    <string name="sensor_bt">수집</string>
+    <string name="push_bt">푸쉬</string>
+    <string name="user_name_tv">ID: </string>
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
     <string name="data_count_none_tv">Data size: </string>
     <string name="minutes">minutes</string>
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
+    <string name="save">저장</string>
+    <string name="edit">수정</string>
     <string name="check_internet_connection_message">Please connect to network to proceed.</string>
     <string name="get_prefs_from_server_message">Synchronizing preferences with server...</string>
     <string name="archive_message">Archiving...</string>
@@ -103,6 +104,8 @@
     <string name="update_config_failed_message">Failed to update pipeline config.</string>
     <string name="change_config_complete_message">Successfully changed pipeline config.</string>
     <string name="change_config_failed_message">Failed to change pipeline config.</string>
+    <string name="alone_bt">혼자입니다</string>
+    <string name="together_bt">함께입니다</string>
 
 
     <!-- Activity recognition strings -->

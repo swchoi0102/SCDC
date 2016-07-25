@@ -40,6 +40,7 @@ import edu.mit.media.funf.storage.FileArchive;
 
 import android.os.IBinder;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -62,7 +63,7 @@ import kr.ac.snu.imlab.scdc.service.storage.MultipartEntityArchive;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCUploadService;
 import kr.ac.snu.imlab.scdc.service.storage.ZipArchive;
-import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel;
+import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel2;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
 import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
@@ -84,25 +85,27 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of normal labels (toggled by Start/End) available
   @Configurable
   public static final String[] normalLabelNames = {
-          LabelKeys.EATING_LABEL,
-          LabelKeys.IN_CLASS_LABEL,
           LabelKeys.SLEEP_LABEL,
+          LabelKeys.EATING_LABEL,
+          LabelKeys.DRINKING_LABEL,
+          LabelKeys.IN_CLASS_LABEL,
           LabelKeys.STUDYING_LABEL,
-          LabelKeys.DRINKING_LABEL
+          LabelKeys.MOVING_LABEL
+
   };
 
   // FIXME: The list of special labels (toggled by more than Start/End) available
   @Configurable
   public static final String[] specialLabelNames = {
-          LabelKeys.ACCOMPANYING_LABEL,
-          LabelKeys.CONVERSING_LABEL
+          LabelKeys.NONE_OF_ABOVE_LABEL
+//          LabelKeys.ACCOMPANYING_LABEL,
+//          LabelKeys.CONVERSING_LABEL
+
   };
 
   // FIXME: The list of 'active' labels
   @Configurable
-  public static final String[] activeLabelNames = {
-          LabelKeys.ACCOMPANYING_LABEL,
-          LabelKeys.CONVERSING_LABEL,
+  public static final String[] activeLabelNames = { //need to be defined later
           LabelKeys.EATING_LABEL,
           LabelKeys.IN_CLASS_LABEL,
           LabelKeys.STUDYING_LABEL,
@@ -123,9 +126,15 @@ public class LaunchActivity extends ActionBarActivity
   private ViewGroup mAsLabelView;
   private ViewGroup mCsLabelView;
   private ListView mListView;
-  private BaseAdapterExLabel mAdapter;
+
+  private GridView mGridView;
+  private GridView mGridViewNone;
+  private BaseAdapterExLabel2 mAdapter;
+  private BaseAdapterExLabel2 mAdapterNone;
+
   // Labels list
   private ArrayList<LabelEntry> normalLabelEntries;
+  private ArrayList<LabelEntry> specialLabelEntries;
 
   // Run Data Collection button
   private ToggleButton enabledToggleButton;
@@ -136,6 +145,8 @@ public class LaunchActivity extends ActionBarActivity
   private Button archiveButton, truncateDataButton;
   private TextView dataCountView;
   private ImageView receivingDataImageView;
+
+  private ToggleButton aloneToggleButton, togetherToggleButton;
 
   class AccompanyingStatusViewHolder {
     TextView asLogLabelTv;
@@ -230,15 +241,16 @@ public class LaunchActivity extends ActionBarActivity
 
     setUserInfo();
 
+
     // Add a single AccompanyingStatusLabelEntry
     asLabelEntry =
       new AccompanyingStatusLabelEntry(LabelKeys.ACCOMPANYING_STATUS_LABEL_ID,
-              specialLabelNames[0], LaunchActivity.this, Config.SCDC_PREFS);
+              LabelKeys.ACCOMPANYING_LABEL, LaunchActivity.this, Config.SCDC_PREFS);
 
     // Add a single ConversingStatusLabelEntry
     csLabelEntry =
       new ConversingStatusLabelEntry(LabelKeys.CONVERSING_STATUS_LABEL_ID,
-              specialLabelNames[1], LaunchActivity.this, Config.SCDC_PREFS);
+              LabelKeys.CONVERSING_LABEL, LaunchActivity.this, Config.SCDC_PREFS);
 
     // The list of labels available
     normalLabelEntries = new ArrayList<LabelEntry>(normalLabelNames.length);
@@ -247,8 +259,16 @@ public class LaunchActivity extends ActionBarActivity
                           LaunchActivity.this, Config.SCDC_PREFS));
     }
 
+
+    specialLabelEntries = new ArrayList<LabelEntry>(specialLabelNames.length);
+    for (int i=0; i < specialLabelNames.length; i++) {
+      specialLabelEntries.add(new LabelEntry(normalLabelEntries.size()+i, specialLabelNames[i],
+              LaunchActivity.this, Config.SCDC_PREFS));
+    }
+
     // Put the total number of labels into SharedPreferences
-    spHandler.setNumLabels(normalLabelEntries.size());
+
+    spHandler.setNumLabels(normalLabelEntries.size()+specialLabelEntries.size());
 
     enabledToggleButton =
             (ToggleButton) findViewById(R.id.enabledToggleButton);
@@ -259,7 +279,17 @@ public class LaunchActivity extends ActionBarActivity
     archiveButton = (Button) findViewById(R.id.archiveButton);
     truncateDataButton = (Button) findViewById(R.id.truncateDataButton);
 
-    mAdapter = new BaseAdapterExLabel(this, normalLabelEntries);
+    aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
+    togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
+
+    mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
+    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
+
+    mGridView = (GridView)findViewById(R.id.label_grid_view);
+    mGridView.setAdapter(mAdapter);
+
+    mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
+    mGridViewNone.setAdapter(mAdapterNone);
 
     mListView = (ListView) findViewById(R.id.label_list_view);
     // Set AccompanyingStatusView as a header of ListView
@@ -271,7 +301,6 @@ public class LaunchActivity extends ActionBarActivity
             R.layout.conversing_status_label_view_item_layout, null, false);
     mListView.addHeaderView(mCsLabelView);
 
-    mListView.setAdapter(mAdapter);
     setAccompanyingStatusListener();
     setConversingStatusListener();
 
@@ -315,6 +344,7 @@ public class LaunchActivity extends ActionBarActivity
 
         } else {
           mAdapter.notifyDataSetChanged();
+          mAdapterNone.notifyDataSetChanged();
           spHandler.setReminderRunning(isChecked);
 
           // Unbind/Stop SCDCService and bind SCDCManager instead
@@ -447,12 +477,12 @@ public class LaunchActivity extends ActionBarActivity
 
     // Truncate the data
     truncateDataButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (pipeline.getDatabaseHelper() != null) {
-          SQLiteDatabase db = pipeline.getWritableDb();
-          dropAndCreateTable(db, true);
-        }
+          @Override
+          public void onClick(View v) {
+            if (pipeline.getDatabaseHelper() != null) {
+              SQLiteDatabase db = pipeline.getWritableDb();
+              dropAndCreateTable(db, true);
+            }
       }
     });
 
@@ -518,6 +548,8 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       public void run() {
         mAdapter.notifyDataSetChanged();
+        mAdapterNone.notifyDataSetChanged();
+
         updateLaunchActivityUi();   // FIXME
         if (asLabelEntry.isLogged()) {
           String elapsedTime =

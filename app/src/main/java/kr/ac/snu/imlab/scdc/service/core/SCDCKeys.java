@@ -108,11 +108,15 @@ public class SCDCKeys {
                                   ".LABEL_STATUS_LOG",
       EXTRA_IS_ACTIVE_LABEL = "kr.ac.snu.imlab.scdc.entry.LabelEntry.IS_ACTIVE_LABEL",
       PIPELINE_KEY = "isPipelineEnabled",   // deprecated
-      SLEEP_LABEL = "sleeping",
-      IN_CLASS_LABEL = "in_class",
-      EATING_LABEL = "having_a_meal",
-      STUDYING_LABEL = "studying",
-      DRINKING_LABEL = "drinking",
+      SLEEP_LABEL = "수면",
+      IN_CLASS_LABEL = "수업",
+      EATING_LABEL = "식사",
+      STUDYING_LABEL = "공부",
+      DRINKING_LABEL = "음주",
+      MOVING_LABEL = "이동",
+      NONE_OF_ABOVE_LABEL = "위의 상황에 해당되지 않음",
+
+
       CONVERSING_LABEL = "conversing",
       ACCOMPANYING_LABEL = "accompanying";
     // LABEL_TYPE = "label_type",
