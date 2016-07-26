@@ -34,7 +34,7 @@ import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.PhoneNumberCell;
 
 @Schedule.DefaultSchedule(interval=36000)
-@RequiredPermissions(android.Manifest.permission.READ_CONTACTS)
+@RequiredPermissions({android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_CALL_LOG})
 public class CallLogProbe extends DatedContentProviderProbe {
 
 	@Override
