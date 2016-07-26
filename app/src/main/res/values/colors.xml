@@ -4,4 +4,7 @@
   <color name="table_front">#00FF00</color>
   <color name="table_back">#0000FF</color>
   <color name="collecting_data">#222222</color>
+  <color name="disabled">#8f8f8f</color>
+  <color name="select">#702034</color>
+  <color name="logging">#646464</color>
 </resources>

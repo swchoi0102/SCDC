@@ -31,9 +31,6 @@ import edu.mit.media.funf.util.EqualsUtil;
 import kr.ac.snu.imlab.scdc.entry.AccompanyingStatusLabelEntry;
 import kr.ac.snu.imlab.scdc.entry.ConversingStatusLabelEntry;
 import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
-import kr.ac.snu.imlab.scdc.service.alarm.AlarmButlerService;
-import kr.ac.snu.imlab.scdc.service.alarm.LabelAlarm;
-import kr.ac.snu.imlab.scdc.service.alarm.WakefulIntentService;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCPipeline;
 import edu.mit.media.funf.storage.FileArchive;
@@ -98,17 +95,12 @@ public class LaunchActivity extends ActionBarActivity
   @Configurable
   public static final String[] specialLabelNames = {
           LabelKeys.NONE_OF_ABOVE_LABEL
-//          LabelKeys.ACCOMPANYING_LABEL,
-//          LabelKeys.CONVERSING_LABEL
-
   };
 
   // FIXME: The list of 'active' labels
   @Configurable
   public static final String[] activeLabelNames = { //need to be defined later
           LabelKeys.EATING_LABEL,
-          LabelKeys.IN_CLASS_LABEL,
-          LabelKeys.STUDYING_LABEL,
           LabelKeys.DRINKING_LABEL
   };
 
@@ -129,24 +121,24 @@ public class LaunchActivity extends ActionBarActivity
 
   private GridView mGridView;
   private GridView mGridViewNone;
-  private BaseAdapterExLabel2 mAdapter;
-  private BaseAdapterExLabel2 mAdapterNone;
+  public BaseAdapterExLabel2 mAdapter;
+  public BaseAdapterExLabel2 mAdapterNone;
 
   // Labels list
   private ArrayList<LabelEntry> normalLabelEntries;
   private ArrayList<LabelEntry> specialLabelEntries;
 
   // Run Data Collection button
-  private ToggleButton enabledToggleButton;
+//  private ToggleButton enabledToggleButton;
+  private ToggleButton aloneToggleButton, togetherToggleButton;
 
   // Run Push notification button
-  private ToggleButton reminderToggleButton;
+//  private ToggleButton reminderToggleButton;
 
-  private Button archiveButton, truncateDataButton;
+  private Button archiveButton, truncateDataButton, editDataButton;
   private TextView dataCountView;
   private ImageView receivingDataImageView;
-
-  private ToggleButton aloneToggleButton, togetherToggleButton;
+  private TextView timeCountView;
 
   class AccompanyingStatusViewHolder {
     TextView asLogLabelTv;
@@ -259,7 +251,6 @@ public class LaunchActivity extends ActionBarActivity
                           LaunchActivity.this, Config.SCDC_PREFS));
     }
 
-
     specialLabelEntries = new ArrayList<LabelEntry>(specialLabelNames.length);
     for (int i=0; i < specialLabelNames.length; i++) {
       specialLabelEntries.add(new LabelEntry(normalLabelEntries.size()+i, specialLabelNames[i],
@@ -267,42 +258,35 @@ public class LaunchActivity extends ActionBarActivity
     }
 
     // Put the total number of labels into SharedPreferences
-
     spHandler.setNumLabels(normalLabelEntries.size()+specialLabelEntries.size());
 
-    enabledToggleButton =
-            (ToggleButton) findViewById(R.id.enabledToggleButton);
-    reminderToggleButton =
-            (ToggleButton)findViewById(R.id.reminderToggleButton);
-    receivingDataImageView =
-            (ImageView)findViewById(R.id.receiving_data_iv);
+    receivingDataImageView = (ImageView)findViewById(R.id.receiving_data_iv);
     archiveButton = (Button) findViewById(R.id.archiveButton);
     truncateDataButton = (Button) findViewById(R.id.truncateDataButton);
+    editDataButton = (Button) findViewById(R.id.editDataButton);
 
     aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
     togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
 
     mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
-    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
-
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
 
+    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
     mGridViewNone.setAdapter(mAdapterNone);
 
-    mListView = (ListView) findViewById(R.id.label_list_view);
-    // Set AccompanyingStatusView as a header of ListView
-    mAsLabelView = (ViewGroup) getLayoutInflater().inflate(
-            R.layout.accompanying_status_label_view_item_layout, null, false);
-    mListView.addHeaderView(mAsLabelView);
-
-    mCsLabelView = (ViewGroup) getLayoutInflater().inflate(
-            R.layout.conversing_status_label_view_item_layout, null, false);
-    mListView.addHeaderView(mCsLabelView);
-
+    // ********* Need to get rid of these Views :(
+    mAsLabelView = (ViewGroup) getLayoutInflater().inflate(R.layout.accompanying_status_label_view_item_layout, null, false);
+    mCsLabelView = (ViewGroup) getLayoutInflater().inflate(R.layout.conversing_status_label_view_item_layout, null, false);
+    // ********* Need to get rid of these Listeners :(
     setAccompanyingStatusListener();
     setConversingStatusListener();
+
+    // Displays the count of time
+    timeCountView = (TextView)findViewById(R.id.timeCountTextView);
+    timeCountView.setText(getResources().getString(R.string.disabled));
+    timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
     // Displays the count of rows in the data
     dataCountView = (TextView) findViewById(R.id.dataCountText);
@@ -310,10 +294,18 @@ public class LaunchActivity extends ActionBarActivity
     // Used to make interface changes on main thread
     handler = new Handler();
 
-    enabledToggleButton.setEnabled(true);
-    enabledToggleButton.setChecked(spHandler.isSensorOn());
+    aloneToggleButton.setChecked(spHandler.isSensorOn());
+    aloneToggleButton.setChecked(spHandler.isAloneOn());
+    aloneToggleButton.setEnabled(!spHandler.isSensorOn() || spHandler.isAloneOn());
+
+    togetherToggleButton.setChecked(spHandler.isSensorOn());
+    togetherToggleButton.setChecked(spHandler.isTogetherOn());
+    togetherToggleButton.setEnabled(!spHandler.isSensorOn() || spHandler.isTogetherOn());
+
     archiveButton.setEnabled(!spHandler.isSensorOn());
     truncateDataButton.setEnabled(!spHandler.isSensorOn());
+    editDataButton.setEnabled(!spHandler.isSensorOn());
+    userNameButton.setEnabled(!spHandler.isSensorOn());
 
     // Bind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
@@ -324,10 +316,12 @@ public class LaunchActivity extends ActionBarActivity
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
     }
 
-    // This checkbox enables or disables the pipeline
-    enabledToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+    aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        // alone status should be transmitted !
+
         if (isChecked) {
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
@@ -342,90 +336,84 @@ public class LaunchActivity extends ActionBarActivity
           bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
           unbindService(scdcManagerConn);
 
+          timeCountView.setText(getResources().getString(R.string.select));
+          timeCountView.setTextColor(getResources().getColor(R.color.select));
+
         } else {
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
-          spHandler.setReminderRunning(isChecked);
+//          spHandler.setReminderRunning(isChecked);
+
+          timeCountView.setText(getResources().getString(R.string.disabled));
+          timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
           // Unbind/Stop SCDCService and bind SCDCManager instead
           unbindService(scdcServiceConn);
           stopService(new Intent(LaunchActivity.this, SCDCService.class));
           bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-                      scdcManagerConn, BIND_AUTO_CREATE);
+                  scdcManagerConn, BIND_AUTO_CREATE);
         }
 
         spHandler.setSensorOn(isChecked);
+        spHandler.setAloneOn(isChecked);
+
         archiveButton.setEnabled(!isChecked);
         truncateDataButton.setEnabled(!isChecked);
-
-        asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged() && isChecked);
-        if (isChecked) {
-          for (int i = 0; i < asViewHolder.startLogBts.size(); i++) {
-            int accompanyingStatusId = i + 1;
-            Button currBt = asViewHolder.startLogBts.get(i);
-            if (asLabelEntry.getLoggedStatus() != accompanyingStatusId)
-              currBt.setEnabled(true);
-          }
-        } else {
-          for (int i = 0; i < asViewHolder.startLogBts.size(); i++) {
-            Button currBt = asViewHolder.startLogBts.get(i);
-            currBt.setEnabled(false);
-          }
-        }
-
-        csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged() && isChecked);
-        if (isChecked) {
-          for (int i = 0; i < csViewHolder.startLogBts.size(); i++) {
-            int conversingStatusId = i + 1;
-            Button currBt = csViewHolder.startLogBts.get(i);
-            if (csLabelEntry.getLoggedStatus() != conversingStatusId)
-              currBt.setEnabled(true);
-          }
-        } else {
-          for (int i = 0; i < csViewHolder.startLogBts.size(); i++) {
-            Button currBt = csViewHolder.startLogBts.get(i);
-            currBt.setEnabled(false);
-          }
-        }
+        editDataButton.setEnabled(!isChecked);
+        userNameButton.setEnabled(!isChecked);
+        togetherToggleButton.setEnabled(!isChecked);
       }
     });
 
-
-    // This checkbox runs or stops the reminder alarm
-    reminderToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+    togetherToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
-      public void onCheckedChanged(CompoundButton buttonView,
-                                   boolean isChecked) {
-        spHandler.setReminderRunning(isChecked);
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        // together status should be transmitted !
+
         if (isChecked) {
-          // Start service to check for alarms
-          WakefulIntentService.acquireStaticLock(LaunchActivity.this);
-          startService(new Intent(LaunchActivity.this,
-                  AlarmButlerService.class));
+          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+
+          // Increment sensorId by 1
+          spHandler.setSensorId(spHandler.getSensorId() + 1);
+          Toast.makeText(LaunchActivity.this,
+                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+                  Toast.LENGTH_SHORT).show();
+
+          // Start/Bind SCDCService and unbind SCDCManager instead
+          startService(intent);
+          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+          unbindService(scdcManagerConn);
+
+          timeCountView.setText(getResources().getString(R.string.select));
+          timeCountView.setTextColor(getResources().getColor(R.color.select));
+
         } else {
-          for (LabelEntry labelEntry : normalLabelEntries) {
-            LabelAlarm alarm = new LabelAlarm();
-            alarm.cancelAlarm(LaunchActivity.this, labelEntry.getId());
-            alarm.cancelNotification(LaunchActivity.this,
-                    labelEntry.getId());
-          }
-          LabelAlarm alarm = new LabelAlarm();
-          int generalAlarmId = Integer.parseInt(SCDCKeys.AlarmKeys
-                  .DEFAULT_GENERAL_ALARM_ID);
-          alarm.cancelAlarm(LaunchActivity.this, generalAlarmId);
-          alarm.cancelNotification(LaunchActivity.this, generalAlarmId);
-          stopService(new Intent(LaunchActivity.this,
-                  AlarmButlerService.class));
+          mAdapter.notifyDataSetChanged();
+          mAdapterNone.notifyDataSetChanged();
+//          spHandler.setReminderRunning(isChecked);
+
+          timeCountView.setText(getResources().getString(R.string.disabled));
+          timeCountView.setTextColor(getResources().getColor(R.color.disabled));
+
+          // Unbind/Stop SCDCService and bind SCDCManager instead
+          unbindService(scdcServiceConn);
+          stopService(new Intent(LaunchActivity.this, SCDCService.class));
+          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+                  scdcManagerConn, BIND_AUTO_CREATE);
         }
+
+        spHandler.setSensorOn(isChecked);
+        spHandler.setTogetherOn(isChecked);
+
+        archiveButton.setEnabled(!isChecked);
+        truncateDataButton.setEnabled(!isChecked);
+        editDataButton.setEnabled(!isChecked);
+        userNameButton.setEnabled(!isChecked);
+        aloneToggleButton.setEnabled(!isChecked);
       }
     });
 
-    // Always enable reminderToggleButton
-    // either enabledToggleButton is checked or not
-    reminderToggleButton.setEnabled(true);
-    if (reminderToggleButton.isEnabled()) {
-      reminderToggleButton.setChecked(spHandler.isReminderRunning());
-    }
 
 
     // Runs an archive if pipeline is enabled
@@ -456,7 +444,7 @@ public class LaunchActivity extends ActionBarActivity
                     // pipeline.onRun(BasicPipeline.ACTION_ARCHIVE, null);
                     // pipeline.onRun(BasicPipeline.ACTION_UPLOAD, null);
                     updateLaunchActivityUi();
-                    if (!enabledToggleButton.isEnabled()) {
+                    if (!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()) {
                       v.setEnabled(true);
                     }
             }
@@ -514,57 +502,40 @@ public class LaunchActivity extends ActionBarActivity
       updateLaunchActivityUi();
     }
 
-    asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged() &&
-                                     enabledToggleButton.isChecked());
-    for (int i = 0; i < asViewHolder.startLogBts.size(); i++) {
-      int accompanyingStatusId = i + 1;
-      Button currBt = asViewHolder.startLogBts.get(i);
-      if (enabledToggleButton.isChecked()) {
-        if (asLabelEntry.isLogged())
-          currBt.setEnabled(asLabelEntry.getLoggedStatus() != accompanyingStatusId);
-        else currBt.setEnabled(true);
-      } else {
-        currBt.setEnabled(false);
-      }
-    }
-
-    csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged() &&
-                                     enabledToggleButton.isChecked());
-    for (int i = 0; i < csViewHolder.startLogBts.size(); i++) {
-      int conversingStatusId = i + 1;
-      Button currBt = csViewHolder.startLogBts.get(i);
-      if (enabledToggleButton.isChecked()) {
-        if (csLabelEntry.isLogged())
-          currBt.setEnabled(csLabelEntry.getLoggedStatus() != conversingStatusId);
-        else currBt.setEnabled(true);
-      } else {
-        currBt.setEnabled(false);
-      }
-    }
+//    asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged());
+//    csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged());
 
     // Dynamically refresh the ListView items
     //  and AccompanyingStatus view
     handler.postDelayed(new Runnable() {
       @Override
       public void run() {
+
         mAdapter.notifyDataSetChanged();
         mAdapterNone.notifyDataSetChanged();
 
         updateLaunchActivityUi();   // FIXME
-        if (asLabelEntry.isLogged()) {
-          String elapsedTime =
-                  TimeUtil.getElapsedTimeUntilNow(asLabelEntry.getStartLoggingTime());
-          asViewHolder.asScheduleTv.setText(" for " + elapsedTime);
-        } else {
-          asViewHolder.asScheduleTv.setText(R.string.probe_disabled);
+
+        if(mAdapter.getLoggedItem()!=null){
+          String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
+          timeCountView.setText(mAdapter.getLoggedItem().getName()+" for "+elapsedTime);
+          timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 
-        if (csLabelEntry.isLogged()) {
-          String elapsedTime =
-                  TimeUtil.getElapsedTimeUntilNow(csLabelEntry.getStartLoggingTime());
-          csViewHolder.csScheduleTv.setText(" for " + elapsedTime);
-        } else {
-          csViewHolder.csScheduleTv.setText(R.string.probe_disabled);
+        else if(mAdapterNone.getLoggedItem()!=null){
+          String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapterNone.getLoggedItem().getStartLoggingTime());
+          timeCountView.setText(mAdapterNone.getLoggedItem().getName()+" for "+elapsedTime);
+          timeCountView.setTextColor(getResources().getColor(R.color.logging));
+        }
+
+        else if(spHandler.isSensorOn()){
+          timeCountView.setText(getResources().getString(R.string.select));
+          timeCountView.setTextColor(getResources().getColor(R.color.select));
+        }
+
+        else {
+          timeCountView.setText(getResources().getString(R.string.disabled));
+          timeCountView.setTextColor(getResources().getColor(R.color.disabled));
         }
         handler.postDelayed(this, 1000L);
       }
@@ -579,7 +550,7 @@ public class LaunchActivity extends ActionBarActivity
     super.onPause();
 
     // Save running status of reminder
-    spHandler.setReminderRunning(reminderToggleButton.isChecked());
+//    spHandler.setReminderRunning(reminderToggleButton.isChecked());
   }
 
 
@@ -603,13 +574,13 @@ public class LaunchActivity extends ActionBarActivity
     // Set current username
     userName = (EditText) findViewById(R.id.user_name);
     userName.setText(spHandler.getUsername());
-    isMaleRadioButton = (RadioButton) findViewById(R.id.radio_male);
-    isFemaleRadioButton = (RadioButton) findViewById(R.id.radio_female);
-    isMaleRadioButton.setChecked(!spHandler.getIsFemale());
-    isFemaleRadioButton.setChecked(spHandler.getIsFemale());
+//    isMaleRadioButton = (RadioButton) findViewById(R.id.radio_male);
+//    isFemaleRadioButton = (RadioButton) findViewById(R.id.radio_female);
+//    isMaleRadioButton.setChecked(!spHandler.getIsFemale());
+//    isFemaleRadioButton.setChecked(spHandler.getIsFemale());
     userName.setEnabled(false);
-    isMaleRadioButton.setEnabled(false);
-    isFemaleRadioButton.setEnabled(false);
+//    isMaleRadioButton.setEnabled(false);
+//    isFemaleRadioButton.setEnabled(false);
     isEdited = false;
 
     userNameButton = (Button) findViewById(R.id.user_name_btn);
@@ -619,17 +590,17 @@ public class LaunchActivity extends ActionBarActivity
         // If it's currently not being edited now:
         if (!isEdited) {
           userName.setEnabled(true);
-          isMaleRadioButton.setEnabled(true);
-          isFemaleRadioButton.setEnabled(true);
+//          isMaleRadioButton.setEnabled(true);
+//          isFemaleRadioButton.setEnabled(true);
           isEdited = true;
           userNameButton.setText(getString(R.string.save));
           // If it has just finished being edited:
         } else {
-          spHandler.setUsername(userName.getText().toString());
-          spHandler.setIsFemale(isFemaleRadioButton.isChecked());
+//          spHandler.setUsername(userName.getText().toString());
+//          spHandler.setIsFemale(isFemaleRadioButton.isChecked());
           userName.setEnabled(false);
-          isMaleRadioButton.setEnabled(false);
-          isFemaleRadioButton.setEnabled(false);
+//          isMaleRadioButton.setEnabled(false);
+//          isFemaleRadioButton.setEnabled(false);
           isEdited = false;
           userNameButton.setText(getString(R.string.edit));
         }
@@ -656,21 +627,20 @@ public class LaunchActivity extends ActionBarActivity
             (Button) mCsLabelView.findViewById(R.id.talking));
 
     csViewHolder.csLogLabelTv.setText(LabelKeys.CONVERSING_LABEL);
-    csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged() &&
-                                     enabledToggleButton.isChecked());
+    csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged());
     for (int i = 0; i < csViewHolder.startLogBts.size(); i++) {
       int conversingStatusId = i + 1;
       Button currBt = csViewHolder.startLogBts.get(i);
-      if (enabledToggleButton.isChecked()) {
-        if (csLabelEntry.isLogged())
-          currBt.setEnabled(csLabelEntry.getLoggedStatus() != conversingStatusId);
-        else currBt.setEnabled(true);
-      } else {
-        currBt.setEnabled(false);
-      }
+//      if (enabledToggleButton.isChecked()) {
+//        if (csLabelEntry.isLogged())
+//          currBt.setEnabled(csLabelEntry.getLoggedStatus() != conversingStatusId);
+//        else currBt.setEnabled(true);
+//      } else {
+//        currBt.setEnabled(false);
+//      }
     }
 
-    // Refresh the elapsed time if the label is logged
+
     if (csLabelEntry.isLogged()) {
       String elapsedTime =
               TimeUtil.getElapsedTimeUntilNow(csLabelEntry.getStartLoggingTime());
@@ -751,18 +721,17 @@ public class LaunchActivity extends ActionBarActivity
       (Button) mAsLabelView.findViewById(R.id.with_over_7_bt));
 
     asViewHolder.asLogLabelTv.setText("Company?");
-    asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged() &&
-                                     enabledToggleButton.isChecked());
+    asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged());
     for (int i = 0; i < asViewHolder.startLogBts.size(); i++) {
       int accompanyingStatusId = i + 1;
       Button currBt = asViewHolder.startLogBts.get(i);
-      if (enabledToggleButton.isChecked()) {
-        if (asLabelEntry.isLogged())
-          currBt.setEnabled(asLabelEntry.getLoggedStatus() != accompanyingStatusId);
-        else currBt.setEnabled(true);
-      } else {
-        currBt.setEnabled(false);
-      }
+//      if (enabledToggleButton.isChecked()) {
+//        if (asLabelEntry.isLogged())
+//          currBt.setEnabled(asLabelEntry.getLoggedStatus() != accompanyingStatusId);
+//        else currBt.setEnabled(true);
+//      } else {
+//        currBt.setEnabled(false);
+//      }
     }
 
     // Refresh the elapsed time if the label is logged

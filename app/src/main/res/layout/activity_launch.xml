@@ -17,7 +17,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textSize="40sp"
-                  android:textColor="#ca2771"
+                  android:textColor="#595959"
               android:paddingLeft="10dp"/>
 
           <ImageView android:id="@+id/receiving_data_iv"
@@ -58,42 +58,24 @@
           android:layout_height="wrap_content"
           android:gravity="left|center" >
 
-          <ToggleButton android:id="@+id/enabledToggleButton"
-              android:layout_width="wrap_content"
-              android:layout_height="35dp"
-              android:layout_gravity="center_vertical"
-              android:layout_alignParentRight="true"
-              android:textOn="@string/sensor_bt"
-              android:textOff="@string/sensor_bt"
-              android:textSize="8sp"/>
+          <!--<RadioGroup-->
+              <!--android:id="@+id/gender_radio"-->
+              <!--android:layout_width="wrap_content"-->
+              <!--android:layout_height="wrap_content"-->
+              <!--android:orientation="horizontal">-->
 
-          <ToggleButton android:id="@+id/reminderToggleButton"
-              android:layout_width="wrap_content"
-              android:layout_height="35dp"
-              android:layout_gravity="center_vertical"
-              android:layout_toLeftOf="@id/enabledToggleButton"
-              android:textOn="@string/push_bt"
-              android:textOff="@string/push_bt"
-              android:textSize="8sp"/>
+              <!--<RadioButton android:id="@+id/radio_female"-->
+                   <!--android:layout_width="wrap_content"-->
+                   <!--android:layout_height="wrap_content"-->
+                   <!--android:text="@string/radio_female"-->
+                  <!--android:textSize="8sp" />-->
 
-          <RadioGroup
-              android:id="@+id/gender_radio"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal">
-
-              <RadioButton android:id="@+id/radio_female"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="@string/radio_female"
-                  android:textSize="8sp" />
-
-              <RadioButton android:id="@+id/radio_male"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="@string/radio_male"
-                  android:textSize="8sp"/>
-          </RadioGroup>
+              <!--<RadioButton android:id="@+id/radio_male"-->
+                   <!--android:layout_width="wrap_content"-->
+                   <!--android:layout_height="wrap_content"-->
+                   <!--android:text="@string/radio_male"-->
+                  <!--android:textSize="8sp"/>-->
+          <!--</RadioGroup>-->
       </RelativeLayout>
 
       <RelativeLayout
@@ -150,14 +132,12 @@
               android:layout_height="wrap_content" />
       </LinearLayout>
 
-      <TextView android:id= "@+id/logLabelTextView_temp"
+      <TextView android:id= "@+id/timeCountTextView"
           android:paddingBottom="10dp"
-          android:textSize="18sp"
+          android:textSize="14sp"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:gravity="center"
-          android:textColor="#494949"
-          android:text="XXXX"/>
+          android:gravity="center"  />
 
       <GridView android:id="@+id/label_grid_view"
           android:layout_width="match_parent"

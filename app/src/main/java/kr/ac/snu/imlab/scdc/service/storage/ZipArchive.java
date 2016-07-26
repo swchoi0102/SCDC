@@ -177,7 +177,7 @@ public class ZipArchive extends DefaultArchive {
     @Override
     public String generateName(final String name) {
       return name == null ?
-          null : (spHandler.getIsFemale() ? "female" : "male") + "_" + name;
+          null : ("new") + "_" + name;
     }
   }
 

@@ -34,6 +34,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
   ArrayList<LabelEntry> mData = null;
   LayoutInflater mLayoutInflater = null;
   SharedPrefsHandler spHandler = null;
+  String elapsedTime = null;
 
   Handler handler;
 
@@ -43,6 +44,18 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
     this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
                         Config.SCDC_PREFS, Context.MODE_PRIVATE);
+    this.elapsedTime = "0";
+  }
+
+  public String getTime() { return this.elapsedTime; }
+
+
+  public LabelEntry getLoggedItem() {
+
+    for(int i=0; i<this.mData.size(); i++){
+      if(this.mData.get(i).isLogged()) return this.mData.get(i);
+    }
+    return null;
   }
 
   @Override
@@ -78,7 +91,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       itemLayout = mLayoutInflater.inflate(R.layout.label_grid_view_item_layout, null);
 
       viewHolder = new ViewHolder();
-
       viewHolder.labelLogToggleButton = (ToggleButton)itemLayout.findViewById(R.id.labelLogToggleButton);
 
       itemLayout.setTag(viewHolder);
@@ -97,12 +109,26 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
     viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
 
-    // Load enabledToggleButton view from LaunchActivity context
-    final ToggleButton enabledToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.enabledToggleButton);
+    // Load alone and together toggle button views from LaunchActivity context
+    final ToggleButton aloneToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.aloneToggleButton);
+    final ToggleButton togetherToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.togetherToggleButton);
 
-    // If enabledToggleButton is enabled, enable labelLogButton
-    viewHolder.labelLogToggleButton.setEnabled(enabledToggleButton.isChecked());
+    // If alone or together is checked, enable labelLogButton
+    viewHolder.labelLogToggleButton.setEnabled(aloneToggleButton.isChecked() || togetherToggleButton.isChecked());
     handler = new Handler();
+
+    // If alone or together goes off, turn off the labelLogButton too
+    if(!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()){
+      viewHolder.labelLogToggleButton.setChecked(false);
+    }
+
+    // Refresh the elapsed time if the label is logged
+    if (mData.get(position).isLogged()) {
+      elapsedTime =
+              TimeUtil.getElapsedTimeUntilNow(
+                      mData.get(position).getStartLoggingTime());
+    }
+
 
     viewHolder.labelLogToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override

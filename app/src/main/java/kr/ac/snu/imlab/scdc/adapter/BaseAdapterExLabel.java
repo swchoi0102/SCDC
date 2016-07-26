@@ -106,12 +106,12 @@ public class BaseAdapterExLabel extends BaseAdapter {
     viewHolder.logLabelTextView.setText(mData.get(position).getName());
 
     // Load enabledToggleButton view from LaunchActivity context
-    final ToggleButton enabledToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.enabledToggleButton);
-    // If enabledToggleButton is enabled, enable startLogButton
-    viewHolder.startLogButton.setEnabled(!mData.get(position).isLogged() &&
-                                         enabledToggleButton.isChecked());
-    viewHolder.endLogButton.setEnabled(mData.get(position).isLogged() &&
-                                       enabledToggleButton.isChecked());
+//    final ToggleButton enabledToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.enabledToggleButton);
+//    // If enabledToggleButton is enabled, enable startLogButton
+//    viewHolder.startLogButton.setEnabled(!mData.get(position).isLogged() &&
+//                                         enabledToggleButton.isChecked());
+//    viewHolder.endLogButton.setEnabled(mData.get(position).isLogged() &&
+//                                       enabledToggleButton.isChecked());
 
     handler = new Handler();
 

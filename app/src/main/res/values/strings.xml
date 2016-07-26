@@ -106,6 +106,9 @@
     <string name="change_config_failed_message">Failed to change pipeline config.</string>
     <string name="alone_bt">혼자입니다</string>
     <string name="together_bt">함께입니다</string>
+    <string name="disabled">"위 버튼을 눌러 데이터 수집을 시작해주세요"</string>
+    <string name="select">"현재 상황에 맞는 버튼을 눌러주세요"</string>
+
 
 
     <!-- Activity recognition strings -->

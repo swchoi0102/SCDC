@@ -71,17 +71,33 @@ public class SharedPrefsHandler {
   }
 
 
-  // Funf sensor
+
+  // Funf sensor & alone/together
+
   public boolean isSensorOn() {
 //    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.isSensorOn(): called");
     return prefs.getBoolean(SharedPrefs.SENSOR_ON, Config.DEFAULT_SENSOR_ON);
   }
-
   public boolean setSensorOn(boolean isSensorOn) {
     prefs.edit().putBoolean(SharedPrefs.SENSOR_ON, isSensorOn).apply();
     return true;
   }
 
+  public boolean isAloneOn() {
+    return prefs.getBoolean(SharedPrefs.ALONE_ON, Config.DEFAULT_ALONE_ON);
+  }
+  public boolean setAloneOn(boolean isAloneOn) {
+    prefs.edit().putBoolean(SharedPrefs.ALONE_ON, isAloneOn).apply();
+    return true;
+  }
+
+  public boolean isTogetherOn() {
+    return prefs.getBoolean(SharedPrefs.TOGETHER_ON, Config.DEFAULT_TOGETHER_ON);
+  }
+  public boolean setTogetherOn(boolean isTogetherOn) {
+    prefs.edit().putBoolean(SharedPrefs.TOGETHER_ON, isTogetherOn).apply();
+    return true;
+  }
 
   // User info
   public String getUsername() {
@@ -93,14 +109,14 @@ public class SharedPrefsHandler {
     prefs.edit().putString(SharedPrefs.USERNAME, username).apply();
   }
 
-  public boolean getIsFemale() {
-    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.getIsFemale(): firstrun=" + firstrun);
-    return prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
-  }
+//  public boolean getIsFemale() {
+//    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.getIsFemale(): firstrun=" + firstrun);
+//    return prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
+//  }
 
-  public void setIsFemale(boolean isFemale) {
-    prefs.edit().putBoolean(SharedPrefs.IS_FEMALE, isFemale).apply();
-  }
+//  public void setIsFemale(boolean isFemale) {
+//    prefs.edit().putBoolean(SharedPrefs.IS_FEMALE, isFemale).apply();
+//  }
 
 
   // Id's related to data collection
@@ -415,20 +431,20 @@ public class SharedPrefsHandler {
                               ".doInBackground(): response=" + response);
         JsonObject userInfo = new JsonParser().parse(response).getAsJsonObject();
         String newUsername = userInfo.get(SharedPrefs.USERNAME).getAsString();
-        int newIsFemale = userInfo.get(SharedPrefs.IS_FEMALE).getAsInt();
+//        int newIsFemale = userInfo.get(SharedPrefs.IS_FEMALE).getAsInt();
         int newSensorId = userInfo.get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
 
         String currUsername = prefs.getString(SharedPrefs.USERNAME,
                                               Config.DEFAULT_USERNAME);
-        boolean currIsFemale =
-          prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
+//        boolean currIsFemale =
+//          prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
         int currSensorId = prefs.getInt(SharedPrefs.KEY_SENSOR_ID, 0);
 
         if (!currUsername.equals(newUsername))
           prefs.edit().putString(SharedPrefs.USERNAME, newUsername).apply();
-        if ((currIsFemale ? 1 : 0) != newIsFemale)
-          prefs.edit().putBoolean(SharedPrefs.IS_FEMALE,
-                                  (newIsFemale == 1)).apply();
+//        if ((currIsFemale ? 1 : 0) != newIsFemale)
+//          prefs.edit().putBoolean(SharedPrefs.IS_FEMALE,
+//                                  (newIsFemale == 1)).apply();
         if (currSensorId != newSensorId)
           prefs.edit().putInt(SharedPrefs.KEY_SENSOR_ID, newSensorId).apply();
 
@@ -478,15 +494,15 @@ public class SharedPrefsHandler {
       prefs.edit().putBoolean("firstrun", false).apply();
 
       EditText username;
-      RadioButton isMaleRadioButton, isFemaleRadioButton;
+//      RadioButton isMaleRadioButton, isFemaleRadioButton;
       if (context instanceof LaunchActivity) {
         username = (EditText)((LaunchActivity)context)
                 .findViewById(R.id.user_name);
         username.setText(getUsername());
-        isMaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_male);
-        isFemaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_female);
-        isMaleRadioButton.setChecked(!getIsFemale());
-        isFemaleRadioButton.setChecked(getIsFemale());
+//        isMaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_male);
+//        isFemaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_female);
+//        isMaleRadioButton.setChecked(!getIsFemale());
+//        isFemaleRadioButton.setChecked(getIsFemale());
       }
 
       progressDialog.dismiss();
@@ -501,8 +517,8 @@ public class SharedPrefsHandler {
       try {
         String currUsername = prefs.getString(SharedPrefs.USERNAME,
                 Config.DEFAULT_USERNAME);
-        boolean currIsFemale =
-                prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
+//        boolean currIsFemale =
+//                prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
         int currSensorId = prefs.getInt(SharedPrefs.KEY_SENSOR_ID, 0);
 
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -510,8 +526,8 @@ public class SharedPrefsHandler {
                                                   deviceId));
         nameValuePairs.add(new BasicNameValuePair(SharedPrefs.USERNAME,
                                                   currUsername));
-        nameValuePairs.add(new BasicNameValuePair(SharedPrefs.IS_FEMALE,
-                              String.valueOf((currIsFemale) ? 1 : 0)));
+//        nameValuePairs.add(new BasicNameValuePair(SharedPrefs.IS_FEMALE,
+//                              String.valueOf((currIsFemale) ? 1 : 0)));
         nameValuePairs.add(new BasicNameValuePair(SharedPrefs.KEY_SENSOR_ID,
                                               String.valueOf(currSensorId)));
         String response = HttpUtil.sendPost(urls[0], nameValuePairs);
