@@ -294,18 +294,11 @@ public class LaunchActivity extends ActionBarActivity
     // Used to make interface changes on main thread
     handler = new Handler();
 
-    aloneToggleButton.setChecked(spHandler.isSensorOn());
     aloneToggleButton.setChecked(spHandler.isAloneOn());
-    aloneToggleButton.setEnabled(!spHandler.isSensorOn() || spHandler.isAloneOn());
+    aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
 
-    togetherToggleButton.setChecked(spHandler.isSensorOn());
     togetherToggleButton.setChecked(spHandler.isTogetherOn());
-    togetherToggleButton.setEnabled(!spHandler.isSensorOn() || spHandler.isTogetherOn());
-
-    archiveButton.setEnabled(!spHandler.isSensorOn());
-    truncateDataButton.setEnabled(!spHandler.isSensorOn());
-    editDataButton.setEnabled(!spHandler.isSensorOn());
-    userNameButton.setEnabled(!spHandler.isSensorOn());
+    togetherToggleButton.setEnabled(!spHandler.isAloneOn());
 
     // Bind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
@@ -528,7 +521,7 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 
-        else if(spHandler.isSensorOn()){
+        else if(spHandler.isAloneOn() || spHandler.isTogetherOn()){
           timeCountView.setText(getResources().getString(R.string.select));
           timeCountView.setTextColor(getResources().getColor(R.color.select));
         }

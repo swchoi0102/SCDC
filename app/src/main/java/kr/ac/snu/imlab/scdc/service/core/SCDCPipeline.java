@@ -397,6 +397,9 @@ public class SCDCPipeline implements Pipeline, DataListener {
                           spHandler.getConversingStatus(
                             LabelKeys.CONVERSING_STATUS_LABEL_ID));
 
+    //****************************
+//    dataClone.addProperty   TODO for me !
+
     IJsonObject dataWithExpId = new IJsonObject(dataClone);
     // FIXME: Uncomment below to enhance CPU performance
 //    Log.d(LogKeys.DEBUG, "SCDCPipeline.onDataReceived(): probeConfig=" + probeConfig.toString() +

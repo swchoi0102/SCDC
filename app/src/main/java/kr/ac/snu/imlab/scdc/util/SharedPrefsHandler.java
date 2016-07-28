@@ -99,6 +99,15 @@ public class SharedPrefsHandler {
     return true;
   }
 
+  public boolean isLabelOn() {
+    return prefs.getBoolean(SharedPrefs.LABEL_ON, Config.DEFAULT_LABEL_ON);
+  }
+  public boolean setLabelOn(boolean isLabelOn) {
+    prefs.edit().putBoolean(SharedPrefs.LABEL_ON, isLabelOn).apply();
+    return true;
+  }
+
+
   // User info
   public String getUsername() {
     Log.d(LogKeys.DEBUG, "SharedPrefsHandler.getUsername(): firstrun=" + firstrun);
@@ -517,8 +526,8 @@ public class SharedPrefsHandler {
       try {
         String currUsername = prefs.getString(SharedPrefs.USERNAME,
                 Config.DEFAULT_USERNAME);
-//        boolean currIsFemale =
-//                prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
+        boolean currIsFemale =
+                prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
         int currSensorId = prefs.getInt(SharedPrefs.KEY_SENSOR_ID, 0);
 
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -526,8 +535,8 @@ public class SharedPrefsHandler {
                                                   deviceId));
         nameValuePairs.add(new BasicNameValuePair(SharedPrefs.USERNAME,
                                                   currUsername));
-//        nameValuePairs.add(new BasicNameValuePair(SharedPrefs.IS_FEMALE,
-//                              String.valueOf((currIsFemale) ? 1 : 0)));
+        nameValuePairs.add(new BasicNameValuePair(SharedPrefs.IS_FEMALE,
+                              String.valueOf((currIsFemale) ? 1 : 0)));
         nameValuePairs.add(new BasicNameValuePair(SharedPrefs.KEY_SENSOR_ID,
                                               String.valueOf(currSensorId)));
         String response = HttpUtil.sendPost(urls[0], nameValuePairs);

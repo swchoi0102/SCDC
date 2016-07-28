@@ -28,7 +28,8 @@ public class SCDCKeys {
       DEFAULT_SENSOR_ON = false,
       DEFAULT_IS_FEMALE = false,
       DEFAULT_ALONE_ON = false,
-      DEFAULT_TOGETHER_ON = false;
+      DEFAULT_TOGETHER_ON = false,
+      DEFAULT_LABEL_ON = false;
   }
 
   public static interface SCDCServiceKeys {
@@ -41,6 +42,8 @@ public class SCDCKeys {
       SENSOR_ON = "sensor_on",
       ALONE_ON = "alone_on",
       TOGETHER_ON = "together_on",
+      LABEL_ON = "label_on",
+
       USERNAME = "username",
       IS_FEMALE = "isFemale",
       DEVICE_ID = "deviceId",

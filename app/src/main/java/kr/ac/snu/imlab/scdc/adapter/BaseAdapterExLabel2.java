@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LabelKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.util.TimeUtil;
@@ -34,7 +36,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
   ArrayList<LabelEntry> mData = null;
   LayoutInflater mLayoutInflater = null;
   SharedPrefsHandler spHandler = null;
-  String elapsedTime = null;
 
   Handler handler;
 
@@ -44,14 +45,9 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
     this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
                         Config.SCDC_PREFS, Context.MODE_PRIVATE);
-    this.elapsedTime = "0";
   }
 
-  public String getTime() { return this.elapsedTime; }
-
-
   public LabelEntry getLoggedItem() {
-
     for(int i=0; i<this.mData.size(); i++){
       if(this.mData.get(i).isLogged()) return this.mData.get(i);
     }
@@ -105,7 +101,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       }
     });
 
-    viewHolder.labelLogToggleButton.setText(mData.get(position).getName());
+//    viewHolder.labelLogToggleButton.setText(mData.get(position).getName());
     viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
     viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
 
@@ -113,37 +109,49 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     final ToggleButton aloneToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.aloneToggleButton);
     final ToggleButton togetherToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.togetherToggleButton);
 
-    // If alone or together is checked, enable labelLogButton
-    viewHolder.labelLogToggleButton.setEnabled(aloneToggleButton.isChecked() || togetherToggleButton.isChecked());
     handler = new Handler();
+
+    // two conditions for enabling the button
+    Boolean first = (spHandler.isAloneOn()||spHandler.isTogetherOn()) && !spHandler.isLabelOn(); //when alone or together, but not labelOn
+    Boolean second = spHandler.isLabelOn() && mData.get(position).isLogged(); //when labelOn, and this label is being logged
+    viewHolder.labelLogToggleButton.setEnabled(first || second);
+
+    // keep the button checked when this label is being logged
+    viewHolder.labelLogToggleButton.setChecked(second);
 
     // If alone or together goes off, turn off the labelLogButton too
     if(!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()){
+      viewHolder.labelLogToggleButton.setEnabled(false);
       viewHolder.labelLogToggleButton.setChecked(false);
-    }
-
-    // Refresh the elapsed time if the label is logged
-    if (mData.get(position).isLogged()) {
-      elapsedTime =
-              TimeUtil.getElapsedTimeUntilNow(
-                      mData.get(position).getStartLoggingTime());
+      mData.get(position).endLog();
     }
 
 
     viewHolder.labelLogToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        spHandler.setLabelOn(isChecked);
+
         if(isChecked){
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+          // Update config again only when isActiveLabelOn status gets changed
+          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
+                  mContext instanceof LaunchActivity)
+            ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+          // Update config again only when isActiveLabelOn status gets changed
+          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
+                  mContext instanceof LaunchActivity)
+            ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
       }
     });
