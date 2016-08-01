@@ -370,7 +370,10 @@ public class SCDCPipeline implements Pipeline, DataListener {
                           spHandler.getSensorId());
 
     // Temporarily build tempLabelEntries List<LabelEntry>
+
+    // 1) for normal labels
     String[] tempLabelNames = LaunchActivity.normalLabelNames;
+
 //    List<LabelEntry> tempLabelEntries =
 //      new ArrayList<LabelEntry>(tempLabelNames.length);
 //    for (int i = 0; i < tempLabelNames.length; i++) {
@@ -388,17 +391,25 @@ public class SCDCPipeline implements Pipeline, DataListener {
                             !(spHandler.getStartLoggingTime(i) == -1));
     }
 
-    // Add AccompanyingStatusLabelEntry info to data
-    dataClone.addProperty(LabelKeys.ACCOMPANYING_LABEL,
-                          spHandler.getAccompanyingStatus(
-                            LabelKeys.ACCOMPANYING_STATUS_LABEL_ID));
-    // Add ConversingStatusLabelEntry info to data
-    dataClone.addProperty(LabelKeys.CONVERSING_LABEL,
-                          spHandler.getConversingStatus(
-                            LabelKeys.CONVERSING_STATUS_LABEL_ID));
+    // 2) for special labels
+    tempLabelNames = LaunchActivity.specialLabelNames;
 
-    //****************************
-//    dataClone.addProperty   TODO for me !
+    for (int i = 0; i < tempLabelNames.length; i++) {
+      dataClone.addProperty(tempLabelNames[i],
+              !(spHandler.getStartLoggingTime(i) == -1));
+    }
+
+    // Add alone/together info to data
+    dataClone.addProperty(LabelKeys.TOGETHER_STATUS, spHandler.getTogetherStatus_Tri());
+
+//      // Add AccompanyingStatusLabelEntry info to data
+//    dataClone.addProperty(LabelKeys.ACCOMPANYING_LABEL,
+//                          spHandler.getAccompanyingStatus(
+//                            LabelKeys.ACCOMPANYING_STATUS_LABEL_ID));
+//    // Add ConversingStatusLabelEntry info to data
+//    dataClone.addProperty(LabelKeys.CONVERSING_LABEL,
+//                          spHandler.getConversingStatus(
+//                            LabelKeys.CONVERSING_STATUS_LABEL_ID));
 
     IJsonObject dataWithExpId = new IJsonObject(dataClone);
     // FIXME: Uncomment below to enhance CPU performance

@@ -79,7 +79,7 @@ public class LaunchActivity extends ActionBarActivity
   @Configurable
   protected int version = 5;
 
-  // FIXME: The list of normal labels (toggled by Start/End) available
+  // FIXME: The list of normal labels
   @Configurable
   public static final String[] normalLabelNames = {
           LabelKeys.SLEEP_LABEL,
@@ -88,10 +88,9 @@ public class LaunchActivity extends ActionBarActivity
           LabelKeys.IN_CLASS_LABEL,
           LabelKeys.STUDYING_LABEL,
           LabelKeys.MOVING_LABEL
-
   };
 
-  // FIXME: The list of special labels (toggled by more than Start/End) available
+  // FIXME: The list of special labels
   @Configurable
   public static final String[] specialLabelNames = {
           LabelKeys.NONE_OF_ABOVE_LABEL
@@ -100,8 +99,7 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of 'active' labels
   @Configurable
   public static final String[] activeLabelNames = { //need to be defined later
-          LabelKeys.EATING_LABEL,
-          LabelKeys.DRINKING_LABEL
+
   };
 
   private Handler handler;
@@ -135,7 +133,8 @@ public class LaunchActivity extends ActionBarActivity
   // Run Push notification button
 //  private ToggleButton reminderToggleButton;
 
-  private Button archiveButton, truncateDataButton, editDataButton;
+  private Button archiveButton, truncateDataButton;
+//  private Button editDataButton;
   private TextView dataCountView;
   private ImageView receivingDataImageView;
   private TextView timeCountView;
@@ -171,7 +170,7 @@ public class LaunchActivity extends ActionBarActivity
    */
   private AlertDialog mAlertDialog;
 
-  private ServiceConnection scdcServiceConn = new ServiceConnection() {
+  public ServiceConnection scdcServiceConn = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
       scdcService = ((SCDCService.LocalBinder) service).getService();
@@ -263,16 +262,16 @@ public class LaunchActivity extends ActionBarActivity
     receivingDataImageView = (ImageView)findViewById(R.id.receiving_data_iv);
     archiveButton = (Button) findViewById(R.id.archiveButton);
     truncateDataButton = (Button) findViewById(R.id.truncateDataButton);
-    editDataButton = (Button) findViewById(R.id.editDataButton);
+//    editDataButton = (Button) findViewById(R.id.editDataButton);
 
     aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
     togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
 
-    mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
+    mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries, scdcServiceConn, scdcManagerConn);
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
 
-    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
+    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries, scdcServiceConn, scdcManagerConn);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
     mGridViewNone.setAdapter(mAdapterNone);
 
@@ -300,6 +299,11 @@ public class LaunchActivity extends ActionBarActivity
     togetherToggleButton.setChecked(spHandler.isTogetherOn());
     togetherToggleButton.setEnabled(!spHandler.isAloneOn());
 
+    archiveButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+    truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+    userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+
+
     // Bind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
       bindService(new Intent(LaunchActivity.this, SCDCManager.class),
@@ -313,21 +317,19 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        // alone status should be transmitted !
-
         if (isChecked) {
-          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
-
-          // Increment sensorId by 1
-          spHandler.setSensorId(spHandler.getSensorId() + 1);
-          Toast.makeText(LaunchActivity.this,
-                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-                  Toast.LENGTH_SHORT).show();
-
-          // Start/Bind SCDCService and unbind SCDCManager instead
-          startService(intent);
-          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
-          unbindService(scdcManagerConn);
+//          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+//
+//          // Increment sensorId by 1
+//          spHandler.setSensorId(spHandler.getSensorId() + 1);
+//          Toast.makeText(LaunchActivity.this,
+//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+//                  Toast.LENGTH_SHORT).show();
+//
+//          // Start/Bind SCDCService and unbind SCDCManager instead
+//          startService(intent);
+//          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+//          unbindService(scdcManagerConn);
 
           timeCountView.setText(getResources().getString(R.string.select));
           timeCountView.setTextColor(getResources().getColor(R.color.select));
@@ -340,19 +342,18 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setText(getResources().getString(R.string.disabled));
           timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
-          // Unbind/Stop SCDCService and bind SCDCManager instead
-          unbindService(scdcServiceConn);
-          stopService(new Intent(LaunchActivity.this, SCDCService.class));
-          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-                  scdcManagerConn, BIND_AUTO_CREATE);
+//          // Unbind/Stop SCDCService and bind SCDCManager instead
+//          unbindService(scdcServiceConn);
+//          stopService(new Intent(LaunchActivity.this, SCDCService.class));
+//          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+//                  scdcManagerConn, BIND_AUTO_CREATE);
         }
 
-        spHandler.setSensorOn(isChecked);
         spHandler.setAloneOn(isChecked);
 
         archiveButton.setEnabled(!isChecked);
         truncateDataButton.setEnabled(!isChecked);
-        editDataButton.setEnabled(!isChecked);
+//        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
         togetherToggleButton.setEnabled(!isChecked);
       }
@@ -362,21 +363,19 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        // together status should be transmitted !
-
         if (isChecked) {
-          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
-
-          // Increment sensorId by 1
-          spHandler.setSensorId(spHandler.getSensorId() + 1);
-          Toast.makeText(LaunchActivity.this,
-                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-                  Toast.LENGTH_SHORT).show();
-
-          // Start/Bind SCDCService and unbind SCDCManager instead
-          startService(intent);
-          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
-          unbindService(scdcManagerConn);
+//          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+//
+//          // Increment sensorId by 1
+//          spHandler.setSensorId(spHandler.getSensorId() + 1);
+//          Toast.makeText(LaunchActivity.this,
+//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+//                  Toast.LENGTH_SHORT).show();
+//
+//          // Start/Bind SCDCService and unbind SCDCManager instead
+//          startService(intent);
+//          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+//          unbindService(scdcManagerConn);
 
           timeCountView.setText(getResources().getString(R.string.select));
           timeCountView.setTextColor(getResources().getColor(R.color.select));
@@ -389,19 +388,18 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setText(getResources().getString(R.string.disabled));
           timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
-          // Unbind/Stop SCDCService and bind SCDCManager instead
-          unbindService(scdcServiceConn);
-          stopService(new Intent(LaunchActivity.this, SCDCService.class));
-          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-                  scdcManagerConn, BIND_AUTO_CREATE);
+//          // Unbind/Stop SCDCService and bind SCDCManager instead
+//          unbindService(scdcServiceConn);
+//          stopService(new Intent(LaunchActivity.this, SCDCService.class));
+//          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+//                  scdcManagerConn, BIND_AUTO_CREATE);
         }
 
-        spHandler.setSensorOn(isChecked);
         spHandler.setTogetherOn(isChecked);
 
         archiveButton.setEnabled(!isChecked);
         truncateDataButton.setEnabled(!isChecked);
-        editDataButton.setEnabled(!isChecked);
+//        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
         aloneToggleButton.setEnabled(!isChecked);
       }
@@ -511,13 +509,15 @@ public class LaunchActivity extends ActionBarActivity
 
         if(mAdapter.getLoggedItem()!=null){
           String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
-          timeCountView.setText(mAdapter.getLoggedItem().getName()+" for "+elapsedTime);
+//          timeCountView.setText(mAdapter.getLoggedItem().getName()+" for "+elapsedTime);
+          timeCountView.setText(elapsedTime);
           timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 
         else if(mAdapterNone.getLoggedItem()!=null){
           String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapterNone.getLoggedItem().getStartLoggingTime());
-          timeCountView.setText(mAdapterNone.getLoggedItem().getName()+" for "+elapsedTime);
+//          timeCountView.setText(mAdapterNone.getLoggedItem().getName()+" for "+elapsedTime);
+          timeCountView.setText(elapsedTime);
           timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 

@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import kr.ac.snu.imlab.scdc.entry.LabelEntry;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LabelKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
+import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
+import kr.ac.snu.imlab.scdc.service.core.SCDCService;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.util.TimeUtil;
 
@@ -36,15 +40,22 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
   ArrayList<LabelEntry> mData = null;
   LayoutInflater mLayoutInflater = null;
   SharedPrefsHandler spHandler = null;
-
   Handler handler;
 
-  public BaseAdapterExLabel2(Context context, ArrayList<LabelEntry> data) {
+  // ****
+  ServiceConnection scdcServiceConn = null;
+  ServiceConnection scdcManagerConn = null;
+
+
+  public BaseAdapterExLabel2(Context context, ArrayList<LabelEntry> data, ServiceConnection scdcServiceConn, ServiceConnection scdcManagerConn) {
     this.mContext = context;
     this.mData = data;
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
     this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
                         Config.SCDC_PREFS, Context.MODE_PRIVATE);
+    // ****
+    this.scdcServiceConn = scdcServiceConn;
+    this.scdcManagerConn = scdcManagerConn;
   }
 
   public LabelEntry getLoggedItem() {
@@ -101,7 +112,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       }
     });
 
-//    viewHolder.labelLogToggleButton.setText(mData.get(position).getName());
     viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
     viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
 
@@ -111,15 +121,17 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
     handler = new Handler();
 
-    // two conditions for enabling the button
-    Boolean first = (spHandler.isAloneOn()||spHandler.isTogetherOn()) && !spHandler.isLabelOn(); //when alone or together, but not labelOn
-    Boolean second = spHandler.isLabelOn() && mData.get(position).isLogged(); //when labelOn, and this label is being logged
+    // Two conditions for enabling each label button
+    // 1) when alone or together, but not sensorOn
+    Boolean first = (spHandler.isAloneOn()||spHandler.isTogetherOn()) && !spHandler.isSensorOn();
+    // 2) when sensorOn, and this label is being logged
+    Boolean second = spHandler.isSensorOn() && mData.get(position).isLogged();
     viewHolder.labelLogToggleButton.setEnabled(first || second);
 
     // keep the button checked when this label is being logged
     viewHolder.labelLogToggleButton.setChecked(second);
 
-    // If alone or together goes off, turn off the labelLogButton too
+    // When alone or together goes off, turn off the labelLogButton too
     if(!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()){
       viewHolder.labelLogToggleButton.setEnabled(false);
       viewHolder.labelLogToggleButton.setChecked(false);
@@ -131,9 +143,22 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        spHandler.setLabelOn(isChecked);
-
         if(isChecked){
+
+          Intent intent = new Intent(mContext, SCDCService.class);
+
+          // Increment sensorId by 1
+          spHandler.setSensorId(spHandler.getSensorId() + 1);
+          Toast.makeText(mContext,
+                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+                  Toast.LENGTH_SHORT).show();
+
+          // Start/Bind SCDCService and unbind SCDCManager instead
+          mContext.startService(intent);
+          mContext.bindService(intent, scdcServiceConn, Context.BIND_AUTO_CREATE);
+          mContext.unbindService(scdcManagerConn);
+
+
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
 
@@ -144,6 +169,13 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
+
+          // Unbind/Stop SCDCService and bind SCDCManager instead
+          mContext.unbindService(scdcServiceConn);
+          mContext.stopService(new Intent(mContext, SCDCService.class));
+          mContext.bindService(new Intent(mContext,SCDCManager.class), scdcManagerConn, Context.BIND_AUTO_CREATE);
+
+
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
 
@@ -152,7 +184,14 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           if (pastIsActiveLabelOn != currIsActiveLabelOn &&
                   mContext instanceof LaunchActivity)
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
+
+          // When labelLogButton goes off, turn off the alone or together too
+          aloneToggleButton.setChecked(false);
+          togetherToggleButton.setChecked(false);
         }
+
+        // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
+        spHandler.setSensorOn(isChecked);
       }
     });
 

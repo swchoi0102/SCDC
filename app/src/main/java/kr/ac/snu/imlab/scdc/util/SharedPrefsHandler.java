@@ -72,8 +72,7 @@ public class SharedPrefsHandler {
 
 
 
-  // Funf sensor & alone/together
-
+  // Funf sensor by each label & alone/together
   public boolean isSensorOn() {
 //    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.isSensorOn(): called");
     return prefs.getBoolean(SharedPrefs.SENSOR_ON, Config.DEFAULT_SENSOR_ON);
@@ -96,14 +95,6 @@ public class SharedPrefsHandler {
   }
   public boolean setTogetherOn(boolean isTogetherOn) {
     prefs.edit().putBoolean(SharedPrefs.TOGETHER_ON, isTogetherOn).apply();
-    return true;
-  }
-
-  public boolean isLabelOn() {
-    return prefs.getBoolean(SharedPrefs.LABEL_ON, Config.DEFAULT_LABEL_ON);
-  }
-  public boolean setLabelOn(boolean isLabelOn) {
-    prefs.edit().putBoolean(SharedPrefs.LABEL_ON, isLabelOn).apply();
     return true;
   }
 
@@ -183,6 +174,19 @@ public class SharedPrefsHandler {
   public void setStartLoggingTime(int labelId, long startLoggingTime) {
     prefs.edit().putLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX +
             String.valueOf(labelId), startLoggingTime).apply();
+  }
+
+  // Alone/Together status (trinary value)
+  public int getTogetherStatus_Tri() {
+    if(isAloneOn()) return 0;
+    else if(isTogetherOn()) return 1;
+    else return -1;
+  }
+
+  // Alone/Together status (binary value)
+  public Boolean getTogetherStatus_Bi() {
+    if(isAloneOn()) return false;
+    else return true;
   }
 
   // AccompanyingStatusLabel
