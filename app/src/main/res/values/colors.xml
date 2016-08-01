@@ -7,5 +7,7 @@
 
   <color name="disabled">#808080</color>
   <color name="select">#154f69</color>
-  <color name="logging">#585858</color>
+  <color name="logging">#154f69</color>
+
+  <color name="data_size">#154f69</color>
 </resources>

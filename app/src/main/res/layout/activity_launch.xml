@@ -65,37 +65,61 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:paddingBottom="10dp"
-              android:gravity="left|center">
+              >
 
-              <Button android:id="@+id/truncateDataButton"
-                  android:text="@string/truncate_bt"
-                  android:textSize="15sp"
-                  android:layout_width="170dp"
+              // first row
+              <LinearLayout android:id="@+id/data_management_first_row"
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:layout_alignParentRight="true"/>
+                  android:weightSum="2" >
 
-              // for later...
-<!--              <Button android:id="@+id/editDataButton"
-                  android:text="@string/edit_bt"
-                  android:textSize="14sp"
-                  android:layout_width="110dp"
-                  android:layout_height="wrap_content"
-                  android:layout_toLeftOf="@id/truncateDataButton"/>-->
+                  <TextView android:id="@+id/dataCountText"
+                      android:text="@string/data_count_none_tv"
+                      android:textSize="15sp"
+                      android:textColor="@color/data_size"
+                      android:layout_weight="1.2"
+                      android:layout_width="0dp"
+                      android:layout_height="50dp"
+                      android:gravity="center_vertical"
+                      android:paddingLeft="25dp"/>
 
-              <TextView android:id="@+id/dataCountText"
-                  android:text="@string/data_count_none_tv"
-                  android:textSize="12sp"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:paddingLeft="5dp"
-                  android:layout_alignBottom="@id/truncateDataButton"/>
+                  <Button android:id="@+id/truncateDataButton"
+                      android:text="@string/truncate_bt"
+                      android:textSize="15sp"
+                      android:layout_weight="0.8"
+                      android:layout_width="0dp"
+                      android:layout_height="50dp" />
+
+              </LinearLayout>
+
+              <!--<Button android:id="@+id/truncateDataButton"-->
+                  <!--android:text="@string/truncate_bt"-->
+                  <!--android:textSize="15sp"-->
+                  <!--android:layout_width="170dp"-->
+                  <!--android:layout_height="50dp"-->
+                  <!--android:layout_alignParentRight="true"/>-->
+              <!--<Button android:id="@+id/editDataButton"-->
+                  <!--android:text="@string/edit_bt"-->
+                  <!--android:textSize="14sp"-->
+                  <!--android:layout_width="110dp"-->
+                  <!--android:layout_height="wrap_content"-->
+                  <!--android:layout_toLeftOf="@id/truncateDataButton"/>-->
+              <!--<TextView android:id="@+id/dataCountText"-->
+                  <!--android:text="@string/data_count_none_tv"-->
+                  <!--android:textSize="16sp"-->
+                  <!--android:textColor="@color/data_size"-->
+                  <!--android:layout_width="wrap_content"-->
+                  <!--android:layout_height="50dp"-->
+                  <!--android:gravity="center_vertical"-->
+                  <!--android:paddingLeft="25dp"-->
+                  <!--/>-->
 
               <Button android:id="@+id/archiveButton"
-                  android:layout_below="@id/truncateDataButton"
+                  android:layout_below="@id/data_management_first_row"
                   android:text="@string/archive_bt"
                   android:textSize="15sp"
                   android:layout_width="match_parent"
-                  android:layout_height="wrap_content"/>
+                  android:layout_height="50dp"/>
 
           </RelativeLayout>
       </LinearLayout>
