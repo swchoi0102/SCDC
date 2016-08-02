@@ -61,10 +61,12 @@ public class VideoMediaProbe extends DatedContentProviderProbe {
 		// Ignoring DATA, too large and not relevant
 		projectionMap.put(Video.Media.DATE_ADDED, longCell());
 		projectionMap.put(Video.Media.DATE_MODIFIED, longCell());
-		projectionMap.put(Video.Media.DISPLAY_NAME, sensitiveStringCell());
+//		projectionMap.put(Video.Media.DISPLAY_NAME, sensitiveStringCell());
+		projectionMap.put(Video.Media.DISPLAY_NAME, stringCell());
 		projectionMap.put(Video.Media.MIME_TYPE, stringCell());
 		projectionMap.put(Video.Media.SIZE, longCell());
-		projectionMap.put(Video.Media.TITLE, sensitiveStringCell());
+//		projectionMap.put(Video.Media.TITLE, sensitiveStringCell());
+		projectionMap.put(Video.Media.TITLE, stringCell());
 		projectionMap.put(Video.Media.ALBUM, stringCell());
 		projectionMap.put(Video.Media.ARTIST, stringCell());
 		projectionMap.put(Video.Media.BOOKMARK, intCell());
