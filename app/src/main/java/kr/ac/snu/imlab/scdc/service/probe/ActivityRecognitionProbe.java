@@ -108,7 +108,7 @@ public class ActivityRecognitionProbe extends Base
         LocalBroadcastManager.getInstance(getContext())
             .registerReceiver(arReceiver, filter);
 
-        // Intentionally wait 1 second for Google API Client to be connected
+        // Intentionally wait 0.1 second for Google API Client to be connected
         // then register activity updates handler
         handler.postDelayed(new Runnable() {
           @Override
@@ -116,7 +116,7 @@ public class ActivityRecognitionProbe extends Base
             // Register for activity recognition updates
             requestActivityUpdatesHandler();
           }
-        }, 1000L);
+        }, 100L);
     }
 
     @Override
