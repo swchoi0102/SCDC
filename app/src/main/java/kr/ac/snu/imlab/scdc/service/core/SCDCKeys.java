@@ -190,5 +190,6 @@ public class SCDCKeys {
 
     public static final String RECEIVED = "received";
     public static final String TRANSMITTED = "transmitted";
+    public static final String DIFF_SECS = "diffSecs";
   }
 }
