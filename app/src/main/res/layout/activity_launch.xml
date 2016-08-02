@@ -17,7 +17,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:gravity="left|center"
-              android:paddingBottom="20dp">
+              android:paddingBottom="10dp">
 
               <TextView android:id="@+id/app_title"
                   android:text="@string/app_title"
@@ -25,7 +25,7 @@
                   android:layout_height="wrap_content"
                   android:textSize="40sp"
                   android:textColor="#595959"
-                  android:paddingLeft="10dp"/>
+                  android:layout_marginLeft="8dp" />
 
               <ImageView android:id="@+id/receiving_data_iv"
                   android:layout_width="10dp"
@@ -41,10 +41,11 @@
                   android:text="@string/edit"
                   android:textSize="12sp"
                   android:layout_alignParentRight="true"
-                  android:layout_alignBottom="@id/app_title"/>
+                  android:layout_alignBottom="@id/app_title"
+                  android:layout_marginRight="8dp"/>
 
               <EditText android:id="@+id/user_name"
-                  android:layout_width="120dp"
+                  android:layout_width="110dp"
                   android:layout_height="wrap_content"
                   android:maxLength="10"
                   android:inputType="text"
@@ -64,32 +65,34 @@
           <RelativeLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingBottom="10dp"
-              >
+              android:paddingBottom="10dp">
 
               // first row
-              <LinearLayout android:id="@+id/data_management_first_row"
+              <LinearLayout android:id="@+id/first_row"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:weightSum="2" >
+                  android:weightSum="20" >
+
+                  <View
+                      android:layout_weight="1.5"
+                      android:layout_width="0dp"
+                      android:layout_height="50dp" />
 
                   <TextView android:id="@+id/dataCountText"
                       android:text="@string/data_count_none_tv"
                       android:textSize="15sp"
                       android:textColor="@color/data_size"
-                      android:layout_weight="1.2"
+                      android:layout_weight="10.5"
                       android:layout_width="0dp"
                       android:layout_height="50dp"
-                      android:gravity="center_vertical"
-                      android:paddingLeft="25dp"/>
+                      android:gravity="center_vertical" />
 
                   <Button android:id="@+id/truncateDataButton"
                       android:text="@string/truncate_bt"
                       android:textSize="15sp"
-                      android:layout_weight="0.8"
+                      android:layout_weight="8"
                       android:layout_width="0dp"
                       android:layout_height="50dp" />
-
               </LinearLayout>
 
               <!--<Button android:id="@+id/truncateDataButton"-->
@@ -115,37 +118,36 @@
                   <!--/>-->
 
               <Button android:id="@+id/archiveButton"
-                  android:layout_below="@id/data_management_first_row"
+                  android:layout_below="@id/first_row"
                   android:text="@string/archive_bt"
                   android:textSize="15sp"
                   android:layout_width="match_parent"
                   android:layout_height="50dp"/>
-
           </RelativeLayout>
       </LinearLayout>
-
 
       // labeling buttons
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:paddingTop="25dp"
-          android:paddingBottom="25dp"
-          android:background="@drawable/border"          >
+          android:paddingTop="20dp"
+          android:paddingBottom="20dp"
+          android:background="@drawable/border" >
 
           // alone or together
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingBottom="5dp"
+              android:paddingBottom="3dp"
+              android:paddingLeft="13dp"
+              android:paddingRight="13dp"
               android:weightSum="2">
 
               <ToggleButton android:id="@+id/aloneToggleButton"
                   android:textOff="@string/alone_bt"
                   android:textOn="@string/alone_bt"
                   android:textSize="14sp"
-                  android:layout_marginLeft="11dp"
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content" />
@@ -154,7 +156,6 @@
                   android:textOff="@string/together_bt"
                   android:textOn="@string/together_bt"
                   android:textSize="14sp"
-                  android:layout_marginRight="11dp"
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content" />
@@ -184,8 +185,5 @@
               android:horizontalSpacing="0dp"
               android:stretchMode="columnWidth"
               android:gravity="center"/>
-
       </LinearLayout>
-
-
   </LinearLayout>
