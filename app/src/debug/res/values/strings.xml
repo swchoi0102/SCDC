@@ -75,6 +75,27 @@
     }
 
     </string>
+    <string name="user_name_tv">ID: </string>
+    <string name="edit">수정</string>
+    <string name="save">저장</string>
+    <string name="data_count_none_tv">Data size: </string>
+    <string name="truncate_bt">데이터 삭제</string>
+    <string name="archive_bt">데이터 업로드</string>
+    <string name="check_internet_connection_message">네트워크 연결 후 진행해주세요</string>
+    <string name="get_prefs_from_server_message">서버와 동기화 중입니다</string>
+    <string name="archive_message">데이터 압축 중</string>
+    <string name="truncate_message">데이터 삭제 중</string>
+    <string name="truncate_complete_message">데이터 삭제가 완료되었습니다</string>
+    <string name="update_config_complete_message">환경설정 업데이트에 성공하였습니다</string>
+    <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>
+    <string name="change_config_complete_message">환경설정 변경에 성공하였습니다</string>
+    <string name="change_config_failed_message">환경설정 변경에 실패하였습니다</string>
+    <string name="alone_bt">혼자입니다</string>
+    <string name="together_bt">함께입니다</string>
+    <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>
+    <string name="select">현재 상황에 맞는 버튼을 눌러주세요</string>
+    <string name="time_count">" 동안 수집 중입니다"</string>
+
     <string name="notification_interval_tv">Push notifications time interval</string>
     <string name="title_activity_probe_reschedule">ProbeRescheduleActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
@@ -83,31 +104,13 @@
     <string name="label_alarm_content_info">Reminder</string>
     <string name="general_alarm_name">general</string>
     <string name="go_back_bt">Go back</string>
-    <string name="archive_bt">데이터 업로드</string>
-    <string name="truncate_bt">데이터 삭제</string>
     <string name="edit_bt">데이터 수정</string>
     <string name="sensor_bt">수집</string>
     <string name="push_bt">푸쉬</string>
-    <string name="user_name_tv">ID: </string>
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
-    <string name="data_count_none_tv">Data size: </string>
     <string name="minutes">minutes</string>
-    <string name="save">저장</string>
-    <string name="edit">수정</string>
-    <string name="check_internet_connection_message">Please connect to network to proceed.</string>
-    <string name="get_prefs_from_server_message">Synchronizing preferences with server...</string>
-    <string name="archive_message">Archiving...</string>
-    <string name="truncate_message">Truncating...</string>
-    <string name="truncate_complete_message">Dropped and re-created data table.</string>
-    <string name="update_config_complete_message">Successfully updated pipeline config.</string>
-    <string name="update_config_failed_message">Failed to update pipeline config.</string>
-    <string name="change_config_complete_message">Successfully changed pipeline config.</string>
-    <string name="change_config_failed_message">Failed to change pipeline config.</string>
-    <string name="alone_bt">혼자입니다</string>
-    <string name="together_bt">함께입니다</string>
-    <string name="disabled">"위 버튼을 눌러 데이터 수집을 시작해주세요"</string>
-    <string name="select">"현재 상황에 맞는 버튼을 눌러주세요"</string>
+
 
 
     <!-- Activity recognition strings -->

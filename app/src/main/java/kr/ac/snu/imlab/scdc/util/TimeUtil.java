@@ -17,13 +17,13 @@ public class TimeUtil {
     long daysInMillis = hoursInMillis * 24;
 
     if (timeDelta < minutesInMillis) {
-      elapsedTime = String.valueOf(timeDelta / secondsInMillis) + " 초";
+      elapsedTime = String.valueOf(timeDelta / secondsInMillis) + "초";
     } else if (timeDelta < hoursInMillis) {
-      elapsedTime = String.valueOf(timeDelta / minutesInMillis) + " 분";
+      elapsedTime = String.valueOf(timeDelta / minutesInMillis) + "분";
     } else if (timeDelta < daysInMillis) {
-      elapsedTime = String.valueOf(timeDelta / hoursInMillis) + " 시간";
+      elapsedTime = String.valueOf(timeDelta / hoursInMillis) + "시간";
     } else {
-      elapsedTime = String.valueOf(timeDelta / daysInMillis) + " 시간";
+      elapsedTime = String.valueOf(timeDelta / daysInMillis) + "시간";
     }
 
     return elapsedTime;

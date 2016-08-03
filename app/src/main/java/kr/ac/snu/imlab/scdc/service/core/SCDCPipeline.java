@@ -369,38 +369,26 @@ public class SCDCPipeline implements Pipeline, DataListener {
     dataClone.addProperty(SharedPrefs.KEY_SENSOR_ID,
                           spHandler.getSensorId());
 
-    // Temporarily build tempLabelEntries List<LabelEntry>
 
+
+    // Add labeling info to data
     // 1) for normal labels
-    String[] tempLabelNames = LaunchActivity.normalLabelNames;
-
-//    List<LabelEntry> tempLabelEntries =
-//      new ArrayList<LabelEntry>(tempLabelNames.length);
-//    for (int i = 0; i < tempLabelNames.length; i++) {
-//      tempLabelEntries.add(new LabelEntry(i, tempLabelNames[i],
-//                                          manager, Config.SCDC_PREFS));
-//    }
-    // Add label status as new key-values for JsonObject data
-//    for (int i = 0; i < tempLabelEntries.size(); i++) {
-//      dataClone.addProperty(tempLabelEntries.get(i).getName(),
-//                            tempLabelEntries.get(i).isLogged());
-//    }
-
-    for (int i = 0; i < tempLabelNames.length; i++) {
-      dataClone.addProperty(tempLabelNames[i],
-                            !(spHandler.getStartLoggingTime(i) == -1));
-    }
-
-    // 2) for special labels
-    tempLabelNames = LaunchActivity.specialLabelNames;
-
-    for (int i = 0; i < tempLabelNames.length; i++) {
-      dataClone.addProperty(tempLabelNames[i],
+    String[] normalLabelNames = LaunchActivity.normalLabelNames;
+    for (int i = 0; i < normalLabelNames.length; i++) {
+      dataClone.addProperty(normalLabelNames[i],
               !(spHandler.getStartLoggingTime(i) == -1));
+//      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]+String.valueOf(!(spHandler.getStartLoggingTime(i) == -1)));
+    }
+    // 2) for special labels
+    String[] specialLabelNames = LaunchActivity.specialLabelNames;
+    for (int i = 0; i < specialLabelNames.length; i++) {
+      dataClone.addProperty(specialLabelNames[i],
+              !(spHandler.getStartLoggingTime(normalLabelNames.length+i) == -1));
+//      Log.d(LogKeys.DEBUG, specialLabelNames[i]+String.valueOf(!(spHandler.getStartLoggingTime(normalLabelNames.length+i) == -1)));
     }
 
     // Add alone/together info to data
-    dataClone.addProperty(LabelKeys.TOGETHER_STATUS, spHandler.getTogetherStatus_Tri());
+    dataClone.addProperty(LabelKeys.TOGETHER_STATUS, spHandler.getTogetherStatus_Bi());
 
 //      // Add AccompanyingStatusLabelEntry info to data
 //    dataClone.addProperty(LabelKeys.ACCOMPANYING_LABEL,

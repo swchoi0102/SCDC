@@ -109,14 +109,14 @@ public class SharedPrefsHandler {
     prefs.edit().putString(SharedPrefs.USERNAME, username).apply();
   }
 
-//  public boolean getIsFemale() {
-//    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.getIsFemale(): firstrun=" + firstrun);
-//    return prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
-//  }
+  public boolean getIsFemale() {
+    Log.d(LogKeys.DEBUG, "SharedPrefsHandler.getIsFemale(): firstrun=" + firstrun);
+    return prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
+  }
 
-//  public void setIsFemale(boolean isFemale) {
-//    prefs.edit().putBoolean(SharedPrefs.IS_FEMALE, isFemale).apply();
-//  }
+  public void setIsFemale(boolean isFemale) {
+    prefs.edit().putBoolean(SharedPrefs.IS_FEMALE, isFemale).apply();
+  }
 
 
   // Id's related to data collection
@@ -156,6 +156,7 @@ public class SharedPrefsHandler {
     prefs.edit().putInt(SharedPrefs.NUM_LABELS, size).apply();
   }
 
+
   public String getLabelName(int labelId) {
     return prefs.getString(SharedPrefs.LABEL_NAME_PREFIX +
             String.valueOf(labelId), null);
@@ -186,7 +187,8 @@ public class SharedPrefsHandler {
   // Alone/Together status (binary value)
   public Boolean getTogetherStatus_Bi() {
     if(isAloneOn()) return false;
-    else return true;
+    else if(isTogetherOn()) return true;
+    else return null;
   }
 
   // AccompanyingStatusLabel

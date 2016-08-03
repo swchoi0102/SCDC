@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -161,6 +162,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
+          Log.d(SCDCKeys.LogKeys.DEBUG, "start logging "+mData.get(position).getName());
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
@@ -169,6 +171,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
+          mData.get(position).endLog();
 
           // Unbind/Stop SCDCService and bind SCDCManager instead
           mContext.unbindService(scdcServiceConn);
@@ -177,8 +180,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
 
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
-          mData.get(position).endLog();
-
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
           if (pastIsActiveLabelOn != currIsActiveLabelOn &&

@@ -25,6 +25,15 @@ public class LabelEntry {
     if (name != null) setName(name);
   }
 
+  public int getId(String name){
+    for(int i=0; i<100 ; i++){
+      if(spHandler.getLabelName(i).equals(name)) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
   public int getId() {
     return this.labelId;
   }

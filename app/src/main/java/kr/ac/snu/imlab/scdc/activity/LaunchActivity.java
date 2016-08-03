@@ -249,12 +249,14 @@ public class LaunchActivity extends ActionBarActivity
     for (int i = 0; i < normalLabelNames.length; i++) {
       normalLabelEntries.add(new LabelEntry(i, normalLabelNames[i],
                           LaunchActivity.this, Config.SCDC_PREFS));
+      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]);
     }
 
     specialLabelEntries = new ArrayList<LabelEntry>(specialLabelNames.length);
     for (int i=0; i < specialLabelNames.length; i++) {
-      specialLabelEntries.add(new LabelEntry(normalLabelEntries.size()+i, specialLabelNames[i],
+      specialLabelEntries.add(new LabelEntry(normalLabelNames.length+i, specialLabelNames[i],
               LaunchActivity.this, Config.SCDC_PREFS));
+      Log.d(LogKeys.DEBUG, String.valueOf(normalLabelNames.length+i)+specialLabelNames[i]);
     }
 
     // Put the total number of labels into SharedPreferences
@@ -292,8 +294,12 @@ public class LaunchActivity extends ActionBarActivity
 
     // Displays the count of time
     timeCountView = (TextView)findViewById(R.id.timeCountTextView);
-    timeCountView.setText(getResources().getString(R.string.disabled));
+    timeCountView.setText(getString(R.string.disabled));
     timeCountView.setTextColor(getResources().getColor(R.color.disabled));
+    if(!spHandler.isSensorOn() && (spHandler.isAloneOn() || spHandler.isTogetherOn())) {
+      timeCountView.setText(getString(R.string.select));
+      timeCountView.setTextColor(getResources().getColor(R.color.select));
+    }
 
     // Displays the count of rows in the data
     dataCountView = (TextView) findViewById(R.id.dataCountText);
@@ -326,6 +332,8 @@ public class LaunchActivity extends ActionBarActivity
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
+          mAdapter.notifyDataSetChanged();
+          mAdapterNone.notifyDataSetChanged();
 //          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 //
 //          // Increment sensorId by 1
@@ -356,7 +364,6 @@ public class LaunchActivity extends ActionBarActivity
 //          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
 //                  scdcManagerConn, BIND_AUTO_CREATE);
         }
-
         spHandler.setAloneOn(isChecked);
 
         archiveButton.setEnabled(!isChecked);
@@ -372,6 +379,8 @@ public class LaunchActivity extends ActionBarActivity
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
+          mAdapter.notifyDataSetChanged();
+          mAdapterNone.notifyDataSetChanged();
 //          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 //
 //          // Increment sensorId by 1
@@ -402,7 +411,6 @@ public class LaunchActivity extends ActionBarActivity
 //          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
 //                  scdcManagerConn, BIND_AUTO_CREATE);
         }
-
         spHandler.setTogetherOn(isChecked);
 
         archiveButton.setEnabled(!isChecked);
@@ -518,14 +526,14 @@ public class LaunchActivity extends ActionBarActivity
         if(mAdapter.getLoggedItem()!=null){
           String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
 //          timeCountView.setText(mAdapter.getLoggedItem().getName()+" for "+elapsedTime);
-          timeCountView.setText(elapsedTime);
+          timeCountView.setText(elapsedTime+getString(R.string.time_count));
           timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 
         else if(mAdapterNone.getLoggedItem()!=null){
           String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapterNone.getLoggedItem().getStartLoggingTime());
 //          timeCountView.setText(mAdapterNone.getLoggedItem().getName()+" for "+elapsedTime);
-          timeCountView.setText(elapsedTime);
+          timeCountView.setText(elapsedTime+getString(R.string.time_count));
           timeCountView.setTextColor(getResources().getColor(R.color.logging));
         }
 
