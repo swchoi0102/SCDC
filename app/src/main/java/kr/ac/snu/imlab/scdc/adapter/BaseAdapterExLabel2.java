@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.nfc.cardemulation.OffHostApduService;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -193,6 +194,11 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
         // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
         spHandler.setSensorOn(isChecked);
+
+        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+        Log.d(SCDCKeys.LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+        Log.d(SCDCKeys.LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+        Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
       }
     });
 

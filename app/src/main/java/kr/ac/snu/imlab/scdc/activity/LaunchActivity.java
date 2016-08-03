@@ -249,14 +249,14 @@ public class LaunchActivity extends ActionBarActivity
     for (int i = 0; i < normalLabelNames.length; i++) {
       normalLabelEntries.add(new LabelEntry(i, normalLabelNames[i],
                           LaunchActivity.this, Config.SCDC_PREFS));
-      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]);
+//      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]);
     }
 
     specialLabelEntries = new ArrayList<LabelEntry>(specialLabelNames.length);
     for (int i=0; i < specialLabelNames.length; i++) {
       specialLabelEntries.add(new LabelEntry(normalLabelNames.length+i, specialLabelNames[i],
               LaunchActivity.this, Config.SCDC_PREFS));
-      Log.d(LogKeys.DEBUG, String.valueOf(normalLabelNames.length+i)+specialLabelNames[i]);
+//      Log.d(LogKeys.DEBUG, String.valueOf(normalLabelNames.length+i)+specialLabelNames[i]);
     }
 
     // Put the total number of labels into SharedPreferences
@@ -327,6 +327,10 @@ public class LaunchActivity extends ActionBarActivity
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
     }
 
+    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+
     aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -363,6 +367,7 @@ public class LaunchActivity extends ActionBarActivity
 //          stopService(new Intent(LaunchActivity.this, SCDCService.class));
 //          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
 //                  scdcManagerConn, BIND_AUTO_CREATE);
+          spHandler.setSensorOn(false);
         }
         spHandler.setAloneOn(isChecked);
 
@@ -371,6 +376,10 @@ public class LaunchActivity extends ActionBarActivity
 //        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
         togetherToggleButton.setEnabled(!isChecked);
+
+        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+        Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 
@@ -410,6 +419,7 @@ public class LaunchActivity extends ActionBarActivity
 //          stopService(new Intent(LaunchActivity.this, SCDCService.class));
 //          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
 //                  scdcManagerConn, BIND_AUTO_CREATE);
+          spHandler.setSensorOn(false);
         }
         spHandler.setTogetherOn(isChecked);
 
@@ -418,6 +428,10 @@ public class LaunchActivity extends ActionBarActivity
 //        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
         aloneToggleButton.setEnabled(!isChecked);
+
+        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+        Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 

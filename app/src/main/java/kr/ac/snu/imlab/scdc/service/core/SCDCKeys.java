@@ -145,7 +145,8 @@ public class SCDCKeys {
 
   public static interface LogKeys {
     public static final String
-      DEBUG = "DEBUG";
+      DEBB = "DEBB",
+      DEBUG = "DEBUG"              ;
   }
 
   public interface SystemSettingsKeys {
