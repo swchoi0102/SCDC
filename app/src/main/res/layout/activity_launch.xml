@@ -1,189 +1,171 @@
   <LinearLayout
       xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
+
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".LaunchActivity">
 
-      // ID and data
-      <LinearLayout
+      // 1) app title and ID
+      <RelativeLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:gravity="left|center"
+          android:paddingBottom="10dp">
 
-          // app title and ID
-          <RelativeLayout
+          <TextView android:id="@+id/app_title"
+              android:text="@string/app_title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="40sp"
+              android:textColor="#595959"
+              android:layout_marginLeft="10dp" />
+
+          <ImageView android:id="@+id/receiving_data_iv"
+              android:layout_width="10dp"
+              android:layout_height="10dp"
+              android:background="@drawable/red_icon"
+              android:layout_toEndOf="@id/app_title"
+              android:layout_alignBottom="@id/app_title"
+              android:visibility="invisible"/>
+
+          <Button android:id="@+id/user_name_btn"
+              android:layout_width="65dp"
+              android:layout_height="wrap_content"
+              android:text="@string/edit"
+              android:textSize="12sp"
+              android:layout_marginRight="10dp"
+              android:layout_alignParentRight="true"
+              android:layout_alignBottom="@id/app_title"/>
+
+          <EditText android:id="@+id/user_name"
+              android:layout_width="110dp"
+              android:layout_height="wrap_content"
+              android:inputType="text"
+              android:maxLength="10"
+              android:layout_toLeftOf="@id/user_name_btn"
+              android:layout_alignBottom="@id/app_title" />
+
+          <TextView android:id="@+id/user_name_tv"
+              android:text="@string/user_name_tv"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_toLeftOf="@id/user_name"
+              android:layout_alignBottom="@id/app_title"
+              android:paddingBottom="4dp" />
+      </RelativeLayout>
+
+      // 2) data management
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingBottom="10dp">
+
+          // first row
+          <LinearLayout android:id="@+id/first_row"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:gravity="left|center"
-              android:paddingBottom="10dp">
+              android:weightSum="20" >
 
-              <TextView android:id="@+id/app_title"
-                  android:text="@string/app_title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textSize="40sp"
-                  android:textColor="#595959"
-                  android:layout_marginLeft="8dp" />
+              <View android:id="@+id/dataCountMargin"
+                  android:layout_weight="1.5"
+                  android:layout_width="0dp"
+                  android:layout_height="50dp" />
 
-              <ImageView android:id="@+id/receiving_data_iv"
-                  android:layout_width="10dp"
-                  android:layout_height="10dp"
-                  android:background="@drawable/red_icon"
-                  android:layout_toEndOf="@id/app_title"
-                  android:layout_alignBottom="@id/app_title"
-                  android:visibility="invisible"/>
-
-              <Button android:id="@+id/user_name_btn"
-                  android:layout_width="65dp"
-                  android:layout_height="wrap_content"
-                  android:text="@string/edit"
-                  android:textSize="12sp"
-                  android:layout_alignParentRight="true"
-                  android:layout_alignBottom="@id/app_title"
-                  android:layout_marginRight="8dp"/>
-
-              <EditText android:id="@+id/user_name"
-                  android:layout_width="110dp"
-                  android:layout_height="wrap_content"
-                  android:maxLength="10"
-                  android:inputType="text"
-                  android:layout_toLeftOf="@id/user_name_btn"
-                  android:layout_alignBottom="@id/app_title" />
-
-              <TextView android:id="@+id/user_name_tv"
-                  android:text="@string/user_name_tv"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_toLeftOf="@id/user_name"
-                  android:layout_alignBottom="@id/app_title"
-                  android:paddingBottom="4dp" />
-          </RelativeLayout>
-
-          // data management
-          <RelativeLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:paddingBottom="10dp">
-
-              // first row
-              <LinearLayout android:id="@+id/first_row"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:weightSum="20" >
-
-                  <View
-                      android:layout_weight="1.5"
-                      android:layout_width="0dp"
-                      android:layout_height="50dp" />
-
-                  <TextView android:id="@+id/dataCountText"
-                      android:text="@string/data_count_none_tv"
-                      android:textSize="15sp"
-                      android:textColor="@color/data_size"
-                      android:layout_weight="10.5"
-                      android:layout_width="0dp"
-                      android:layout_height="50dp"
-                      android:gravity="center_vertical" />
-
-                  <Button android:id="@+id/truncateDataButton"
-                      android:text="@string/truncate_bt"
-                      android:textSize="15sp"
-                      android:layout_weight="8"
-                      android:layout_width="0dp"
-                      android:layout_height="50dp" />
-              </LinearLayout>
-
-              <!--<Button android:id="@+id/truncateDataButton"-->
-                  <!--android:text="@string/truncate_bt"-->
-                  <!--android:textSize="15sp"-->
-                  <!--android:layout_width="170dp"-->
-                  <!--android:layout_height="50dp"-->
-                  <!--android:layout_alignParentRight="true"/>-->
-              <!--<Button android:id="@+id/editDataButton"-->
-                  <!--android:text="@string/edit_bt"-->
-                  <!--android:textSize="14sp"-->
-                  <!--android:layout_width="110dp"-->
-                  <!--android:layout_height="wrap_content"-->
-                  <!--android:layout_toLeftOf="@id/truncateDataButton"/>-->
-              <!--<TextView android:id="@+id/dataCountText"-->
-                  <!--android:text="@string/data_count_none_tv"-->
-                  <!--android:textSize="16sp"-->
-                  <!--android:textColor="@color/data_size"-->
-                  <!--android:layout_width="wrap_content"-->
-                  <!--android:layout_height="50dp"-->
-                  <!--android:gravity="center_vertical"-->
-                  <!--android:paddingLeft="25dp"-->
-                  <!--/>-->
-
-              <Button android:id="@+id/archiveButton"
-                  android:layout_below="@id/first_row"
-                  android:text="@string/archive_bt"
+              <TextView android:id="@+id/dataCountText"
+                  android:text="@string/data_count_none_tv"
                   android:textSize="15sp"
-                  android:layout_width="match_parent"
-                  android:layout_height="50dp"/>
-          </RelativeLayout>
-      </LinearLayout>
+                  android:textColor="@color/data_size"
+                  android:layout_weight="10.5"
+                  android:layout_width="0dp"
+                  android:layout_height="50dp"
+                  android:gravity="center_vertical"/>
 
-      // labeling buttons
-      <LinearLayout
+              <Button android:id="@+id/truncateDataButton"
+                  android:text="@string/truncate_bt"
+                  android:textSize="15sp"
+                  android:layout_weight="8"
+                  android:layout_width="0dp"
+                  android:layout_height="50dp" />
+          </LinearLayout>
+
+          // second row
+          <Button android:id="@+id/archiveButton"
+              android:text="@string/archive_bt"
+              android:textSize="15sp"
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:layout_below="@id/first_row" />
+      </RelativeLayout>
+
+      // 3) labeling buttons
+      <ScrollView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:paddingTop="20dp"
-          android:paddingBottom="20dp"
-          android:background="@drawable/border" >
+          android:fillViewport="true">
 
-          // alone or together
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingBottom="3dp"
-              android:paddingLeft="13dp"
-              android:paddingRight="13dp"
-              android:weightSum="2">
+              android:orientation="vertical"
+              android:paddingTop="20dp"
+              android:paddingBottom="20dp"
+              android:background="@drawable/border" >
 
-              <ToggleButton android:id="@+id/aloneToggleButton"
-                  android:textOff="@string/alone_bt"
-                  android:textOn="@string/alone_bt"
+              // alone or together
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="13dp"
+                  android:layout_marginRight="13dp"
+                  android:weightSum="2">
+
+                  <ToggleButton android:id="@+id/aloneToggleButton"
+                      android:textOff="@string/alone_bt"
+                      android:textOn="@string/alone_bt"
+                      android:textSize="14sp"
+                      android:layout_weight="1"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content" />
+
+                  <ToggleButton android:id="@+id/togetherToggleButton"
+                      android:textOff="@string/together_bt"
+                      android:textOn="@string/together_bt"
+                      android:textSize="14sp"
+                      android:layout_weight="1"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content" />
+              </LinearLayout>
+
+              <TextView android:id= "@+id/timeCountTextView"
                   android:textSize="14sp"
-                  android:layout_weight="1"
-                  android:layout_width="0dp"
+                  android:gravity="center"
+                  android:layout_marginTop="7dp"
+                  android:layout_marginBottom="7dp"
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content" />
 
-              <ToggleButton android:id="@+id/togetherToggleButton"
-                  android:textOff="@string/together_bt"
-                  android:textOn="@string/together_bt"
-                  android:textSize="14sp"
-                  android:layout_weight="1"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content" />
+              // fixed height for gridview1
+              <GridView android:id="@+id/label_grid_view"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:numColumns="3"
+                  android:verticalSpacing="0dp"
+                  android:horizontalSpacing="0dp"
+                  android:stretchMode="columnWidth"
+                  android:gravity="center" />
 
+              // fixed height for gridview2
+              <GridView android:id="@+id/label_grid_view_none"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:numColumns="1"
+                  android:verticalSpacing="0dp"
+                  android:horizontalSpacing="0dp"
+                  android:stretchMode="columnWidth"
+                  android:gravity="center"/>
           </LinearLayout>
-
-          <TextView android:id= "@+id/timeCountTextView"
-              android:paddingBottom="10dp"
-              android:textSize="14sp"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"  />
-
-          <GridView android:id="@+id/label_grid_view"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:numColumns="3"
-              android:verticalSpacing="0dp"
-              android:horizontalSpacing="0dp"
-              android:stretchMode="columnWidth"
-              android:gravity="center"/>
-
-          <GridView android:id="@+id/label_grid_view_none"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:verticalSpacing="0dp"
-              android:horizontalSpacing="0dp"
-              android:stretchMode="columnWidth"
-              android:gravity="center"/>
-      </LinearLayout>
+      </ScrollView>
   </LinearLayout>

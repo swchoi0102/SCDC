@@ -39,6 +39,7 @@ import android.os.IBinder;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -270,10 +271,17 @@ public class LaunchActivity extends ActionBarActivity
     mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries, scdcServiceConn, scdcManagerConn);
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
+    setGridViewHeightBasedOnChildren(mGridView, 3);
 
     mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries, scdcServiceConn, scdcManagerConn);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
     mGridViewNone.setAdapter(mAdapterNone);
+    setGridViewHeightBasedOnChildren(mGridViewNone, 1);
+
+
+
+
+
 
     // ********* Need to get rid of these Views :(
     mAsLabelView = (ViewGroup) getLayoutInflater().inflate(R.layout.accompanying_status_label_view_item_layout, null, false);
@@ -1051,5 +1059,34 @@ public class LaunchActivity extends ActionBarActivity
       }
     }.execute();
   }
+
+  // fixed height for GridViews
+  public void setGridViewHeightBasedOnChildren(GridView gridView, int columns) {
+    ListAdapter listAdapter = gridView.getAdapter();
+    if (listAdapter == null) {
+      // pre-condition
+      return;
+    }
+
+    int totalHeight = 0;
+    int items = listAdapter.getCount();
+    int rows = 0;
+
+    View listItem = listAdapter.getView(0, null, gridView);
+    listItem.measure(0, 0);
+    totalHeight = listItem.getMeasuredHeight();
+
+    float x = 1;
+    if( items > columns ){
+      x = items/columns;
+      rows = (int) (x);
+      totalHeight *= rows;
+    }
+
+    ViewGroup.LayoutParams params = gridView.getLayoutParams();
+    params.height = totalHeight;
+    gridView.setLayoutParams(params);
+  }
+
 
 }
