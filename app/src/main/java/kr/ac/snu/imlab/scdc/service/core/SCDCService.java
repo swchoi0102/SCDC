@@ -42,6 +42,7 @@ public class SCDCService extends Service {
   private ServiceConnection scdcManagerConn = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onServiceConnected()");
       scdcManager = ((SCDCManager.LocalBinder) service).getManager();
 //      scdcManager.reload();
       pipeline = (SCDCPipeline) scdcManager.getRegisteredPipeline
@@ -63,6 +64,7 @@ public class SCDCService extends Service {
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onServiceDisconnected()");
       Log.d(LogKeys.DEBUG, TAG+".scdcManagerConn.onServiceDisconnected() called");
       scdcManager = null;
       pipeline = null;
@@ -71,6 +73,7 @@ public class SCDCService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand()");
     super.onStartCommand(intent, flags, startId);
 
     spHandler = SharedPrefsHandler.getInstance(this,
@@ -97,6 +100,7 @@ public class SCDCService extends Service {
 
   @Override
   public void onDestroy() {
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy()");
     super.onDestroy();
     Log.d(LogKeys.DEBUG, TAG+".onDestroy() called");
     stopForeground(true);
@@ -111,6 +115,7 @@ public class SCDCService extends Service {
 
   @Override
   public IBinder onBind(Intent intent) {
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onBind()");
     return new LocalBinder();
   }
 

@@ -81,7 +81,6 @@ public class SharedPrefsHandler {
     prefs.edit().putBoolean(SharedPrefs.SENSOR_ON, isSensorOn).apply();
     return true;
   }
-
   public boolean isAloneOn() {
     return prefs.getBoolean(SharedPrefs.ALONE_ON, Config.DEFAULT_ALONE_ON);
   }

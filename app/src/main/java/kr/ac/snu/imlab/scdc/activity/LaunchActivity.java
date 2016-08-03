@@ -28,6 +28,7 @@ import edu.mit.media.funf.config.ConfigUpdater.ConfigUpdateException;
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.config.HttpConfigUpdater;
 import edu.mit.media.funf.util.EqualsUtil;
+import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel2;
 import kr.ac.snu.imlab.scdc.entry.AccompanyingStatusLabelEntry;
 import kr.ac.snu.imlab.scdc.entry.ConversingStatusLabelEntry;
 import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
@@ -175,11 +176,13 @@ public class LaunchActivity extends ActionBarActivity
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
       scdcService = ((SCDCService.LocalBinder) service).getService();
+      Log.d(LogKeys.DEB, TAG+".scdcServiceConn.onServiceConnected()");
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
       scdcService = null;
+      Log.d(LogKeys.DEB, TAG+".scdcServiceConn.onServiceDisconnected()");
     }
   };
 
@@ -199,6 +202,7 @@ public class LaunchActivity extends ActionBarActivity
                            "pipeline.getName()=" + pipeline.getName() +
                            ", pipeline.getDatabaseHelper()=" +
                            pipeline.getDatabaseHelper());
+      Log.d(LogKeys.DEB, TAG+".scdcManagerConn.onServiceConnected()");
 
       pipeline.setDataReceivedListener(LaunchActivity.this);
 
@@ -214,12 +218,14 @@ public class LaunchActivity extends ActionBarActivity
     public void onServiceDisconnected(ComponentName name) {
       scdcManager = null;
       pipeline = null;
+      Log.d(LogKeys.DEB, TAG+".scdcManagerConn.onServiceDisconnected()");
     }
   };
 
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.d(LogKeys.DEB, TAG+".onCreate()");
     spHandler = SharedPrefsHandler.getInstance(this,
             Config.SCDC_PREFS, Context.MODE_PRIVATE);
 
@@ -270,18 +276,15 @@ public class LaunchActivity extends ActionBarActivity
     aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
     togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
 
-    mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries, scdcServiceConn, scdcManagerConn);
+    mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
     setGridViewHeightBasedOnChildren(mGridView, 3);
 
-    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries, scdcServiceConn, scdcManagerConn);
+    mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
     mGridViewNone.setAdapter(mAdapterNone);
     setGridViewHeightBasedOnChildren(mGridViewNone, 1);
-
-
-
 
 
 
@@ -308,53 +311,70 @@ public class LaunchActivity extends ActionBarActivity
     handler = new Handler();
 
     aloneToggleButton.setChecked(spHandler.isAloneOn());
-    aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
-
     togetherToggleButton.setChecked(spHandler.isTogetherOn());
-    togetherToggleButton.setEnabled(!spHandler.isAloneOn());
 
     archiveButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
 
+    if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
+      spHandler.setSensorOn(false);
+    }
+
+    if (spHandler.isSensorOn()){
+      aloneToggleButton.setEnabled(false);
+      togetherToggleButton.setEnabled(false);
+    }
+    else{
+      aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
+      togetherToggleButton.setEnabled(!spHandler.isAloneOn());
+    }
 
     // Bind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
       bindService(new Intent(LaunchActivity.this, SCDCManager.class),
               scdcManagerConn, BIND_AUTO_CREATE);
+      Log.d(LogKeys.DEB, TAG+".bindService() : scdcManager");
     } else { // Bind SCDCService service if sensor is on
       bindService(new Intent(LaunchActivity.this, SCDCService.class),
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
+      Log.d(LogKeys.DEB, TAG+".bindService() : scdcService");
     }
-
-    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+    Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+            + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+            + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+//    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+//    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+//    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
 
     aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
-          mAdapter.notifyDataSetChanged();
-          mAdapterNone.notifyDataSetChanged();
-//          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
-//
-//          // Increment sensorId by 1
-//          spHandler.setSensorId(spHandler.getSensorId() + 1);
-//          Toast.makeText(LaunchActivity.this,
-//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-//                  Toast.LENGTH_SHORT).show();
-//
-//          // Start/Bind SCDCService and unbind SCDCManager instead
-//          startService(intent);
-//          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
-//          unbindService(scdcManagerConn);
+          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
+
+//          mAdapter.notifyDataSetChanged();
+//          mAdapterNone.notifyDataSetChanged();
+
+          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+
+          // Increment sensorId by 1
+          spHandler.setSensorId(spHandler.getSensorId() + 1);
+          Toast.makeText(LaunchActivity.this,
+                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+                  Toast.LENGTH_SHORT).show();
+
+          // Start/Bind SCDCService and unbind SCDCManager instead
+          startService(intent);
+          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+          unbindService(scdcManagerConn);
 
           timeCountView.setText(getResources().getString(R.string.select));
           timeCountView.setTextColor(getResources().getColor(R.color.select));
 
         } else {
+          Log.d(LogKeys.DEB, TAG+".AloneButton unchecked!");
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
 //          spHandler.setReminderRunning(isChecked);
@@ -362,12 +382,13 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setText(getResources().getString(R.string.disabled));
           timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
-//          // Unbind/Stop SCDCService and bind SCDCManager instead
-//          unbindService(scdcServiceConn);
-//          stopService(new Intent(LaunchActivity.this, SCDCService.class));
-//          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-//                  scdcManagerConn, BIND_AUTO_CREATE);
-          spHandler.setSensorOn(false);
+          // Unbind/Stop SCDCService and bind SCDCManager instead
+          unbindService(scdcServiceConn);
+          stopService(new Intent(LaunchActivity.this, SCDCService.class));
+          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+                  scdcManagerConn, BIND_AUTO_CREATE);
+
+//          spHandler.setSensorOn(false);
         }
         spHandler.setAloneOn(isChecked);
 
@@ -377,9 +398,12 @@ public class LaunchActivity extends ActionBarActivity
         userNameButton.setEnabled(!isChecked);
         togetherToggleButton.setEnabled(!isChecked);
 
-        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-        Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+        Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+                + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+  //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+  //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+  //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 
@@ -388,25 +412,27 @@ public class LaunchActivity extends ActionBarActivity
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
-          mAdapter.notifyDataSetChanged();
-          mAdapterNone.notifyDataSetChanged();
-//          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
-//
-//          // Increment sensorId by 1
-//          spHandler.setSensorId(spHandler.getSensorId() + 1);
-//          Toast.makeText(LaunchActivity.this,
-//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-//                  Toast.LENGTH_SHORT).show();
-//
-//          // Start/Bind SCDCService and unbind SCDCManager instead
-//          startService(intent);
-//          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
-//          unbindService(scdcManagerConn);
+          Log.d(LogKeys.DEB, TAG+".TogetherButton checked!");
+//          mAdapter.notifyDataSetChanged();
+//          mAdapterNone.notifyDataSetChanged();
+          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+
+          // Increment sensorId by 1
+          spHandler.setSensorId(spHandler.getSensorId() + 1);
+          Toast.makeText(LaunchActivity.this,
+                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+                  Toast.LENGTH_SHORT).show();
+
+          // Start/Bind SCDCService and unbind SCDCManager instead
+          startService(intent);
+          bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+          unbindService(scdcManagerConn);
 
           timeCountView.setText(getResources().getString(R.string.select));
           timeCountView.setTextColor(getResources().getColor(R.color.select));
 
         } else {
+          Log.d(LogKeys.DEB, TAG+".TogetherButton unchecked!");
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
 //          spHandler.setReminderRunning(isChecked);
@@ -414,12 +440,12 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setText(getResources().getString(R.string.disabled));
           timeCountView.setTextColor(getResources().getColor(R.color.disabled));
 
-//          // Unbind/Stop SCDCService and bind SCDCManager instead
-//          unbindService(scdcServiceConn);
-//          stopService(new Intent(LaunchActivity.this, SCDCService.class));
-//          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-//                  scdcManagerConn, BIND_AUTO_CREATE);
-          spHandler.setSensorOn(false);
+          // Unbind/Stop SCDCService and bind SCDCManager instead
+          unbindService(scdcServiceConn);
+          stopService(new Intent(LaunchActivity.this, SCDCService.class));
+          bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+                  scdcManagerConn, BIND_AUTO_CREATE);
+//          spHandler.setSensorOn(false);
         }
         spHandler.setTogetherOn(isChecked);
 
@@ -429,9 +455,12 @@ public class LaunchActivity extends ActionBarActivity
         userNameButton.setEnabled(!isChecked);
         aloneToggleButton.setEnabled(!isChecked);
 
-        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-        Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+        Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+                + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+        //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+        //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+        //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 
@@ -517,6 +546,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   public void onResume() {
+    Log.d(LogKeys.DEB, TAG+".onResume()");
     super.onResume();
 
     if (pipeline != null) {
@@ -570,6 +600,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   public void onPause() {
+    Log.d(LogKeys.DEB, TAG+".onPause()");
     super.onPause();
 
     // Save running status of reminder
@@ -579,11 +610,14 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   protected void onDestroy() {
+    Log.d(LogKeys.DEB, TAG+".onDestroy()");
     super.onDestroy();
     // Unbind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
+      Log.d(LogKeys.DEB, TAG+".unbindService() : scdcManager");
       unbindService(scdcManagerConn);
     } else { // Unbind SCDCService service if sensor is on
+      Log.d(LogKeys.DEB, TAG+".unbindService() : scdcService");
       unbindService(scdcServiceConn);
     }
     this.unregisterReceiver(alertReceiver);
@@ -1084,31 +1118,33 @@ public class LaunchActivity extends ActionBarActivity
 
   // fixed height for GridViews
   public void setGridViewHeightBasedOnChildren(GridView gridView, int columns) {
+    Log.d(LogKeys.DEB, TAG+".setGridViewHeightBasedOnChildren()");
     ListAdapter listAdapter = gridView.getAdapter();
     if (listAdapter == null) {
       // pre-condition
       return;
     }
 
-    int totalHeight = 0;
+    int totalHeight = 272;
     int items = listAdapter.getCount();
     int rows = 0;
 
-    View listItem = listAdapter.getView(0, null, gridView);
-    listItem.measure(0, 0);
-    totalHeight = listItem.getMeasuredHeight();
+    for (int i=0; i<items; i++){
+      View listItem = listAdapter.getView(i, null, gridView);
+      listItem.measure(0, 0);
+      totalHeight = listItem.getMeasuredHeight();
+      Log.d(LogKeys.DEB, TAG+".totalHeight: " +totalHeight);
 
-    float x = 1;
-    if( items > columns ){
-      x = items/columns;
-      rows = (int) (x);
-      totalHeight *= rows;
+      float x = 1;
+      if( items > columns ){
+        x = items/columns;
+        rows = (int) (x);
+        totalHeight *= rows;
+      }
+
+      ViewGroup.LayoutParams params = gridView.getLayoutParams();
+      params.height = totalHeight;
+      gridView.setLayoutParams(params);
     }
-
-    ViewGroup.LayoutParams params = gridView.getLayoutParams();
-    params.height = totalHeight;
-    gridView.setLayoutParams(params);
   }
-
-
 }

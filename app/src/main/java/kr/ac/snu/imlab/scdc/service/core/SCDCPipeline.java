@@ -173,6 +173,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
 
   @Override
   public void onCreate(FunfManager manager) {
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onCreate()");
     if (archive == null) {
       archive = new DefaultArchive(manager, name);
     }
@@ -210,6 +211,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
 
   @Override
   public void onDestroy() {
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy()");
     for (JsonElement dataRequest : data) {
       manager.unrequestData(this, dataRequest);
     }

@@ -49,15 +49,12 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
   ServiceConnection scdcManagerConn = null;
 
 
-  public BaseAdapterExLabel2(Context context, ArrayList<LabelEntry> data, ServiceConnection scdcServiceConn, ServiceConnection scdcManagerConn) {
+  public BaseAdapterExLabel2(Context context, ArrayList<LabelEntry> data) {
     this.mContext = context;
     this.mData = data;
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
     this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
                         Config.SCDC_PREFS, Context.MODE_PRIVATE);
-    // ****
-    this.scdcServiceConn = scdcServiceConn;
-    this.scdcManagerConn = scdcManagerConn;
   }
 
   public LabelEntry getLoggedItem() {
@@ -83,7 +80,8 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
   }
 
   class ViewHolder {
-    ToggleButton labelLogToggleButton;
+//    ToggleButton labelLogToggleButton;
+    Button labelLogToggleButton;
   }
 
   @Override
@@ -100,7 +98,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       itemLayout = mLayoutInflater.inflate(R.layout.label_grid_view_item_layout, null);
 
       viewHolder = new ViewHolder();
-      viewHolder.labelLogToggleButton = (ToggleButton)itemLayout.findViewById(R.id.labelLogToggleButton);
+      viewHolder.labelLogToggleButton = (Button)itemLayout.findViewById(R.id.labelLogToggleButton);
 
       itemLayout.setTag(viewHolder);
     } else {
@@ -114,8 +112,8 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       }
     });
 
-    viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
-    viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
+//    viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
+//    viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
 
     // Load alone and together toggle button views from LaunchActivity context
     final ToggleButton aloneToggleButton = (ToggleButton)((LaunchActivity)mContext).findViewById(R.id.aloneToggleButton);
@@ -123,43 +121,50 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
     handler = new Handler();
 
-    // Two conditions for enabling each label button
-    // 1) when alone or together, but not sensorOn
-    Boolean first = (spHandler.isAloneOn()||spHandler.isTogetherOn()) && !spHandler.isSensorOn();
-    // 2) when sensorOn, and this label is being logged
+//    // Two conditions for enabling each label button
+//    // 1) when alone or together, but not sensorOn
+//    Boolean first = (aloneToggleButton.isChecked() || togetherToggleButton.isChecked())
+//            && !spHandler.isSensorOn();
+    Boolean first = (spHandler.isAloneOn() || spHandler.isTogetherOn())
+            && !spHandler.isSensorOn();
+//    // 2) when sensorOn, and this label is being logged
+//    Boolean second = spHandler.isSensorOn() && mData.get(position).isLogged();
     Boolean second = spHandler.isSensorOn() && mData.get(position).isLogged();
     viewHolder.labelLogToggleButton.setEnabled(first || second);
 
-    // keep the button checked when this label is being logged
-    viewHolder.labelLogToggleButton.setChecked(second);
+//    // keep the button checked when this label is being logged
+//    Log.d(SCDCKeys.LogKeys.DEB, TAG+".getView(): set check "+mData.get(position).getName() + second.toString());
+//    viewHolder.labelLogToggleButton.setChecked(second);
 
     // When alone or together goes off, turn off the labelLogButton too
-    if(!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()){
+    if(!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
       viewHolder.labelLogToggleButton.setEnabled(false);
-      viewHolder.labelLogToggleButton.setChecked(false);
+//      viewHolder.labelLogToggleButton.setChecked(false);
       mData.get(position).endLog();
     }
 
 
-    viewHolder.labelLogToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    viewHolder.labelLogToggleButton.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-        if(isChecked){
-
-          Intent intent = new Intent(mContext, SCDCService.class);
-
-          // Increment sensorId by 1
-          spHandler.setSensorId(spHandler.getSensorId() + 1);
-          Toast.makeText(mContext,
-                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-                  Toast.LENGTH_SHORT).show();
-
-          // Start/Bind SCDCService and unbind SCDCManager instead
-          mContext.startService(intent);
-          mContext.bindService(intent, scdcServiceConn, Context.BIND_AUTO_CREATE);
-          mContext.unbindService(scdcManagerConn);
-
+      public void onClick(View v) {
+        boolean wasChecked = spHandler.isSensorOn();
+        if (!wasChecked) {
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+": start logging "+mData.get(position).getName());
+//          Intent intent = new Intent(mContext, SCDCService.class);
+//
+//          // Increment sensorId by 1
+//          spHandler.setSensorId(spHandler.getSensorId() + 1);
+//          Toast.makeText(mContext,
+//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+//                  Toast.LENGTH_SHORT).show();
+//
+//          // Start/Bind SCDCService and unbind SCDCManager instead
+//          mContext.startService(intent);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": start scdcService");
+//          mContext.bindService(intent, scdcServiceConn, Context.BIND_AUTO_CREATE);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": bind scdcService");
+//          mContext.unbindService(scdcManagerConn);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": unbind scdcManager");
 
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
@@ -172,15 +177,19 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+": stop logging "+mData.get(position).getName());
+          boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
 
-          // Unbind/Stop SCDCService and bind SCDCManager instead
-          mContext.unbindService(scdcServiceConn);
-          mContext.stopService(new Intent(mContext, SCDCService.class));
-          mContext.bindService(new Intent(mContext,SCDCManager.class), scdcManagerConn, Context.BIND_AUTO_CREATE);
+//          // Unbind/Stop SCDCService and bind SCDCManager instead
+//          mContext.unbindService(scdcServiceConn);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": unbind scdcService");
+//          mContext.stopService(new Intent(mContext, SCDCService.class));
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": stop scdcService");
+//          mContext.bindService(new Intent(mContext,SCDCManager.class), scdcManagerConn, Context.BIND_AUTO_CREATE);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+": bind scdcManager");
 
 
-          boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
           if (pastIsActiveLabelOn != currIsActiveLabelOn &&
@@ -188,17 +197,32 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
 
           // When labelLogButton goes off, turn off the alone or together too
+//          aloneToggleButton.setChecked(false);
+//          togetherToggleButton.setChecked(false);
+          spHandler.setAloneOn(false);
+          spHandler.setTogetherOn(false);
           aloneToggleButton.setChecked(false);
           togetherToggleButton.setChecked(false);
         }
 
         // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
-        spHandler.setSensorOn(isChecked);
+        spHandler.setSensorOn(!wasChecked);
+        aloneToggleButton.setEnabled(wasChecked);
+        togetherToggleButton.setEnabled(wasChecked);
+//        viewHolder.labelLogToggleButton.setChecked(!wasChecked);
 
-        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-        Log.d(SCDCKeys.LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-        Log.d(SCDCKeys.LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-        Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
+        Log.d(SCDCKeys.LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+                + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+        Log.d(SCDCKeys.LogKeys.DEB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
+        //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+        //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+        //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+
+//        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
+//        Log.d(SCDCKeys.LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
+//        Log.d(SCDCKeys.LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+//        Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
       }
     });
 
