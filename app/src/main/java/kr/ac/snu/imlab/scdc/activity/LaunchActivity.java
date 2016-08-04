@@ -100,8 +100,8 @@ public class LaunchActivity extends ActionBarActivity
 
   // FIXME: The list of 'active' labels
   @Configurable
-  public static final String[] activeLabelNames = { //need to be defined later
-
+  public static final String[] activeLabelNames = {
+          //need to be defined later
   };
 
   private Handler handler;
@@ -225,7 +225,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.d(LogKeys.DEB, TAG+".onCreate()");
+    Log.d(LogKeys.DEBB, TAG+".onCreate()");
     spHandler = SharedPrefsHandler.getInstance(this,
             Config.SCDC_PREFS, Context.MODE_PRIVATE);
 
@@ -236,7 +236,6 @@ public class LaunchActivity extends ActionBarActivity
     // when a user clicks into an EditText
     this.getWindow().setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     setUserInfo();
 
 
@@ -319,11 +318,13 @@ public class LaunchActivity extends ActionBarActivity
 
     if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
       spHandler.setSensorOn(false);
+      Log.d(LogKeys.DEBB, "sensor off when alone/together off");
     }
 
     if (spHandler.isSensorOn()){
       aloneToggleButton.setEnabled(false);
       togetherToggleButton.setEnabled(false);
+      Log.d(LogKeys.DEBB, "disable alone/together when sensor on");
     }
     else{
       aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
@@ -334,25 +335,22 @@ public class LaunchActivity extends ActionBarActivity
     if (!spHandler.isSensorOn()) {
       bindService(new Intent(LaunchActivity.this, SCDCManager.class),
               scdcManagerConn, BIND_AUTO_CREATE);
-      Log.d(LogKeys.DEB, TAG+".bindService() : scdcManager");
+      Log.d(LogKeys.DEBB, TAG+".bindService() : scdcManager");
     } else { // Bind SCDCService service if sensor is on
       bindService(new Intent(LaunchActivity.this, SCDCService.class),
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
-      Log.d(LogKeys.DEB, TAG+".bindService() : scdcService");
+      Log.d(LogKeys.DEBB, TAG+".bindService() : scdcService");
     }
-    Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
             + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
             + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-//    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-//    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-//    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
 
     aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
-          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
+          Log.d(LogKeys.DEBB, TAG+".AloneButton checked!");
 
 //          mAdapter.notifyDataSetChanged();
 //          mAdapterNone.notifyDataSetChanged();
@@ -374,7 +372,7 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setTextColor(getResources().getColor(R.color.select));
 
         } else {
-          Log.d(LogKeys.DEB, TAG+".AloneButton unchecked!");
+          Log.d(LogKeys.DEBB, TAG+".AloneButton unchecked!");
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
 //          spHandler.setReminderRunning(isChecked);
@@ -398,12 +396,9 @@ public class LaunchActivity extends ActionBarActivity
         userNameButton.setEnabled(!isChecked);
         togetherToggleButton.setEnabled(!isChecked);
 
-        Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-  //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-  //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-  //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 
@@ -412,9 +407,11 @@ public class LaunchActivity extends ActionBarActivity
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
-          Log.d(LogKeys.DEB, TAG+".TogetherButton checked!");
+          Log.d(LogKeys.DEBB, TAG+".TogetherButton checked!");
+
 //          mAdapter.notifyDataSetChanged();
 //          mAdapterNone.notifyDataSetChanged();
+
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
           // Increment sensorId by 1
@@ -432,7 +429,7 @@ public class LaunchActivity extends ActionBarActivity
           timeCountView.setTextColor(getResources().getColor(R.color.select));
 
         } else {
-          Log.d(LogKeys.DEB, TAG+".TogetherButton unchecked!");
+          Log.d(LogKeys.DEBB, TAG+".TogetherButton unchecked!");
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
 //          spHandler.setReminderRunning(isChecked);
@@ -455,12 +452,9 @@ public class LaunchActivity extends ActionBarActivity
         userNameButton.setEnabled(!isChecked);
         aloneToggleButton.setEnabled(!isChecked);
 
-        Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-        //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-        //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-        //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
 
@@ -546,7 +540,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   public void onResume() {
-    Log.d(LogKeys.DEB, TAG+".onResume()");
+    Log.d(LogKeys.DEBB, TAG+".onResume()");
     super.onResume();
 
     if (pipeline != null) {
@@ -600,7 +594,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   public void onPause() {
-    Log.d(LogKeys.DEB, TAG+".onPause()");
+    Log.d(LogKeys.DEBB, TAG+".onPause()");
     super.onPause();
 
     // Save running status of reminder
@@ -610,14 +604,14 @@ public class LaunchActivity extends ActionBarActivity
 
   @Override
   protected void onDestroy() {
-    Log.d(LogKeys.DEB, TAG+".onDestroy()");
+    Log.d(LogKeys.DEBB, TAG+".onDestroy()");
     super.onDestroy();
     // Unbind SCDCManager service if sensor is off
     if (!spHandler.isSensorOn()) {
-      Log.d(LogKeys.DEB, TAG+".unbindService() : scdcManager");
+      Log.d(LogKeys.DEBB, TAG+".unbindService() : scdcManager");
       unbindService(scdcManagerConn);
     } else { // Unbind SCDCService service if sensor is on
-      Log.d(LogKeys.DEB, TAG+".unbindService() : scdcService");
+      Log.d(LogKeys.DEBB, TAG+".unbindService() : scdcService");
       unbindService(scdcServiceConn);
     }
     this.unregisterReceiver(alertReceiver);

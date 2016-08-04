@@ -112,6 +112,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       }
     });
 
+    viewHolder.labelLogToggleButton.setText(mData.get(position).getName());
 //    viewHolder.labelLogToggleButton.setTextOn(mData.get(position).getName());
 //    viewHolder.labelLogToggleButton.setTextOff(mData.get(position).getName());
 
@@ -149,7 +150,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       public void onClick(View v) {
         boolean wasChecked = spHandler.isSensorOn();
         if (!wasChecked) {
-          Log.d(SCDCKeys.LogKeys.DEB, TAG+": start logging "+mData.get(position).getName());
+          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": start logging "+mData.get(position).getName());
 //          Intent intent = new Intent(mContext, SCDCService.class);
 //
 //          // Increment sensorId by 1
@@ -168,7 +169,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
-          Log.d(SCDCKeys.LogKeys.DEBUG, "start logging "+mData.get(position).getName());
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
@@ -177,7 +177,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
-          Log.d(SCDCKeys.LogKeys.DEB, TAG+": stop logging "+mData.get(position).getName());
+          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName());
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
 
@@ -188,7 +188,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 //          Log.d(SCDCKeys.LogKeys.DEB, TAG+": stop scdcService");
 //          mContext.bindService(new Intent(mContext,SCDCManager.class), scdcManagerConn, Context.BIND_AUTO_CREATE);
 //          Log.d(SCDCKeys.LogKeys.DEB, TAG+": bind scdcManager");
-
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
@@ -211,18 +210,10 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
         togetherToggleButton.setEnabled(wasChecked);
 //        viewHolder.labelLogToggleButton.setChecked(!wasChecked);
 
-        Log.d(SCDCKeys.LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-        Log.d(SCDCKeys.LogKeys.DEB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
-        //    Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-        //    Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-        //    Log.d(LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-
-//        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()));
-//        Log.d(SCDCKeys.LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()));
-//        Log.d(SCDCKeys.LogKeys.DEBB, "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-//        Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
+        Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
       }
     });
 
