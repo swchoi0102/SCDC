@@ -26,14 +26,17 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.Manifest;
 import android.net.Uri;
 import android.provider.MediaStore.Audio;
 import edu.mit.media.funf.Schedule;
+import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 
 @DisplayName("Audio Media File Stats Probe")
 @Schedule.DefaultSchedule(interval=36000)
+@Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class AudioMediaProbe extends DatedContentProviderProbe {
 
 	@Override

@@ -26,14 +26,17 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.Manifest;
 import android.net.Uri;
 import android.provider.MediaStore.Video;
 import edu.mit.media.funf.Schedule;
+import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 
 @DisplayName("Video File Stats Probe")
 @Schedule.DefaultSchedule(interval=604800)
+@Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class VideoMediaProbe extends DatedContentProviderProbe {
 
 	@Override
@@ -58,10 +61,12 @@ public class VideoMediaProbe extends DatedContentProviderProbe {
 		// Ignoring DATA, too large and not relevant
 		projectionMap.put(Video.Media.DATE_ADDED, longCell());
 		projectionMap.put(Video.Media.DATE_MODIFIED, longCell());
-		projectionMap.put(Video.Media.DISPLAY_NAME, sensitiveStringCell());
+//		projectionMap.put(Video.Media.DISPLAY_NAME, sensitiveStringCell());
+		projectionMap.put(Video.Media.DISPLAY_NAME, stringCell());
 		projectionMap.put(Video.Media.MIME_TYPE, stringCell());
 		projectionMap.put(Video.Media.SIZE, longCell());
-		projectionMap.put(Video.Media.TITLE, sensitiveStringCell());
+//		projectionMap.put(Video.Media.TITLE, sensitiveStringCell());
+		projectionMap.put(Video.Media.TITLE, stringCell());
 		projectionMap.put(Video.Media.ALBUM, stringCell());
 		projectionMap.put(Video.Media.ARTIST, stringCell());
 		projectionMap.put(Video.Media.BOOKMARK, intCell());

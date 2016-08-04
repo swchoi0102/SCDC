@@ -26,12 +26,16 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.Manifest;
 import android.net.Uri;
 import android.provider.MediaStore.Images;
+
+import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 
 @DisplayName("Image File Stats Probe")
+@Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class ImageMediaProbe extends DatedContentProviderProbe {
 
 	@Override
@@ -51,11 +55,14 @@ public class ImageMediaProbe extends DatedContentProviderProbe {
 		// Ignoring DATA, too large and not relevant
 		projectionMap.put(Images.Media.DATE_ADDED, longCell());
 		projectionMap.put(Images.Media.DATE_MODIFIED, longCell());
-		projectionMap.put(Images.Media.DISPLAY_NAME, sensitiveStringCell());
+//		projectionMap.put(Images.Media.DISPLAY_NAME, sensitiveStringCell());
+		projectionMap.put(Images.Media.DISPLAY_NAME, stringCell());
 		projectionMap.put(Images.Media.MIME_TYPE, stringCell());
 		projectionMap.put(Images.Media.SIZE, longCell());
-		projectionMap.put(Images.Media.TITLE, sensitiveStringCell());
-		projectionMap.put(Images.Media.BUCKET_DISPLAY_NAME, sensitiveStringCell());
+//		projectionMap.put(Images.Media.TITLE, sensitiveStringCell());
+		projectionMap.put(Images.Media.TITLE, stringCell());
+//		projectionMap.put(Images.Media.BUCKET_DISPLAY_NAME, sensitiveStringCell());
+		projectionMap.put(Images.Media.BUCKET_DISPLAY_NAME, stringCell());
 		projectionMap.put(Images.Media.BUCKET_ID, stringCell());
 		projectionMap.put(Images.Media.DATE_TAKEN, longCell());
 		projectionMap.put(Images.Media.DESCRIPTION, sensitiveStringCell());

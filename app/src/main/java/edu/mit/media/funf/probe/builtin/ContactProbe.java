@@ -124,7 +124,7 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 			cursorCells.put(getKey(Organization.CONTENT_ITEM_TYPE, Data.DATA10), stringCell()); // Phonetic_Name_Style
 			
 			// Phone
-			cursorCells.put(getKey(Phone.CONTENT_ITEM_TYPE, Phone.NUMBER), new PhoneNumberCell());
+			cursorCells.put(getKey(Phone.CONTENT_ITEM_TYPE, Phone.NUMBER), new SensitiveCell(new PhoneNumberCell()));
 			cursorCells.put(getKey(Phone.CONTENT_ITEM_TYPE, Phone.TYPE), intCell());
 			cursorCells.put(getKey(Phone.CONTENT_ITEM_TYPE, Phone.LABEL), stringCell());
 			

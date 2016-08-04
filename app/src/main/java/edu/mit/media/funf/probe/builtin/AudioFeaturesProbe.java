@@ -59,6 +59,7 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 	private static int RECORDER_SAMPLERATE = 8000;
 	
 	private static int FFT_SIZE = 8192;
+//	private static int FFT_SIZE = 256;
 	private static int MFCCS_VALUE = 12;
 	private static int MEL_BANDS = 20;
 	private static double[] FREQ_BANDEDGES = {50,250,500,1000,2000};

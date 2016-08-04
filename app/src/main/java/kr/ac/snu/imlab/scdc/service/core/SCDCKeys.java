@@ -195,4 +195,14 @@ public class SCDCKeys {
       CALIBRATION_STATUS_TABLE_FRONT = 1,
       CALIBRATION_STATUS_TABLE_BACK = 2;
   }
+
+  public class NetworkTrafficKeys {
+    public static final String WHERE = "where";
+    public static final String TOTAL_WHERE_VALUE = "TOTAL";
+    public static final String MOBILE_WHERE_VALUE = "MOBILE";
+
+    public static final String RECEIVED = "received";
+    public static final String TRANSMITTED = "transmitted";
+    public static final String DIFF_SECS = "diffSecs";
+  }
 }
