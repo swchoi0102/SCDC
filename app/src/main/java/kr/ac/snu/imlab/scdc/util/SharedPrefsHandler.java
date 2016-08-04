@@ -272,11 +272,11 @@ public class SharedPrefsHandler {
   }
 
   public long getLastConfigUpdate() {
-    return prefs.getLong(SharedPrefs.IDLE_CONFIG, SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE);
+    return prefs.getLong(SharedPrefs.LAST_CONFIG_UPDATE, SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE);
   }
 
   public void setLastConfigUpdate(long updateTime) {
-    prefs.edit().putLong(SharedPrefs.IDLE_CONFIG, updateTime).apply();
+    prefs.edit().putLong(SharedPrefs.LAST_CONFIG_UPDATE, updateTime).apply();
   }
 
 

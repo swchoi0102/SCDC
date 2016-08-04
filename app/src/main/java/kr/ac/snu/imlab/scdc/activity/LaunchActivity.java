@@ -101,7 +101,11 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of 'active' labels
   @Configurable
   public static final String[] activeLabelNames = {
-          //need to be defined later
+          LabelKeys.EATING_LABEL,
+          LabelKeys.DRINKING_LABEL,
+          LabelKeys.IN_CLASS_LABEL,
+          LabelKeys.STUDYING_LABEL,
+          LabelKeys.MOVING_LABEL
   };
 
   private Handler handler;
@@ -1009,6 +1013,7 @@ public class LaunchActivity extends ActionBarActivity
       JsonObject newConfig = new JsonParser().parse(newConfigString).getAsJsonObject();
       boolean result = false;
       if (!EqualsUtil.areEqual(oldConfig, newConfig)) {
+        Log.d(LogKeys.DEB, TAG + ".changeConfig/ configuration should be changed.");
         if (spHandler.isSensorOn()) {
           result = scdcService.saveAndReload(Config.PIPELINE_NAME, newConfig);
         } else {
