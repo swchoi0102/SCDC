@@ -11,15 +11,15 @@ public class SCDCKeys {
       SCDC_PREFS = "kr.ac.snu.imlab.scdc.prefs",
       DEFAULT_USERNAME = "imlab_user",
       // Upload URL for publish
-      DEFAULT_UPLOAD_URL = "http://imlab-ws2.snu.ac.kr:7777/data/",
+      DEFAULT_UPLOAD_URL = "http://imlab-ws4.snu.ac.kr:7777/data/",
       // Upload URL for debug
-      DEFAULT_UPLOAD_URL_DEBUG = "http://imlab-ws2.snu.ac.kr:7000/data",
+      DEFAULT_UPLOAD_URL_DEBUG = "http://imlab-ws4.snu.ac.kr:7000/data",
       // Update URL for publish
-      DEFAULT_USERINFO_URL = "http://imlab-ws2.snu.ac.kr:7777/userinfo/",
-      DEFAULT_UPDATE_URL_IDLE = "http://imlab-ws2.snu.ac.kr:7777/conf/idle/",
-      DEFAULT_UPDATE_URL_ACTIVE = "http://imlab-ws2.snu.ac.kr:7777/conf/active/",
+      DEFAULT_USERINFO_URL = "http://imlab-ws4.snu.ac.kr:7777/userinfo/",
+      DEFAULT_UPDATE_URL_IDLE = "http://imlab-ws4.snu.ac.kr:7777/conf/idle/",
+      DEFAULT_UPDATE_URL_ACTIVE = "http://imlab-ws4.snu.ac.kr:7777/conf/active/",
       // Update URL for debug
-      DEFAULT_UPDATE_URL_DEBUG = "http://imlab-ws2.snu.ac.kr:7000/config";
+      DEFAULT_UPDATE_URL_DEBUG = "http://imlab-ws4.snu.ac.kr:7000/config";
 
     public static final int
       PIPELINE_VERSION = 1;

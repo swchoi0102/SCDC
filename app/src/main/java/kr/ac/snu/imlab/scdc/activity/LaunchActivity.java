@@ -568,7 +568,7 @@ public class LaunchActivity extends ActionBarActivity
         if ((lastTime == SCDCKeys.SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE)
                 || (System.currentTimeMillis() - lastTime > 3000000)){
           updateConfig();
-          changeConfig(spHandler.isActiveLabelOn());
+//          changeConfig(spHandler.isActiveLabelOn());
         }
       }
     }
