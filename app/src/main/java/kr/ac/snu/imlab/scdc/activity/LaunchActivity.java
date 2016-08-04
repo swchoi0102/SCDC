@@ -620,10 +620,8 @@ public class LaunchActivity extends ActionBarActivity
     super.onDestroy();
 //    // Unbind SCDCManager service if sensor is off
 //    if (!spHandler.isSensorOn()) {
-//      Log.d(LogKeys.DEBB, TAG+".unbindService() : scdcManager");
 //      unbindService(scdcManagerConn);
 //    } else { // Unbind SCDCService service if sensor is on
-//      Log.d(LogKeys.DEBB, TAG+".unbindService() : scdcService");
 //      unbindService(scdcServiceConn);
 //    }
     // Unbind SCDCManager service if alone and together OFF
