@@ -134,7 +134,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     viewHolder.labelLogToggleButton.setEnabled(first || second);
 
     // keep the button checked when this label is being logged
-    Log.d(SCDCKeys.LogKeys.DEB, TAG+".getView(): set check "+mData.get(position).getName() + second.toString());
+//    Log.d(SCDCKeys.LogKeys.DEB, TAG+".getView(): set check "+mData.get(position).getName() + second.toString());
     viewHolder.labelLogToggleButton.setChecked(second);
 
     // When alone or together goes off, turn off the labelLogButton too

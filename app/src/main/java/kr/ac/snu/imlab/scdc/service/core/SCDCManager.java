@@ -266,13 +266,13 @@ public class SCDCManager extends FunfManager {
     String action = intent.getAction();
     if (action == null || ACTION_KEEP_ALIVE.equals(action)) {
       // Does nothing, but wakes up SCDCManager
-      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : Does nothing, but wakes up SCDCManager");
+//      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : Does nothing, but wakes up SCDCManager");
     } else if (!spHandler.isSensorOn()) {
       // IMPORTANT: Does nothing if sensor button is not on
-      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : IMPORTANT: Does nothing if sensor button is not on");
-      Log.d(LogKeys.DEBUG, TAG+".onStartCommand(): spHandler.isSensorOn()=" + spHandler.isSensorOn());
+//      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : IMPORTANT: Does nothing if sensor button is not on");
+//      Log.d(LogKeys.DEBUG, TAG+".onStartCommand(): spHandler.isSensorOn()=" + spHandler.isSensorOn());
     } else if (ACTION_INTERNAL.equals(action)) {
-      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : sensor button is on : " + ACTION_INTERNAL);
+//      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : sensor button is on : " + ACTION_INTERNAL);
       String type = intent.getType();
       Uri componentUri = intent.getData();
       if (PROBE_TYPE.equals(type)) {

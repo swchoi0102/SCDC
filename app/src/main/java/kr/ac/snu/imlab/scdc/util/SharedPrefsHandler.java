@@ -54,7 +54,7 @@ public class SharedPrefsHandler {
     this.userinfoUrl = Config.DEFAULT_USERINFO_URL;
 //    Log.d(LogKeys.DEBUG,
 //      "SharedPrefsHandler.SharedPrefsHandler(): deviceId=" + this.deviceId);
-    firstrun = prefs.getBoolean("firstrun", true);
+    firstrun = prefs.getBoolean(SharedPrefs.FIRST_RUN, true);
     if (firstrun && context instanceof LaunchActivity) {
       try {
         new GetPrefsFromServerTask().execute(userinfoUrl + deviceId + "/");
@@ -269,6 +269,14 @@ public class SharedPrefsHandler {
 
   public void setIdleConfig(String config) {
     prefs.edit().putString(SharedPrefs.IDLE_CONFIG, config).apply();
+  }
+
+  public long getLastConfigUpdate() {
+    return prefs.getLong(SharedPrefs.IDLE_CONFIG, SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE);
+  }
+
+  public void setLastConfigUpdate(long updateTime) {
+    prefs.edit().putLong(SharedPrefs.IDLE_CONFIG, updateTime).apply();
   }
 
 
@@ -505,7 +513,7 @@ public class SharedPrefsHandler {
     protected void onPostExecute(Boolean result) {
       // updated = result;
       // Change UI of LaunchActivity
-      prefs.edit().putBoolean("firstrun", false).apply();
+      prefs.edit().putBoolean(SharedPrefs.FIRST_RUN, false).apply();
 
       EditText username;
 //      RadioButton isMaleRadioButton, isFemaleRadioButton;

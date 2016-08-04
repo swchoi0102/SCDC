@@ -557,6 +557,16 @@ public class LaunchActivity extends ActionBarActivity
 
     if (pipeline != null) {
       updateLaunchActivityUi();
+
+      // When the last update time from server passed more than 5 minutes, update config.
+      if (!spHandler.isSensorOn()){
+        long lastTime = spHandler.getLastConfigUpdate();
+        if ((lastTime == SCDCKeys.SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE)
+                || (System.currentTimeMillis() - lastTime > 3000000)){
+          updateConfig();
+          changeConfig(spHandler.isActiveLabelOn());
+        }
+      }
     }
 
 //    asViewHolder.endLogBt.setEnabled(asLabelEntry.isLogged());
@@ -1070,6 +1080,7 @@ public class LaunchActivity extends ActionBarActivity
           Toast.makeText(getBaseContext(),
                   getString(R.string.update_config_complete_message),
                   Toast.LENGTH_LONG).show();
+          spHandler.setLastConfigUpdate(System.currentTimeMillis());
         } else {
           Toast.makeText(getBaseContext(),
                   getString(R.string.update_config_failed_message),

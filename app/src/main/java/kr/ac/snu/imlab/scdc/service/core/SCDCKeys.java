@@ -69,10 +69,15 @@ public class SCDCKeys {
       KEY_EXP_ID = "exp_id",
       KEY_SENSOR_ID = "sensor_id",
       ACTIVE_CONFIG = "activeConfig",
-      IDLE_CONFIG = "idleConfig";
+      IDLE_CONFIG = "idleConfig",
+      LAST_CONFIG_UPDATE = "last_config_update",
+      FIRST_RUN = "firstrun";
 
     public static final int
       DEFAULT_SENSOR_ID = 0;
+
+    public static final long
+      DEFAULT_LAST_CONFIG_UPDATE = -1;
   }
 
   public static interface AlarmKeys {
