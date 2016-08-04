@@ -125,7 +125,7 @@
                   <ToggleButton android:id="@+id/aloneToggleButton"
                       android:textOff="@string/alone_bt"
                       android:textOn="@string/alone_bt"
-                      android:textSize="14sp"
+                      android:textSize="13sp"
                       android:layout_weight="1"
                       android:layout_width="0dp"
                       android:layout_height="wrap_content" />
@@ -133,7 +133,7 @@
                   <ToggleButton android:id="@+id/togetherToggleButton"
                       android:textOff="@string/together_bt"
                       android:textOn="@string/together_bt"
-                      android:textSize="14sp"
+                      android:textSize="13sp"
                       android:layout_weight="1"
                       android:layout_width="0dp"
                       android:layout_height="wrap_content" />
