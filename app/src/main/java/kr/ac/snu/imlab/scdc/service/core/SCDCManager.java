@@ -315,10 +315,10 @@ public class SCDCManager extends FunfManager {
               final DataListener[] listenerArray = new DataListener[listenersThatNeedData.size()];
               listenersThatNeedData.toArray(listenerArray);
               if (listenerArray.length > 0) {
-                if (probe instanceof ContinuableProbe) {
-                  // TODO: how do we take care of multiple registrants with different checkpoints
-                  ((ContinuableProbe)probe).setCheckpoint(requests.get(0).checkpoint);
-                }
+//                if (probe instanceof ContinuableProbe) {
+//                  // TODO: how do we take care of multiple registrants with different checkpoints
+//                  ((ContinuableProbe)probe).setCheckpoint(requests.get(0).checkpoint);
+//                }
                 probe.registerListener(listenerArray);
               }
 
