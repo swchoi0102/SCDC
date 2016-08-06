@@ -60,9 +60,10 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		String[] dateFilterParams = null;
 		if (afterDate != null || latestTimestamp != null) {
 			dateFilter = dateColumn + " > ?";
-			BigDecimal startingDate = afterDate == null ? latestTimestamp : 
-						afterDate.max(latestTimestamp == null ? BigDecimal.ZERO : latestTimestamp);
-			dateFilterParams = new String[] {String.valueOf(getDateColumnTimeUnit().convert(startingDate, DecimalTimeUnit.SECONDS))};
+			dateFilterParams = new String[]{"" + getLastSavedTime()};
+//			BigDecimal startingDate = afterDate == null ? latestTimestamp :
+//						afterDate.max(latestTimestamp == null ? BigDecimal.ZERO : latestTimestamp);
+//			dateFilterParams = new String[] {String.valueOf(getDateColumnTimeUnit().convert(startingDate, DecimalTimeUnit.SECONDS))};
 		}
 		return getContext().getContentResolver().query(
 				getContentProviderUri(),
@@ -79,12 +80,15 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 	protected DecimalTimeUnit getDateColumnTimeUnit() {
 		return DecimalTimeUnit.MILLISECONDS;
 	}
-	
-	
+
+	protected abstract void setLastSavedTime();
+	protected abstract long getLastSavedTime();
+
 	@Override
 	protected void sendData(JsonObject data) {
 		super.sendData(data);
-		latestTimestamp = getTimestamp(data);
+		setLastSavedTime();
+//		latestTimestamp = getTimestamp(data);
 	}
 
 	@Override
@@ -101,7 +105,5 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 	public void setCheckpoint(JsonElement checkpoint) {
 		latestTimestamp = checkpoint == null ? null : checkpoint.getAsBigDecimal();
 	}
-	
-	
-	
+
 }

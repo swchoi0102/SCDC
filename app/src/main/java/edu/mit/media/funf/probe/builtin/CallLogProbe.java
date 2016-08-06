@@ -26,12 +26,15 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.CallLog.Calls;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.PhoneNumberCell;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @Schedule.DefaultSchedule(interval=36000)
 @RequiredPermissions({android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_CALL_LOG})
@@ -45,6 +48,18 @@ public class CallLogProbe extends DatedContentProviderProbe {
 	@Override
 	protected String getDateColumnName() {
 		return Calls.DATE;
+	}
+
+	@Override
+	protected void setLastSavedTime() {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.CALL_LOG_LAST_TIME);
+	}
+
+	@Override
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.CALL_LOG_LAST_TIME);
 	}
 
 	@Override

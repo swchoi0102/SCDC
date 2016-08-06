@@ -23,10 +23,13 @@
  */
 package edu.mit.media.funf.probe.builtin;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
@@ -43,7 +46,9 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
+import android.provider.MediaStore;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -53,6 +58,8 @@ import edu.mit.media.funf.probe.Probe.ContinuableProbe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ContactKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @DisplayName("Contacts Probe")
 @RequiredPermissions(android.Manifest.permission.READ_CONTACTS)
@@ -62,15 +69,54 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 	private class VersionMap extends TreeMap<Integer,Integer> {private static final long serialVersionUID = 8835219249716647742L;}
 	
 	private VersionMap dataIdToVersion = new VersionMap();
-	
+
 	@Override
 	protected Cursor getCursor(String[] projection) {
 		return getContext().getContentResolver().query(
 				ContactsContract.Data.CONTENT_URI,
-                projection, 
-                null, //Data.MIMETYPE + " IN ('" + Email.CONTENT_ITEM_TYPE + "')",
-                null,//new String[] {"('" + Utils.join(Arrays.asList(Email.MIMETYPE, Event.MIMETYPE), "','") +"')"}, 
+                projection,
+				Data.CONTACT_ID + " > ?",
+				new String[]{"" + getLastSavedId()},
+//                null, //Data.MIMETYPE + " IN ('" + Email.CONTENT_ITEM_TYPE + "')",
+//                null,//new String[] {"('" + Utils.join(Arrays.asList(Email.MIMETYPE, Event.MIMETYPE), "','") +"')"},
                 Data.CONTACT_ID + " ASC");
+	}
+
+	private Gson gson;
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		gson = getGson();
+		int lastSavedId = 0;
+		for (JsonObject data : parseCursorResults()) {
+			if (data != null) {
+				BigDecimal customTimestamp = getTimestamp(data);
+				if (customTimestamp != null) {
+					data.addProperty(TIMESTAMP, customTimestamp);
+				}
+				sendData(data);
+				int tempId;
+				try{
+					tempId = data.get(Data.CONTACT_ID).getAsInt();
+				} catch (Exception e){
+					tempId = lastSavedId;
+				}
+				lastSavedId = tempId;
+			}
+		}
+		setLastSavedId(lastSavedId);
+		stop();
+	}
+
+	private Iterable<JsonObject> parseCursorResults() {
+		return new Iterable<JsonObject>() {
+			@Override
+			public Iterator<JsonObject> iterator() {
+				return new ContentProviderIterator();
+			}
+
+		};
 	}
 	
 	
@@ -282,6 +328,17 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 		contact.add(CONTACT_DATA, contactData);
 		return hasChanged ? contact : null;
 	}
+
+	protected void setLastSavedId(int lastSavedId) {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedId(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_ID, lastSavedId);
+	}
+
+	protected int getLastSavedId() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedId(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_ID);
+	}
+
 
 
 	@Override

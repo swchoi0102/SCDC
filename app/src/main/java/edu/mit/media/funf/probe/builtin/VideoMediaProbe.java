@@ -27,12 +27,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.Manifest;
+import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore.Video;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.time.DecimalTimeUnit;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @DisplayName("Video File Stats Probe")
 @Schedule.DefaultSchedule(interval=604800)
@@ -86,4 +89,15 @@ public class VideoMediaProbe extends DatedContentProviderProbe {
 		return projectionMap;
 	}
 
+	@Override
+	protected void setLastSavedTime() {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.VIDEO_LOG_LAST_TIME);
+	}
+
+	@Override
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.VIDEO_LOG_LAST_TIME);
+	}
 }

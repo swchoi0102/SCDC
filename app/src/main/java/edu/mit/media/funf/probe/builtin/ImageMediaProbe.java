@@ -27,12 +27,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.Manifest;
+import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore.Images;
 
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.time.DecimalTimeUnit;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @DisplayName("Image File Stats Probe")
 @Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -80,4 +83,15 @@ public class ImageMediaProbe extends DatedContentProviderProbe {
 		return DecimalTimeUnit.SECONDS;
 	}
 
+	@Override
+	protected void setLastSavedTime() {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_TIME);
+	}
+
+	@Override
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_TIME);
+	}
 }

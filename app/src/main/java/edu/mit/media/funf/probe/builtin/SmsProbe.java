@@ -26,12 +26,15 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.net.Uri;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.AndroidInternal.Sms;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.SmsKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 /**
  * @author alangardner
@@ -75,4 +78,15 @@ public class SmsProbe extends DatedContentProviderProbe implements SmsKeys {
 		return projectionMap;
 	}
 
+	@Override
+	protected void setLastSavedTime() {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.SMS_LOG_LAST_TIME);
+	}
+
+	@Override
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.SMS_LOG_LAST_TIME);
+	}
 }

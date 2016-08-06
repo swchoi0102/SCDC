@@ -26,12 +26,15 @@ package edu.mit.media.funf.probe.builtin;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.net.Uri;
 import android.provider.Browser;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @DisplayName("Browser Searches")
 @Schedule.DefaultSchedule(interval=604800)
@@ -46,6 +49,18 @@ public class BrowserSearchesProbe extends DatedContentProviderProbe {
 	@Override
 	protected String getDateColumnName() {
 		return Browser.SearchColumns.DATE;
+	}
+
+	@Override
+	protected void setLastSavedTime() {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_TIME);
+	}
+
+	@Override
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_TIME);
 	}
 
 	@Override

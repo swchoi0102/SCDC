@@ -432,6 +432,23 @@ public class SharedPrefsHandler {
                             isRunning).apply();
   }
 
+  // Last saved time for continuable probes
+  public void setCPLastSavedTime(String key){
+    prefs.edit().putLong(key, System.currentTimeMillis()).apply();
+  }
+
+  public long getCPLastSavedTime(String key){
+    return prefs.getLong(key, 0L);
+  }
+
+  // Last saved id for contact probe
+  public void setCPLastSavedId(String key, int id){
+    prefs.edit().putInt(key, id).apply();
+  }
+
+  public int getCPLastSavedId(String key){
+    return prefs.getInt(key, 0);
+  }
 
   private class GetPrefsFromServerTask extends AsyncTask<String, Void, Boolean> {
 

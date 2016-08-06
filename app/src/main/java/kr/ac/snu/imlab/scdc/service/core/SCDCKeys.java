@@ -71,7 +71,15 @@ public class SCDCKeys {
       ACTIVE_CONFIG = "activeConfig",
       IDLE_CONFIG = "idleConfig",
       LAST_CONFIG_UPDATE = "last_config_update",
-      FIRST_RUN = "firstrun";
+      FIRST_RUN = "firstrun",
+      CALL_LOG_LAST_TIME = "CALL",
+      AUDIO_LOG_LAST_TIME = "AUDIO",
+      BOOKMARK_LOG_LAST_TIME = "BOOKMARK",
+      SEARCH_LOG_LAST_TIME = "SEARCH",
+      IMAGE_LOG_LAST_TIME = "IMAGE",
+      SMS_LOG_LAST_TIME = "SMS",
+      VIDEO_LOG_LAST_TIME = "VIDEO",
+      CONTACT_LOG_LAST_ID = "CONTACT";
 
     public static final int
       DEFAULT_SENSOR_ID = 0;
