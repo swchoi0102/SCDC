@@ -433,8 +433,8 @@ public class SharedPrefsHandler {
   }
 
   // Last saved time for continuable probes
-  public void setCPLastSavedTime(String key){
-    prefs.edit().putLong(key, System.currentTimeMillis()).apply();
+  public void setCPLastSavedTime(String key, long lastTime){
+    prefs.edit().putLong(key, lastTime).apply();
   }
 
   public long getCPLastSavedTime(String key){

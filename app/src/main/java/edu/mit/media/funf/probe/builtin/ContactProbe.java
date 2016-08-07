@@ -47,6 +47,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -82,44 +83,6 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
                 Data.CONTACT_ID + " ASC");
 	}
 
-	private Gson gson;
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		gson = getGson();
-		int lastSavedId = 0;
-		for (JsonObject data : parseCursorResults()) {
-			if (data != null) {
-				BigDecimal customTimestamp = getTimestamp(data);
-				if (customTimestamp != null) {
-					data.addProperty(TIMESTAMP, customTimestamp);
-				}
-				sendData(data);
-				int tempId;
-				try{
-					tempId = data.get(Data.CONTACT_ID).getAsInt();
-				} catch (Exception e){
-					tempId = lastSavedId;
-				}
-				lastSavedId = tempId;
-			}
-		}
-		setLastSavedId(lastSavedId);
-		stop();
-	}
-
-	private Iterable<JsonObject> parseCursorResults() {
-		return new Iterable<JsonObject>() {
-			@Override
-			public Iterator<JsonObject> iterator() {
-				return new ContentProviderIterator();
-			}
-
-		};
-	}
-	
-	
 	private class ContactDataCell extends CursorCell<Object> {
 		
 		private Map<String,CursorCell<?>> cursorCells;
@@ -339,7 +302,18 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedId(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_ID);
 	}
 
-
+	@Override
+	protected void sendData(JsonObject data) {
+		int tempId = getLastSavedId();
+		try{
+			tempId = data.get(Data.CONTACT_ID).getAsInt();
+		} catch (Exception e){}
+		if (tempId > getLastSavedId()){
+			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last Id: " + tempId);
+			super.sendData(data);
+			setLastSavedId(tempId);
+		}
+	}
 
 	@Override
 	public void setCheckpoint(JsonElement checkpoint) {

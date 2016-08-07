@@ -89,9 +89,9 @@ public class AudioMediaProbe extends DatedContentProviderProbe {
 	}
 
 	@Override
-	protected void setLastSavedTime() {
+	protected void setLastSavedTime(long lastSavedTime) {
 		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.AUDIO_LOG_LAST_TIME);
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.AUDIO_LOG_LAST_TIME, lastSavedTime);
 	}
 
 	@Override

@@ -26,17 +26,21 @@ package edu.mit.media.funf.probe.builtin;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.ContinuableProbe;
 import edu.mit.media.funf.time.DecimalTimeUnit;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 public abstract class DatedContentProviderProbe extends ContentProviderProbe implements ContinuableProbe {
 
@@ -58,21 +62,25 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		}
 		String dateFilter = null;
 		String[] dateFilterParams = null;
-		if (afterDate != null || latestTimestamp != null) {
-			dateFilter = dateColumn + " > ?";
-			dateFilterParams = new String[]{"" + getLastSavedTime()};
-//			BigDecimal startingDate = afterDate == null ? latestTimestamp :
-//						afterDate.max(latestTimestamp == null ? BigDecimal.ZERO : latestTimestamp);
-//			dateFilterParams = new String[] {String.valueOf(getDateColumnTimeUnit().convert(startingDate, DecimalTimeUnit.SECONDS))};
-		}
+		dateFilter = dateColumn + " > ?";
+		dateFilterParams = new String[]{"" + getLastSavedTime()};
+		Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
+//		if (afterDate != null || latestTimestamp != null) {
+//			dateFilter = dateColumn + " > ?";
+//			dateFilterParams = new String[]{"" + getLastSavedTime()};
+//			Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
+////			BigDecimal startingDate = afterDate == null ? latestTimestamp :
+////						afterDate.max(latestTimestamp == null ? BigDecimal.ZERO : latestTimestamp);
+////			dateFilterParams = new String[] {String.valueOf(getDateColumnTimeUnit().convert(startingDate, DecimalTimeUnit.SECONDS))};
+//		}
 		return getContext().getContentResolver().query(
 				getContentProviderUri(),
 				projection, // TODO: different platforms have different fields supported for content providers, need to resolve this
 				dateFilter, 
 				dateFilterParams,
-                dateColumn + " DESC");
+                dateColumn + " ASC");
 	}
-	
+
 	protected abstract Uri getContentProviderUri();
 	
 	protected abstract String getDateColumnName();
@@ -81,14 +89,20 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		return DecimalTimeUnit.MILLISECONDS;
 	}
 
-	protected abstract void setLastSavedTime();
+	protected abstract void setLastSavedTime(long lastSavedTime);
 	protected abstract long getLastSavedTime();
 
 	@Override
 	protected void sendData(JsonObject data) {
-		super.sendData(data);
-		setLastSavedTime();
-//		latestTimestamp = getTimestamp(data);
+		long tempTime = getLastSavedTime();
+		try{
+			tempTime = data.get(getDateColumnName()).getAsLong();
+		} catch (Exception e){}
+		if (tempTime > getLastSavedTime()){
+			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last time: " + tempTime);
+			super.sendData(data);
+			setLastSavedTime(tempTime);
+		}
 	}
 
 	@Override
