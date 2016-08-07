@@ -309,7 +309,7 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 			tempId = data.get(Data.CONTACT_ID).getAsInt();
 		} catch (Exception e){}
 		if (tempId > getLastSavedId()){
-			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last Id: " + tempId);
+//			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last Id: " + tempId);
 			super.sendData(data);
 			setLastSavedId(tempId);
 		}

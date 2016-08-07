@@ -29,6 +29,13 @@
         "@schedule": { "interval": 10800 }
       },
       "data": [
+        {"@type": "edu.mit.media.funf.probe.builtin.AccountsProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ApplicationsProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+
         {"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
          "@schedule": {"interval": 120, "opportunistic": true}
         },

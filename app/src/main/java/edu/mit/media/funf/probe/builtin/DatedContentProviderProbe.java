@@ -64,7 +64,8 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		String[] dateFilterParams = null;
 		dateFilter = dateColumn + " > ?";
 		dateFilterParams = new String[]{"" + getLastSavedTime()};
-		Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
+//		Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
+
 //		if (afterDate != null || latestTimestamp != null) {
 //			dateFilter = dateColumn + " > ?";
 //			dateFilterParams = new String[]{"" + getLastSavedTime()};
@@ -99,7 +100,7 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 			tempTime = data.get(getDateColumnName()).getAsLong();
 		} catch (Exception e){}
 		if (tempTime > getLastSavedTime()){
-			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last time: " + tempTime);
+//			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last time: " + tempTime);
 			super.sendData(data);
 			setLastSavedTime(tempTime);
 		}

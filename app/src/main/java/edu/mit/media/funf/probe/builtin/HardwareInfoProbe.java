@@ -33,6 +33,8 @@ import android.telephony.TelephonyManager;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.HardwareInfoKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @Schedule.DefaultSchedule(interval=604800)
 @RequiredPermissions({android.Manifest.permission.ACCESS_WIFI_STATE, android.Manifest.permission.BLUETOOTH, android.Manifest.permission.READ_PHONE_STATE})
@@ -41,7 +43,14 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		sendData(getGson().toJsonTree(getData()).getAsJsonObject());
+
+		long currentTime = System.currentTimeMillis();
+		long lastSavedTime = getLastSavedTime();
+
+		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+			sendData(getGson().toJsonTree(getData()).getAsJsonObject());
+			setLastSavedTime(currentTime);
+		}
 		stop();
 	}
 
@@ -64,5 +73,15 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 	private String getBluetoothMac() {
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		return (adapter != null) ? adapter.getAddress() : null;
+	}
+
+	protected void setLastSavedTime(long lastSavedTime) {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.HARDWARE_INFO_LOG_LAST_TIME, lastSavedTime);
+	}
+
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.HARDWARE_INFO_LOG_LAST_TIME);
 	}
 }

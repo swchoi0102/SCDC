@@ -46,61 +46,74 @@ import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ApplicationsKeys;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
-public class ApplicationsProbe extends ImpulseProbe implements PassiveProbe, ApplicationsKeys{
+//public class ApplicationsProbe extends ImpulseProbe implements PassiveProbe, ApplicationsKeys{
+public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 	
 	private PackageManager pm;
 	
-	private BroadcastReceiver packageChangeListener = new BroadcastReceiver()  {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			try {
-				if (Intent.ACTION_PACKAGE_ADDED.equals(action) || Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
-					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), 0);
-					sendData(info, true, TimeUtil.getTimestamp());
-				} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), PackageManager.GET_UNINSTALLED_PACKAGES);
-					sendData(info, false, TimeUtil.getTimestamp());
-				}
-			} catch (NameNotFoundException e) {
-				Log.w(LogUtil.TAG, "ApplicationsProbe: Package not found '" + intent.getDataString() + "'");
-			}
-		}
-	};
-	
-	@Override
-	protected void onEnable() {
-		super.onEnable();
-		pm = getContext().getPackageManager();
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-		getContext().registerReceiver(packageChangeListener, filter);
-	}
+//	private BroadcastReceiver packageChangeListener = new BroadcastReceiver()  {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			String action = intent.getAction();
+//			try {
+//				if (Intent.ACTION_PACKAGE_ADDED.equals(action) || Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
+//					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), 0);
+//					sendData(info, true, TimeUtil.getTimestamp());
+//				} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
+//					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), PackageManager.GET_UNINSTALLED_PACKAGES);
+//					sendData(info, false, TimeUtil.getTimestamp());
+//				}
+//			} catch (NameNotFoundException e) {
+//				Log.w(LogUtil.TAG, "ApplicationsProbe: Package not found '" + intent.getDataString() + "'");
+//			}
+//		}
+//	};
+//
+//	@Override
+//	protected void onEnable() {
+//		super.onEnable();
+//		pm = getContext().getPackageManager();
+//		IntentFilter filter = new IntentFilter();
+//		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+//		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+//		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+//		getContext().registerReceiver(packageChangeListener, filter);
+//	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		List<ApplicationInfo> allApplications = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
-		List<ApplicationInfo> installedApplications = new ArrayList<ApplicationInfo>(pm.getInstalledApplications(0));
-		List<ApplicationInfo> uninstalledApplications = getUninstalledApps(allApplications, installedApplications);
-		for (ApplicationInfo info : installedApplications) {
-			sendData(info, true, null);
+
+		long currentTime = System.currentTimeMillis();
+		long lastSavedTime = getLastSavedTime();
+
+		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+			pm = getContext().getPackageManager();
+			List<ApplicationInfo> allApplications = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+			List<ApplicationInfo> installedApplications = new ArrayList<ApplicationInfo>(pm.getInstalledApplications(0));
+			List<ApplicationInfo> uninstalledApplications = getUninstalledApps(allApplications, installedApplications);
+			for (ApplicationInfo info : installedApplications) {
+				sendData(info, true, null);
+			}
+			for (ApplicationInfo info : uninstalledApplications) {
+				sendData(info, false, null);
+			}
+			setLastSavedTime(currentTime);
 		}
-		for (ApplicationInfo info : uninstalledApplications) {
-			sendData(info, false, null);
-		}
-		stop();
+
+//		stop();
+		disable();
 	}
 
-	@Override
-	protected void onDisable() {
-		super.onDisable();
-		getContext().unregisterReceiver(packageChangeListener);
-	}
+//	@Override
+//	protected void onDisable() {
+//		super.onDisable();
+//		getContext().unregisterReceiver(packageChangeListener);
+//	}
 
 	private void sendData(ApplicationInfo info, boolean installed, BigDecimal installedTimestamp) {
 		JsonObject data = getGson().toJsonTree(info).getAsJsonObject();
@@ -126,5 +139,16 @@ public class ApplicationsProbe extends ImpulseProbe implements PassiveProbe, App
 			}
 		}
 		return uninstalledApps;
+	}
+
+
+	protected void setLastSavedTime(long lastSavedTime) {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.APPLICATIONS_LOG_LAST_TIME, lastSavedTime);
+	}
+
+	protected long getLastSavedTime() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.APPLICATIONS_LOG_LAST_TIME);
 	}
 }
