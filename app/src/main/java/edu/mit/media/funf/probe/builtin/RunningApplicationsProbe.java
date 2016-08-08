@@ -31,6 +31,7 @@ import java.util.List;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.content.Context;
+import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -146,8 +147,15 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 		super.onStart();
 		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onStart");
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).registerListener(screenListener);
-		if (pm.isScreenOn()) {
-			onContinue();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+			if (pm.isInteractive()) {
+                onContinue();
+            }
+		}
+		else{
+			if (pm.isScreenOn()) {
+				onContinue();
+			}
 		}
 	}
 

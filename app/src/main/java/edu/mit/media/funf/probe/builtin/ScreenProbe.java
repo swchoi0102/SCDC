@@ -27,6 +27,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 
 import com.google.gson.JsonObject;
 
@@ -36,6 +39,8 @@ import edu.mit.media.funf.probe.Probe.ContinuousProbe;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ScreenKeys;
+import edu.mit.media.funf.time.DecimalTimeUnit;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @DisplayName("Screen On/Off")
 @Description("Records when the screen turns off and on.")
@@ -43,50 +48,126 @@ import edu.mit.media.funf.probe.builtin.ProbeKeys.ScreenKeys;
 public class ScreenProbe extends Base implements ContinuousProbe, ScreenKeys  {
 
 	private BroadcastReceiver screenReceiver;
+	private PowerManager pm;
+
+	private double checkInterval = 1.0;
+	private ScreenChecker screenChecker = new ScreenChecker();
+	private long lastTimeMillis;
+	private boolean lastScreenOn;
+	private boolean replicateOn = false;
+
+	private class ScreenChecker implements Runnable {
+		@Override
+		public void run() {
+			getHandler().postDelayed(this, edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval));
+			long currentTimeMillis = System.currentTimeMillis();
+			if (replicateOn){
+				if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
+//					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
+					replicateData(lastScreenOn, currentTimeMillis);
+				}
+			}
+		}
+
+		public void endCurrentTask() {
+//			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
+			reset();
+		}
+
+		public void reset() {
+//			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
+			replicateOn = false;
+		}
+	}
+
+	protected void replicateData(boolean so, long timeMillis) {
+//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
+		JsonObject data = new JsonObject();
+		data.addProperty(SCREEN_ON, so);
+		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
+		data.addProperty("rep", true);
+
+		// check one more time
+		if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
+			sendData(data);
+		}
+	}
 	
 	@Override
 	protected void onEnable() {
-		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
 		screenReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				final String action = intent.getAction();
-
 				JsonObject data = new JsonObject();
-				if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-					data.addProperty(SCREEN_ON, false);
+
+				final String action = intent.getAction();
+				if (Intent.ACTION_SCREEN_OFF.equals(action)
+						|| Intent.ACTION_SCREEN_ON.equals(action)) {
+					lastTimeMillis = System.currentTimeMillis();
+					lastScreenOn = Intent.ACTION_SCREEN_ON.equals(action);
+					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
+					data.addProperty(SCREEN_ON, lastScreenOn);
 					sendData(data);
-				} else if (Intent.ACTION_SCREEN_ON.equals(action)) {
-					data.addProperty(SCREEN_ON, true);
-					sendData(data);
+					replicateOn = true;
 				}
 			}
 		};
-		getContext().registerReceiver(screenReceiver, filter);
 	}
-	
-	
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		initializeScreenStatus();
+
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		getContext().registerReceiver(screenReceiver, filter);
+		onContinue();
 	}
 
+	protected void onContinue() {
+//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
+		getHandler().post(screenChecker);
+	}
 
+	@Override
+	protected void onStop() {
+//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
+		getContext().unregisterReceiver(screenReceiver);
+		onPause();
+	}
+
+	protected void onPause() {
+//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
+		getHandler().removeCallbacks(screenChecker);
+		screenChecker.endCurrentTask();
+	}
 
 	@Override
 	protected void onDisable() {
-		getContext().unregisterReceiver(screenReceiver);
+		screenChecker.reset();
 	}
 
+	private void initializeScreenStatus() {
+		JsonObject currentScreenStatus = new JsonObject();
 
+		lastTimeMillis = System.currentTimeMillis();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+			lastScreenOn = pm.isInteractive();
+		}
+		else{
+			lastScreenOn = pm.isScreenOn();
+		}
+		currentScreenStatus.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
+		currentScreenStatus.addProperty(SCREEN_ON, lastScreenOn);
 
-	@Override
-	protected boolean isWakeLockedWhileRunning() {
-		return false;
+		sendData(currentScreenStatus);
+		replicateOn = true;
 	}
 
-	
-	
+//	@Override
+//	protected boolean isWakeLockedWhileRunning() {
+//		return false;
+//	}
 }

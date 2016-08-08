@@ -52,7 +52,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 
 	@Configurable
 	private String sensorDelay = SENSOR_DELAY_GAME;
-	private int checkInterval = 1;
+	private double checkInterval = 1.0;
 
 	public static final String
 		SENSOR_DELAY_FASTEST = "FASTEST",
@@ -68,10 +68,9 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 	private long lastTimeMillis;
 	private float[] lastValues;
 	private int lastAccuracy;
-	private boolean replicateOn;
+	private boolean replicateOn = false;
 
 	private class SensorChecker implements Runnable {
-
 		@Override
 		public void run() {
 			getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
@@ -101,6 +100,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 		JsonObject data = new JsonObject();
 		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
 		data.addProperty(ACCURACY, acc);
+		data.addProperty("rep", true);
 		final String[] valueNames = getValueNames();
 
 		for (int i = 0; i < vArr.length; i++) {
@@ -129,7 +129,8 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 				JsonObject data = new JsonObject();
         // FIXME: TIMESTAMP for all SensorProbe's
 				// data.addProperty(TIMESTAMP, TimeUtil.uptimeNanosToTimestamp(event.timestamp));
-        		data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+				lastTimeMillis = System.currentTimeMillis();
+        		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
 				data.addProperty(ACCURACY, event.accuracy);
 				int valuesLength = Math.min(event.values.length, valueNames.length);
 				for (int i = 0; i < valuesLength; i++) {
@@ -138,9 +139,8 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 					lastValues[i] = event.values[i];
 					lastAccuracy = event.accuracy;
 				}
-				lastTimeMillis = System.currentTimeMillis();
-				replicateOn = true;
 				sendData(data);
+				replicateOn = true;
 			}
 
 			@Override
@@ -161,17 +161,17 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 		getHandler().post(sensorChecker);
 	}
 
-	protected void onPause() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
-		getHandler().removeCallbacks(sensorChecker);
-		sensorChecker.endCurrentTask();
-	}
-
 	@Override
 	protected void onStop() {
 //		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
 		getSensorManager().unregisterListener(sensorListener);
 		onPause();
+	}
+
+	protected void onPause() {
+//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
+		getHandler().removeCallbacks(sensorChecker);
+		sensorChecker.endCurrentTask();
 	}
 
 	@Override

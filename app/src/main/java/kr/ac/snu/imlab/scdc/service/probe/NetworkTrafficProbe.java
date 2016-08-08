@@ -29,7 +29,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     private TrafficStatsDummy trafficStatsCurrent;
     public static TrafficStatsDummy trafficStatsPast;
     private int expId;
-    private int checkInterval = 2;
+    private double checkInterval = 2.5;
     private TrafficChecker trafficChecker = new TrafficChecker();
     public long currSecs = 0;
     public long prevSecs = 0;
