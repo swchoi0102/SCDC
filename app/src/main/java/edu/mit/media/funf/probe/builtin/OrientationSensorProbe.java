@@ -150,8 +150,9 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 
 						for (int i = 0; i < valueNames.length; i++) {
 							String valueName = valueNames[i];
-							data.addProperty(valueName, orientation[i]);
-							lastValues[i] = orientation[i];
+							int tempValue = (int) ( Math.toDegrees( orientation[i] ) + 360 ) % 360;
+							data.addProperty(valueName, tempValue);
+							lastValues[i] = tempValue;
 							lastAccuracy = event.accuracy;
 						}
 						sendData(data);
