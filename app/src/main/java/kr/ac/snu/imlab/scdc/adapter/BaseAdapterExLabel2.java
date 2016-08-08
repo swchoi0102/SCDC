@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.nfc.cardemulation.OffHostApduService;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -15,10 +14,6 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -27,10 +22,7 @@ import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LabelKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
-import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
-import kr.ac.snu.imlab.scdc.service.core.SCDCService;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.util.TimeUtil;
 
@@ -176,11 +168,10 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
             ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
         }
         else{
-          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName());
           long elapsedTime = TimeUtil.getElapsedTimeUntilNow(mData.get(position).getStartLoggingTime(), "second");
-          Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(elapsedTime));
+          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName()+" ("+String.valueOf(elapsedTime)+" seconds)");
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
-          mData.get(position).endLog();
+          mData.get(position).endLog(elapsedTime);
 
 //          // Unbind/Stop SCDCService and bind SCDCManager instead
 //          mContext.unbindService(scdcServiceConn);
@@ -210,9 +201,9 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
         togetherToggleButton.setEnabled(wasChecked);
         viewHolder.labelLogToggleButton.setChecked(!wasChecked);
 
-        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
-                + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
-                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+//        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+//                + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+//                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
         Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(mData.get(position).getName())+"\t"+String.valueOf(mData.get(position).isLogged()));
       }
     });
