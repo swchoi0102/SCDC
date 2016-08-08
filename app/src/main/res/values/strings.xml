@@ -44,12 +44,15 @@
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
 
+            {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkTrafficProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+            },
 
             {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
-             "@schedule": {"interval": 120, "duration": 60, "opportunistic": true}
+             "@schedule": {"interval": 120, "opportunistic": true}
             },
             {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe",
-             "@schedule": {"interval": 120, "duration": 60, "opportunistic": true}
+             "@schedule": {"interval": 120, "opportunistic": true}
             }
         ]
     }

@@ -7,12 +7,15 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
+import edu.mit.media.funf.probe.builtin.ProbeKeys;
+import edu.mit.media.funf.time.DecimalTimeUnit;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
@@ -28,8 +31,8 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     private int expId;
     private int checkInterval = 2;
     private TrafficChecker trafficChecker = new TrafficChecker();
-    public double currSecs = 0;
-    public double prevSecs = 0;
+    public long currSecs = 0;
+    public long prevSecs = 0;
 
     private class TrafficChecker implements Runnable {
 
@@ -37,8 +40,9 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         public void run() {
             trafficStatsCurrent = snapTrafficStatsCurrent();
             if (trafficStatsPast != null) {
-                double diffSecs = currSecs - prevSecs;
-                sendTraffic(trafficDataList(diffSecs));
+                double diffSecs = (double) (currSecs - prevSecs) / 1000.0d;
+                BigDecimal currTimestamp = DecimalTimeUnit.MILLISECONDS.toSeconds(currSecs);
+                sendTraffic(trafficDataList(), currTimestamp, diffSecs);
             }
             setTrafficStatsPast();
             getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
@@ -96,7 +100,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     }
 
     private TrafficStatsDummy snapTrafficStatsCurrent() {
-        currSecs = (double) System.currentTimeMillis() / 1000.0d;
+        currSecs = System.currentTimeMillis();
 
         TrafficStatsDummy currentTrafficStats = new TrafficStatsDummy();
         currentTrafficStats.totalRxBytes = TrafficStats.getTotalRxBytes();
@@ -118,15 +122,14 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         return pm.getInstalledApplications(PackageManager.GET_META_DATA);
     }
 
-    private ArrayList<JsonObject> trafficDataList(double diffSecs) {
+    private ArrayList<JsonObject> trafficDataList() {
         ArrayList<JsonObject> trafficDataList = new ArrayList<>();
 
-        trafficDataList.add(totalTraffic(diffSecs));
-
-        trafficDataList.add(mobileTraffic(diffSecs));
+        trafficDataList.add(totalTraffic());
+        trafficDataList.add(mobileTraffic());
 
         for (int uid : trafficStatsCurrent.applicationUIdAndPackageName.keySet()) {
-            JsonObject applicationTraffic = getApplicationTrafficWithUId(uid, diffSecs);
+            JsonObject applicationTraffic = getApplicationTrafficWithUId(uid);
             if (applicationTraffic != null) {
                 trafficDataList.add(applicationTraffic);
             }
@@ -135,25 +138,23 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         return trafficDataList;
     }
 
-    private JsonObject totalTraffic(double diffSecs) {
+    private JsonObject totalTraffic() {
         JsonObject traffic = new JsonObject();
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.WHERE, SCDCKeys.NetworkTrafficKeys.TOTAL_WHERE_VALUE);
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.RECEIVED, trafficStatsCurrent.totalRxBytes - trafficStatsPast.totalRxBytes);
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.TRANSMITTED, trafficStatsCurrent.totalTxBytes - trafficStatsPast.totalTxBytes);
-        traffic.addProperty(SCDCKeys.NetworkTrafficKeys.DIFF_SECS, diffSecs);
         return traffic;
     }
 
-    private JsonObject mobileTraffic(double diffSecs) {
+    private JsonObject mobileTraffic() {
         JsonObject traffic = new JsonObject();
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.WHERE, SCDCKeys.NetworkTrafficKeys.MOBILE_WHERE_VALUE);
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.RECEIVED, trafficStatsCurrent.mobileRxBytes - trafficStatsPast.mobileRxBytes);
         traffic.addProperty(SCDCKeys.NetworkTrafficKeys.TRANSMITTED, trafficStatsCurrent.mobileTxBytes - trafficStatsPast.mobileTxBytes);
-        traffic.addProperty(SCDCKeys.NetworkTrafficKeys.DIFF_SECS, diffSecs);
         return traffic;
     }
 
-    private JsonObject getApplicationTrafficWithUId(int uid, double diffSecs) {
+    private JsonObject getApplicationTrafficWithUId(int uid) {
         if (!trafficStatsPast.applicationUIdAndPackageName.keySet().contains(uid)) {
             return null;
         } else {
@@ -166,15 +167,16 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
                 applicationTraffic.addProperty(SCDCKeys.NetworkTrafficKeys.WHERE, trafficStatsCurrent.applicationUIdAndPackageName.get(uid));
                 applicationTraffic.addProperty(SCDCKeys.NetworkTrafficKeys.RECEIVED, trafficRx);
                 applicationTraffic.addProperty(SCDCKeys.NetworkTrafficKeys.TRANSMITTED, trafficTx);
-                applicationTraffic.addProperty(SCDCKeys.NetworkTrafficKeys.DIFF_SECS, diffSecs);
                 return applicationTraffic;
             }
         }
     }
 
-    private void sendTraffic(ArrayList<JsonObject> trafficDataList) {
+    private void sendTraffic(ArrayList<JsonObject> trafficDataList, BigDecimal currTimestamp, double diffSecs) {
         if (isValidTrafficDataList(trafficDataList)) {
             for (JsonObject trafficData : trafficDataList) {
+                trafficData.addProperty(SCDCKeys.NetworkTrafficKeys.DIFF_SECS, diffSecs);
+                trafficData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, currTimestamp);
                 sendData(trafficData);
             }
         }

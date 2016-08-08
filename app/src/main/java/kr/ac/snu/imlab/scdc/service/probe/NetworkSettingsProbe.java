@@ -11,6 +11,7 @@ import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.TimeUtil;
 
 @Probe.RequiredPermissions({Manifest.permission.ACCESS_NETWORK_STATE})
 @Probe.DisplayName("Network Settings Log Probe")
@@ -41,6 +42,7 @@ public class NetworkSettingsProbe extends Probe.Base implements Probe.Continuous
         currentSystemSettings.addProperty(SCDCKeys.NetworkSettingsKeys.AIR_PLANE_MODE_ON, getCurrentValue(Settings.Global.AIRPLANE_MODE_ON));
         currentSystemSettings.addProperty(SCDCKeys.NetworkSettingsKeys.MOBILE_DATA_ON, getCurrentValue(MOBILE_DATA_ON_NAME));
         currentSystemSettings.addProperty(SCDCKeys.NetworkSettingsKeys.WIFI_ON, getCurrentValue(Settings.Global.WIFI_ON));
+        currentSystemSettings.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
         return currentSystemSettings;
     }
 

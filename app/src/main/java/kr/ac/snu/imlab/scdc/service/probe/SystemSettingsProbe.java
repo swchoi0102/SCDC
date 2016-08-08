@@ -52,6 +52,7 @@ public class SystemSettingsProbe extends Probe.Base implements Probe.ContinuousP
         currentSystemSettings.addProperty(SCDCKeys.SystemSettingsKeys.VOLUME_RING, getCurrentVolume(AudioManager.STREAM_RING));
         currentSystemSettings.addProperty(SCDCKeys.SystemSettingsKeys.VOLUME_SYSTEM, getCurrentVolume(AudioManager.STREAM_SYSTEM));
         currentSystemSettings.addProperty(SCDCKeys.SystemSettingsKeys.VOLUME_VOICE, getCurrentVolume(AudioManager.STREAM_VOICE_CALL));
+        currentSystemSettings.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
         return currentSystemSettings;
     }
 
