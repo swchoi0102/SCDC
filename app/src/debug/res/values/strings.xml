@@ -29,42 +29,23 @@
         "@schedule": { "interval": 10800 }
       },
       "data": [
-        {"@type": "edu.mit.media.funf.probe.builtin.AccountsProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.ApplicationsProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
+        {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
         },
 
-        {"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
+        {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
         },
-        {"@type": "edu.mit.media.funf.probe.builtin.SmsProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
+        {"@type": "edu.mit.media.funf.probe.builtin.LightSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
         },
-        {"@type": "edu.mit.media.funf.probe.builtin.ContactProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.BrowserBookmarksProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.BrowserSearchesProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.AudioMediaProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.ImageMediaProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.VideoMediaProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
-        },
+
+
         {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
+         "@schedule": {"interval": 120, "duration": 60, "opportunistic": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe",
-         "@schedule": {"interval": 120, "opportunistic": true}
+         "@schedule": {"interval": 120, "duration": 60, "opportunistic": true}
         }
       ]
     }
