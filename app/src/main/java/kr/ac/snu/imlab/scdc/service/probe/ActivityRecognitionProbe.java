@@ -187,7 +187,7 @@ public class ActivityRecognitionProbe extends Base
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-      Log.i(TAG, "Connected to GoogleApiClient");
+//      Log.i(TAG, "Connected to GoogleApiClient");
     }
 
     @Override
@@ -201,15 +201,15 @@ public class ActivityRecognitionProbe extends Base
       intent.putExtra(AlertKeys.EXTRA_ALERT_ERROR_MESSAGE, message);
 
       getContext().sendBroadcast(intent);
-      Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode()=" + result.getErrorCode() +
-                  ", ConnectionResult.getErrorMessage()=" + result.getErrorMessage());
+//      Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode()=" + result.getErrorCode() +
+//                  ", ConnectionResult.getErrorMessage()=" + result.getErrorMessage());
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
       // The connection to Google Play services was lost for some reason. We call connect() to
       // attempt to re-establish the connection.
-      Log.i(TAG, "Connection suspended");
+//      Log.i(TAG, "Connection suspended");
       mGoogleApiClient.connect();
     }
 

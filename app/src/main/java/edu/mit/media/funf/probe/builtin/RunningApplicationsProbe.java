@@ -115,7 +115,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 		
 		@Override
 		public void onDataReceived(IJsonObject completeProbeUri, IJsonObject data) {
-			Log.d(LogUtil.TAG, "RunningApplications: " + data);
+//			Log.d(LogUtil.TAG, "RunningApplications: " + data);
 			String type = completeProbeUri.get(RuntimeTypeAdapterFactory.TYPE).getAsString();
 			if (ScreenProbe.class.getName().equals(type)) {
 				boolean screenOn = data.get(ScreenProbe.SCREEN_ON).getAsBoolean();
@@ -137,7 +137,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	@Override
 	protected synchronized void onEnable() {
 		super.onEnable();
-		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onEnable");
+//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onEnable");
 		pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
 	}
 
@@ -145,7 +145,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onStart");
+//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onStart");
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).registerListener(screenListener);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
 			if (pm.isInteractive()) {
@@ -161,7 +161,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 
 	protected void onContinue() { 
 		if (State.RUNNING.equals(getState()) && am == null) {
-			Log.d(LogUtil.TAG, "RunningApplicationsProbe: onContinue");
+//			Log.d(LogUtil.TAG, "RunningApplicationsProbe: onContinue");
 			am = (ActivityManager)getContext().getSystemService(Context.ACTIVITY_SERVICE);
 			getHandler().post(runningAppsPoller);
 		}
@@ -169,7 +169,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	
 	protected void onPause() { 
 		if (am != null) {
-			Log.d(LogUtil.TAG, "RunningApplicationsProbe: onPause");
+//			Log.d(LogUtil.TAG, "RunningApplicationsProbe: onPause");
 			am = null;
 			getHandler().removeCallbacks(runningAppsPoller);
 			runningAppsPoller.endCurrentTask();
@@ -187,7 +187,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	@Override
 	protected void onDisable() {
 		super.onDisable();
-		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onDisable");
+//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onDisable");
 		runningAppsPoller.reset();
 	}
 	

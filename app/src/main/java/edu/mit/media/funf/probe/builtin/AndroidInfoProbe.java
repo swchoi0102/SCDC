@@ -50,7 +50,7 @@ public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 							+ " " + Build.ID
 							+ " " + Build.VERSION.INCREMENTAL
 							+ " " + Build.TAGS);
-			data.addProperty(SDK, Integer.parseInt(Build.VERSION.SDK, 10));
+			data.addProperty(SDK, Build.VERSION.SDK_INT);
 			sendData(data);
 			setLastSavedTime(currentTime);
 		}
