@@ -29,4 +29,18 @@ public class TimeUtil {
     return elapsedTime;
   }
 
+  public static long getElapsedTimeUntilNow(long startTime, String unit){
+    if (startTime == -1 ) return (long) 0;
+
+    long elapsedTime = 0;
+    long timeDelta = System.currentTimeMillis() - startTime;
+    long secondsInMillis = 1000;
+
+    if(unit.equals("second")){
+      elapsedTime = (timeDelta / secondsInMillis);
+    }
+
+    return elapsedTime;
+  }
+
 }

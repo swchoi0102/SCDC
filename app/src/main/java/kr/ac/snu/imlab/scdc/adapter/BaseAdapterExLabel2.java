@@ -177,6 +177,8 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
         }
         else{
           Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName());
+          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(mData.get(position).getStartLoggingTime(), "second");
+          Log.d(SCDCKeys.LogKeys.DEBB, String.valueOf(elapsedTime));
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
 
