@@ -30,6 +30,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.renderscript.Script;
+import android.util.Log;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -46,6 +48,8 @@ import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LocationKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
+import edu.mit.media.funf.util.NameGenerator;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Sends all location points gathered by system.
@@ -64,16 +68,103 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 	@Configurable
 	private boolean useNetwork = true;
 	
-	@Configurable
-	private boolean useCache = true;
+//	@Configurable
+//	private boolean useCache = true;
 	
 	private Gson gson;
 	private LocationManager mLocationManager;
-	private LocationListener listener = new ProbeLocationListener();
+	private LocationListener gpsListener = new ProbeLocationListener();
+	private LocationListener networkListener = new ProbeLocationListener();
 	private LocationListener passiveListener = new ProbeLocationListener();
+
+
+	private long checkInterval = 3;
+	private ProviderChecker providerChecker = new ProviderChecker();
+	private long lastTimeMillis;
+	private long lastGpsTimeMillis;
+	private long lastNetTimeMillis;
+	private boolean networkOn = false;
+
+	private class ProviderChecker implements Runnable {
+		@Override
+		public void run() {
+			getHandler().postDelayed(this, edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval));
+			long currentTimeMillis = System.currentTimeMillis();
+
+			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] networkOn: " + networkOn + ", curr: " + currentTimeMillis + ", last: " + lastTimeMillis + ", lastGps: " + lastGpsTimeMillis + ", lastNet: " + lastGpsTimeMillis);
+			if (useGps && useNetwork){
+				if (networkOn){
+					if (currentTimeMillis <= lastGpsTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+						// turn off network when it's sufficient with gps only.
+						mLocationManager.removeUpdates(networkListener);
+						networkOn = false;
+					} else if(currentTimeMillis > Math.max(lastTimeMillis, lastNetTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+						// even if gps and network are on, location is unknown.
+						generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastNetTimeMillis));
+					}
+				} else{
+					if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+						// turn on network when it's not sufficient with gps only.
+						mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) checkInterval, 0, networkListener);
+						networkOn = true;
+						lastNetTimeMillis = System.currentTimeMillis();
+					}
+				}
+			} else if (useNetwork){
+				if (currentTimeMillis > Math.max(lastTimeMillis, lastNetTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+					// location is unknown.
+					generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastNetTimeMillis));
+				}
+			} else if (useGps){
+				if (currentTimeMillis > Math.max(lastTimeMillis, lastGpsTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+					// location is unknown.
+					generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastGpsTimeMillis));
+				}
+			}
+		}
+
+		public void endCurrentTask() {
+			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] End task");
+			reset();
+		}
+
+		public void reset() {
+			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Reset");
+			networkOn = false;
+		}
+	}
+
+	protected void generateUnknownData(long timeMillis, long comparedTimeMillis) {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Generate unknown data!");
+		JsonObject data = new JsonObject();
+		data.addProperty("mAccuracy", -1);
+		data.addProperty("mAltitude", -1);
+		data.addProperty("mBearing", -1);
+		data.addProperty("mElapsedRealtimeNanos", -1);
+		data.addProperty("mExtras", "unknown");
+		data.addProperty("mHasAccuracy", false);
+		data.addProperty("mHasAltitude", false);
+		data.addProperty("mHasBearing", false);
+		data.addProperty("mHasSpeed", false);
+		data.addProperty("mIsFromMockProvider", false);
+		data.addProperty("mLatitude", -1);
+		data.addProperty("mLongitude", -1);
+		data.addProperty("mProvider", -1);
+		data.addProperty("mSpeed", -1);
+		data.addProperty("mTime", -1);
+		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
+		data.addProperty("rep", true);
+
+		// check one more time
+		if (timeMillis > comparedTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
+			sendData(data);
+		}
+	}
+
 	
 	@Override
 	protected void onEnable() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onEnable()");
 		super.onEnable();
 		gson = getGsonBuilder().addSerializationExclusionStrategy(new LocationExclusionStrategy()).create();
 		mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
@@ -86,30 +177,49 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 	@Override
 	protected void onStart() {
 		super.onStart();
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart()");
+		lastTimeMillis = System.currentTimeMillis();
 		if (useGps) {
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0, gpsListener);
+			lastGpsTimeMillis = lastTimeMillis;
 		}
-		if (useNetwork) {
-			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+		else if (useNetwork) {
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0, gpsListener);
+			lastNetTimeMillis = lastTimeMillis;
 		}
-		if (useCache) {
-			listener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-			listener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-		}
-		if (!useGps && ! useNetwork) {
+//		if (useCache) {
+//			gpsListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+//			gpsListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+//		}
+		else{
 			stop();
 		}
+		getHandler().post(providerChecker);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mLocationManager.removeUpdates(listener);
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStop()");
+		if (useGps){
+			mLocationManager.removeUpdates(gpsListener);
+			if (useNetwork && networkOn) mLocationManager.removeUpdates(networkListener);
+		} else{
+			if (useNetwork) mLocationManager.removeUpdates(networkListener);
+		}
+		onPause();
+	}
+
+	protected void onPause() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onPause()");
+		getHandler().removeCallbacks(providerChecker);
+		providerChecker.endCurrentTask();
 	}
 
 	@Override
 	protected void onDisable() {
 		super.onDisable();
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onDisable()");
 		mLocationManager.removeUpdates(passiveListener);
 	}
 
@@ -119,13 +229,20 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 		public void onLocationChanged(Location location) {
 			if (location != null) {
 				String provider = location.getProvider();
-				if (provider == null 
-						|| (useGps && LocationManager.GPS_PROVIDER.equals(provider))
-						|| (useNetwork && LocationManager.NETWORK_PROVIDER.equals(provider))) {
-					JsonObject data = gson.toJsonTree(location).getAsJsonObject();
-					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(data.get("mTime").getAsBigDecimal()));
-					sendData(gson.toJsonTree(location).getAsJsonObject());
-				}
+//				if (provider == null
+//						|| (useGps && LocationManager.GPS_PROVIDER.equals(provider))
+//						|| (useNetwork && LocationManager.NETWORK_PROVIDER.equals(provider))) {
+//					JsonObject data = gson.toJsonTree(location).getAsJsonObject();
+//					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(data.get("mTime").getAsBigDecimal()));
+//					sendData(gson.toJsonTree(location).getAsJsonObject());
+//				}
+				JsonObject data = gson.toJsonTree(location).getAsJsonObject();
+				lastTimeMillis = data.get("mTime").getAsLong();
+				if (provider.equals(LocationManager.GPS_PROVIDER)) lastGpsTimeMillis = lastTimeMillis;
+				if (provider.equals(LocationManager.NETWORK_PROVIDER)) lastNetTimeMillis = lastTimeMillis;
+				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
+				sendData(gson.toJsonTree(location).getAsJsonObject());
+				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + lastTimeMillis);
 			}
 		}
 
@@ -163,7 +280,6 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
             				)
             		);
         }
-
     }
 	
 	/**
