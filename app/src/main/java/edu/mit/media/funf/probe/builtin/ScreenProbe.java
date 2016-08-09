@@ -85,7 +85,7 @@ public class ScreenProbe extends Base implements ContinuousProbe, ScreenKeys  {
 		JsonObject data = new JsonObject();
 		data.addProperty(SCREEN_ON, so);
 		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-		data.addProperty("rep", true);
+//		data.addProperty("rep", true);
 
 		// check one more time
 		if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){

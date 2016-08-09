@@ -79,7 +79,7 @@ public class SystemSettingsProbe extends Probe.Base implements Probe.ContinuousP
         data.addProperty(SCDCKeys.SystemSettingsKeys.VOLUME_SYSTEM, vs);
         data.addProperty(SCDCKeys.SystemSettingsKeys.VOLUME_VOICE, vv);
         data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-        data.addProperty("rep", true);
+//        data.addProperty("rep", true);
 
         // check one more time
         if (timeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)){

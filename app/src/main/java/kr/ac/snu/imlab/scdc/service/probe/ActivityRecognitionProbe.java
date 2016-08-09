@@ -116,7 +116,7 @@ public class ActivityRecognitionProbe extends Base
             // Register for activity recognition updates
             requestActivityUpdatesHandler();
           }
-        }, 100L);
+        }, 500L);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ActivityRecognitionProbe extends Base
      */
     public void requestActivityUpdatesHandler() {
       if (!mGoogleApiClient.isConnected()) {
-        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
+//        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
 //        Toast.makeText(getContext(), getContext().getString(R.string.not_connected),
 //                Toast.LENGTH_SHORT).show();
         return;
@@ -247,7 +247,7 @@ public class ActivityRecognitionProbe extends Base
      */
     public void removeActivityUpdatesHandler() {
       if (!mGoogleApiClient.isConnected()) {
-        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
+//        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
 //        Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
         return;
       }
@@ -272,13 +272,13 @@ public class ActivityRecognitionProbe extends Base
         boolean requestingUpdates = !getUpdatesRequestedState();
         setUpdatesRequestedState(requestingUpdates);
 
-        Log.d(LogKeys.DEBUG, TAG+"/ ActivityUpdates status changed");
+//        Log.d(LogKeys.DEBUG, TAG+"/ ActivityUpdates status changed");
 //        setButtonsEnabledState();
 
-        Log.d(LogKeys.DEBUG, TAG+"/ " +
-                getContext().getString(requestingUpdates ?
-                                R.string.activity_updates_added :
-                                R.string.activity_updates_removed));
+//        Log.d(LogKeys.DEBUG, TAG+"/ " +
+//                getContext().getString(requestingUpdates ?
+//                                R.string.activity_updates_added :
+//                                R.string.activity_updates_removed));
       } else {
         Log.e(LogKeys.DEBUG, TAG+"/ Error adding or removing activity detection: "
                               + status.getStatusMessage());
@@ -333,7 +333,7 @@ public class ActivityRecognitionProbe extends Base
      * @param detectedActivities the freshly detected activities
      */
     private void updateDetectedActivities(ArrayList<DetectedActivity> detectedActivities) {
-      Log.d(LogKeys.DEBUG, TAG+"/ entered updateDetectedActivities()");
+//      Log.d(LogKeys.DEBUG, TAG+"/ entered updateDetectedActivities()");
       HashMap<Integer, Integer> detectedActivitiesMap = new HashMap<>();
       for (DetectedActivity activity : detectedActivities) {
         detectedActivitiesMap.put(activity.getType(), activity.getConfidence());
@@ -349,9 +349,9 @@ public class ActivityRecognitionProbe extends Base
         int confidence = detectedActivitiesMap.containsKey(Constants.MONITORED_ACTIVITIES[i]) ?
                 detectedActivitiesMap.get(Constants.MONITORED_ACTIVITIES[i]) : 0;
 
-        Log.d(LogKeys.DEBUG, TAG+"/ update activity: " +
-                Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
-                "=" + confidence);
+//        Log.d(LogKeys.DEBUG, TAG+"/ update activity: " +
+//                Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
+//                "=" + confidence);
         tempMap.put(Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]),
                     confidence);
 //        tempList.add(new DetectedActivity(Constants.MONITORED_ACTIVITIES[i],
@@ -363,7 +363,7 @@ public class ActivityRecognitionProbe extends Base
         data.addProperty(key, tempMap.get(key));
       }
 
-      Log.d(LogKeys.DEBUG, TAG+"/ JsonObject data=" + data.toString());
+//      Log.d(LogKeys.DEBUG, TAG+"/ JsonObject data=" + data.toString());
       sendData(data);
     }
 
@@ -377,7 +377,7 @@ public class ActivityRecognitionProbe extends Base
 
       @Override
       public void onReceive(Context context, Intent intent) {
-        Log.d(LogKeys.DEBUG, TAG+"/ Received broadcast");
+//        Log.d(LogKeys.DEBUG, TAG+"/ Received broadcast");
         ArrayList<DetectedActivity> updatedActivities =
                 intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
 

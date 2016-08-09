@@ -1,36 +1,36 @@
 /**
- * 
+ *
  * Funf: Open Sensing Framework
  * Copyright (C) 2010-2011 Nadav Aharony, Wei Pan, Alex Pentland.
  * Acknowledgments: Alan Gardner
  * Contact: nadav@media.mit.edu
- * 
+ *
  * This file is part of Funf.
- * 
+ *
  * Funf is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Funf is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with Funf. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package edu.mit.media.funf.probe.builtin;
 
 import java.lang.reflect.Field;
 
 import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.renderscript.Script;
 import android.util.Log;
 
 import com.google.gson.ExclusionStrategy;
@@ -39,7 +39,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import edu.mit.media.funf.Schedule;
-import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.Probe.ContinuousProbe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
@@ -48,7 +47,6 @@ import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LocationKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
-import edu.mit.media.funf.util.NameGenerator;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
@@ -60,66 +58,41 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 @RequiredPermissions({android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION})
 @RequiredFeatures("android.hardware.location")
 @Schedule.DefaultSchedule(interval=1800)
-public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe, LocationKeys {
+public class LocationProbe extends Base implements ContinuousProbe, LocationKeys {
 
-	@Configurable
-	private boolean useGps = true;
-	
-	@Configurable
-	private boolean useNetwork = true;
-	
+//	@Configurable
+//	private boolean useGps = true;
+//
+//	@Configurable
+//	private boolean useNetwork = false;
+//
 //	@Configurable
 //	private boolean useCache = true;
-	
+
 	private Gson gson;
 	private LocationManager mLocationManager;
-	private LocationListener gpsListener = new ProbeLocationListener();
-	private LocationListener networkListener = new ProbeLocationListener();
-	private LocationListener passiveListener = new ProbeLocationListener();
+	private LocationListener locationListener = new ProbeLocationListener();
+//	private LocationListener passiveListener = new ProbeLocationListener();
 
 
-	private long checkInterval = 3;
-	private ProviderChecker providerChecker = new ProviderChecker();
+	private long checkInterval = 4;
+	private LocationChecker locationChecker = new LocationChecker();
 	private long lastTimeMillis;
 	private long lastGpsTimeMillis;
 	private long lastNetTimeMillis;
-	private boolean networkOn = false;
+	private JsonObject lastData;
+	private boolean replicateOn = false;
 
-	private class ProviderChecker implements Runnable {
+	private class LocationChecker implements Runnable {
 		@Override
 		public void run() {
 			getHandler().postDelayed(this, edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval));
 			long currentTimeMillis = System.currentTimeMillis();
 
-			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] networkOn: " + networkOn + ", curr: " + currentTimeMillis + ", last: " + lastTimeMillis + ", lastGps: " + lastGpsTimeMillis + ", lastNet: " + lastGpsTimeMillis);
-			if (useGps && useNetwork){
-				if (networkOn){
-					if (currentTimeMillis <= lastGpsTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-						// turn off network when it's sufficient with gps only.
-						mLocationManager.removeUpdates(networkListener);
-						networkOn = false;
-					} else if(currentTimeMillis > Math.max(lastTimeMillis, lastNetTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-						// even if gps and network are on, location is unknown.
-						generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastNetTimeMillis));
-					}
-				} else{
-					if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-						// turn on network when it's not sufficient with gps only.
-						mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) checkInterval, 0, networkListener);
-						networkOn = true;
-						lastNetTimeMillis = System.currentTimeMillis();
-					}
-				}
-			} else if (useNetwork){
-				if (currentTimeMillis > Math.max(lastTimeMillis, lastNetTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-					// location is unknown.
-					generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastNetTimeMillis));
-				}
-			} else if (useGps){
-				if (currentTimeMillis > Math.max(lastTimeMillis, lastGpsTimeMillis) + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-					// location is unknown.
-					generateUnknownData(currentTimeMillis, Math.max(lastTimeMillis, lastGpsTimeMillis));
-				}
+			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] replicateOn: " + replicateOn + ", curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
+			if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
+				// even if gps and network are on, location is unknown.
+				if (replicateOn) generateReplicateData(currentTimeMillis);
 			}
 		}
 
@@ -130,48 +103,48 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 
 		public void reset() {
 			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Reset");
-			networkOn = false;
+			replicateOn = false;
 		}
 	}
 
-	protected void generateUnknownData(long timeMillis, long comparedTimeMillis) {
+	protected void generateReplicateData(long timeMillis) {
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Generate unknown data!");
+
 		JsonObject data = new JsonObject();
 		data.addProperty("mAccuracy", -1);
-		data.addProperty("mAltitude", -1);
-		data.addProperty("mBearing", -1);
-		data.addProperty("mElapsedRealtimeNanos", -1);
-		data.addProperty("mExtras", "unknown");
+		data.addProperty("mAltitude", lastData.get("mAltitude").getAsFloat());
+		data.addProperty("mBearing", lastData.get("mBearing").getAsFloat());
+		data.addProperty("mElapsedRealtimeNanos", lastData.get("mElapsedRealtimeNanos").getAsLong());
+		data.addProperty("mExtras", "replicate");
 		data.addProperty("mHasAccuracy", false);
-		data.addProperty("mHasAltitude", false);
-		data.addProperty("mHasBearing", false);
-		data.addProperty("mHasSpeed", false);
-		data.addProperty("mIsFromMockProvider", false);
-		data.addProperty("mLatitude", -1);
-		data.addProperty("mLongitude", -1);
-		data.addProperty("mProvider", -1);
-		data.addProperty("mSpeed", -1);
-		data.addProperty("mTime", -1);
+		data.addProperty("mHasAltitude", lastData.get("mHasAltitude").getAsBoolean());
+		data.addProperty("mHasBearing", lastData.get("mHasBearing").getAsBoolean());
+		data.addProperty("mHasSpeed", lastData.get("mHasSpeed").getAsBoolean());
+		data.addProperty("mIsFromMockProvider", lastData.get("mIsFromMockProvider").getAsBoolean());
+		data.addProperty("mLatitude", lastData.get("mLatitude").getAsFloat());
+		data.addProperty("mLongitude", lastData.get("mLongitude").getAsFloat());
+		data.addProperty("mProvider", lastData.get("mProvider").getAsString());
+		data.addProperty("mSpeed", lastData.get("mSpeed").getAsFloat());
+		data.addProperty("mTime", lastData.get("mTime").getAsLong());
 		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-		data.addProperty("rep", true);
 
 		// check one more time
-		if (timeMillis > comparedTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
+		if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
 			sendData(data);
 		}
 	}
 
-	
+
 	@Override
 	protected void onEnable() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onEnable()");
 		super.onEnable();
 		gson = getGsonBuilder().addSerializationExclusionStrategy(new LocationExclusionStrategy()).create();
 		mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-		String passiveProvider = getPassiveProvider();
-		if (passiveProvider != null) {
-			mLocationManager.requestLocationUpdates(getPassiveProvider(), 0, 0, passiveListener);
-		}
+//		String passiveProvider = getPassiveProvider();
+//		if (passiveProvider != null) {
+//			mLocationManager.requestLocationUpdates(getPassiveProvider(), 0, 0, passiveListener);
+//		}
 	}
 
 	@Override
@@ -179,48 +152,45 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 		super.onStart();
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart()");
 		lastTimeMillis = System.currentTimeMillis();
-		if (useGps) {
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0, gpsListener);
-			lastGpsTimeMillis = lastTimeMillis;
-		}
-		else if (useNetwork) {
-			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0, gpsListener);
-			lastNetTimeMillis = lastTimeMillis;
-		}
-//		if (useCache) {
-//			gpsListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-//			gpsListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0f, locationListener);
+		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0f, locationListener);
+//		if (useGps) {
+//			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0.5f, locationListener);
+//			lastGpsTimeMillis = lastTimeMillis;
 //		}
-		else{
-			stop();
-		}
-		getHandler().post(providerChecker);
+//		if (useNetwork) {
+//			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0.5f, locationListener);
+//			lastNetTimeMillis = lastTimeMillis;
+//		}
+//		if (useCache) {
+//			locationListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+//			locationListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+//		}
+//		if(!useGps && !useNetwork){
+//			stop();
+//		}
+		getHandler().post(locationChecker);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStop()");
-		if (useGps){
-			mLocationManager.removeUpdates(gpsListener);
-			if (useNetwork && networkOn) mLocationManager.removeUpdates(networkListener);
-		} else{
-			if (useNetwork) mLocationManager.removeUpdates(networkListener);
-		}
+		mLocationManager.removeUpdates(locationListener);
 		onPause();
 	}
 
 	protected void onPause() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onPause()");
-		getHandler().removeCallbacks(providerChecker);
-		providerChecker.endCurrentTask();
+		getHandler().removeCallbacks(locationChecker);
+		locationChecker.endCurrentTask();
 	}
 
 	@Override
 	protected void onDisable() {
 		super.onDisable();
 		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onDisable()");
-		mLocationManager.removeUpdates(passiveListener);
+//		mLocationManager.removeUpdates(passiveListener);
 	}
 
 	private class ProbeLocationListener implements LocationListener{
@@ -238,11 +208,21 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 //				}
 				JsonObject data = gson.toJsonTree(location).getAsJsonObject();
 				lastTimeMillis = data.get("mTime").getAsLong();
-				if (provider.equals(LocationManager.GPS_PROVIDER)) lastGpsTimeMillis = lastTimeMillis;
-				if (provider.equals(LocationManager.NETWORK_PROVIDER)) lastNetTimeMillis = lastTimeMillis;
+				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + lastTimeMillis);
+				if (provider.equals(LocationManager.GPS_PROVIDER)){
+					lastGpsTimeMillis = lastTimeMillis;
+					Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] lastGps updated: " + lastGpsTimeMillis);
+				}
+				if (provider.equals(LocationManager.NETWORK_PROVIDER) && (lastTimeMillis > lastGpsTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2))){
+					// write location given by network provider, when no location is given by gps provider for a long time.
+					lastNetTimeMillis = lastTimeMillis;
+					Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] lastNet updated: " + lastNetTimeMillis);
+				}
 				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
 				sendData(gson.toJsonTree(location).getAsJsonObject());
-				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + lastTimeMillis);
+				lastData = data;
+				replicateOn = true;
+//				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] data sended: " + lastNetTimeMillis);
 			}
 		}
 
@@ -257,9 +237,9 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 		@Override
 		public void onProviderDisabled(String provider) {
 		}
-		
+
 	}
-	
+
     public class LocationExclusionStrategy implements ExclusionStrategy {
 
         public boolean shouldSkipClass(Class<?> cls) {
@@ -268,20 +248,20 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 
         public boolean shouldSkipField(FieldAttributes f) {
         	String name = f.getName();
-            return (f.getDeclaringClass() == Location.class && 
-            			(name.equals("mResults") 
-            				|| name.equals("mDistance") 
-            				|| name.equals("mInitialBearing") 
-            				|| name.equals("mLat1") 
-            				|| name.equals("mLat2") 
-            				|| name.equals("mLon1") 
-            				|| name.equals("mLon2") 
-            				|| name.equals("mLon2") 
+            return (f.getDeclaringClass() == Location.class &&
+            			(name.equals("mResults")
+            				|| name.equals("mDistance")
+            				|| name.equals("mInitialBearing")
+            				|| name.equals("mLat1")
+            				|| name.equals("mLat2")
+            				|| name.equals("mLon1")
+            				|| name.equals("mLon2")
+            				|| name.equals("mLon2")
             				)
             		);
         }
     }
-	
+
 	/**
 	 * Supporting API level 7 which does not have PASSIVE provider
 	 * @return
@@ -297,5 +277,5 @@ public class LocationProbe extends Base implements ContinuousProbe, PassiveProbe
 		}
 		return null;
 	}
-	
+
 }

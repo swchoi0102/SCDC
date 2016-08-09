@@ -78,7 +78,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 			if (lastValues != null && replicateOn){
 				if (currentTimeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)){
 //					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-					replicateData(lastValues, currentTimeMillis, lastAccuracy);
+					replicateData(lastValues, currentTimeMillis);
 				}
 			}
 		}
@@ -95,12 +95,12 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 		}
 	}
 
-	protected void replicateData(float[] vArr, long timeMillis, int acc) {
+	protected void replicateData(float[] vArr, long timeMillis) {
 //		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
 		JsonObject data = new JsonObject();
 		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
-		data.addProperty(ACCURACY, acc);
-		data.addProperty("rep", true);
+		data.addProperty(ACCURACY, 0);
+//		data.addProperty("rep", true);
 		final String[] valueNames = getValueNames();
 
 		for (int i = 0; i < vArr.length; i++) {

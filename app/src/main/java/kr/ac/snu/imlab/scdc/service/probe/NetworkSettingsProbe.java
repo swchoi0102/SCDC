@@ -68,7 +68,7 @@ public class NetworkSettingsProbe extends Probe.Base implements Probe.Continuous
         data.addProperty(SCDCKeys.NetworkSettingsKeys.MOBILE_DATA_ON, mdm);
         data.addProperty(SCDCKeys.NetworkSettingsKeys.WIFI_ON, wm);
         data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-        data.addProperty("rep", true);
+//        data.addProperty("rep", true);
 
         // check one more time
         if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
