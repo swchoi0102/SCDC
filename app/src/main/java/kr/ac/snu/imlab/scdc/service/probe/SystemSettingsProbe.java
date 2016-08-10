@@ -38,7 +38,6 @@ public class SystemSettingsProbe extends InsensitiveProbe implements Probe.Conti
         Log.d(SCDCKeys.LogKeys.DEB, "[SystemSettingsProbe] onStart");
         initializeSystemSettings();
         registerContentObserver();
-//        onContinue();
     }
 
     @Override
