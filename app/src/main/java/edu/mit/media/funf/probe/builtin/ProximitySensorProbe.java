@@ -24,10 +24,13 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ProximitySensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 
 /**
@@ -50,8 +53,15 @@ public class ProximitySensorProbe extends SensorProbe implements ProximitySensor
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ProximitySensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ProximitySensorProbe] onStop");
+		super.onStop();
+	}
 }

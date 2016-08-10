@@ -30,6 +30,7 @@ import android.Manifest;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore.Images;
+import android.util.Log;
 
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
@@ -40,6 +41,18 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @DisplayName("Image File Stats Probe")
 @Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class ImageMediaProbe extends DatedContentProviderProbe {
+
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ImageMediaProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ImageMediaProbe] onStop");
+		super.onStop();
+	}
 
 	@Override
 	protected Uri getContentProviderUri() {

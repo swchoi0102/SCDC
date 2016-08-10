@@ -44,6 +44,7 @@ import edu.mit.media.funf.probe.Probe.RequiredProbes;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LocationKeys;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Filters the verbose location set for the most accurate location within a max wait time,
@@ -155,8 +156,8 @@ public class SimpleLocationProbe extends Base implements PassiveProbe, LocationK
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[SimpleLocationProbe] onStart");
 		super.onStart();
-		Log.d(LogUtil.TAG, "SimpleLocationProbe starting, registering listener");
 		startTime = TimeUtil.getTimestamp();
 		locationProbe.registerListener(listener);
 		getHandler().sendMessageDelayed(getHandler().obtainMessage(STOP_MESSAGE), TimeUtil.secondsToMillis(maxWaitTime));
@@ -165,7 +166,7 @@ public class SimpleLocationProbe extends Base implements PassiveProbe, LocationK
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d(LogUtil.TAG, "SimpleLocationProbe stopping");
+		Log.d(SCDCKeys.LogKeys.DEB, "[SimpleLocationProbe] onStop");
 		getHandler().removeMessages(STOP_MESSAGE);
 		locationProbe.unregisterListener(listener);
 		sendCurrentBestLocation();

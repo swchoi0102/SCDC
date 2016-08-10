@@ -4,6 +4,7 @@ import android.Manifest;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -34,13 +35,14 @@ public class NetworkSettingsProbe extends InsensitiveProbe implements Probe.Cont
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkSettingsProbe] onStart");
         initializeNetworkSettings();
         registerContentObserver();
     }
 
     @Override
     protected void onStop() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkSettingsProbe] onStop");
         super.onStop();
         unregisterContentObserver();
     }
@@ -51,6 +53,7 @@ public class NetworkSettingsProbe extends InsensitiveProbe implements Probe.Cont
 
     @Override
     protected JsonObject getCurrData() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkSettingsProbe] getCurrData");
         JsonObject currentNetworkSettings = new JsonObject();
 
         currentNetworkSettings.addProperty(SCDCKeys.NetworkSettingsKeys.AIR_PLANE_MODE_ON, getCurrentValue(Settings.Global.AIRPLANE_MODE_ON));

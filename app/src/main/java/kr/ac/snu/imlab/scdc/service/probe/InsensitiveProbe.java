@@ -39,9 +39,9 @@ public abstract class InsensitiveProbe extends Probe.Base {
             BigDecimal duration =
                     DecimalTimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()).subtract(
                             lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal());
-            Log.d(SCDCKeys.LogKeys.DEB, "[InsensitiveProbe] sendLastData!, " + duration);
             lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration.floatValue());
             sendData(lastData);
+            Log.d(SCDCKeys.LogKeys.DEB, "[InsensitiveProbe] sendLastData!, " + duration);
         }
     }
 

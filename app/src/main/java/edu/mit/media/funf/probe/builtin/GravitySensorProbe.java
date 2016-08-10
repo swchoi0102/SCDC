@@ -44,9 +44,12 @@
  */
 package edu.mit.media.funf.probe.builtin;
 
+import android.util.Log;
+
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.GravitySensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * A three dimensional vector indicating the direction and magnitude of gravity. Units are m/s^2. The coordinate system is the same as is used by the acceleration sensor.
@@ -69,8 +72,15 @@ public class GravitySensorProbe extends SensorProbe implements GravitySensorKeys
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[GravitySensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[GravitySensorProbe] onStop");
+		super.onStop();
+	}
 }

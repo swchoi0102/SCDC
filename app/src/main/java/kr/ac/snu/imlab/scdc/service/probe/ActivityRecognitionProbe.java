@@ -31,6 +31,7 @@ import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.service.ar.Constants;
 import kr.ac.snu.imlab.scdc.service.ar.DetectedActivitiesIntentService;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.AlertKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.ActivityRecognitionKeys;
@@ -121,11 +122,13 @@ public class ActivityRecognitionProbe extends Base
 
     @Override
     protected void onStart() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[ActivityRecognitionProbe] onStart");
         super.onStart();
     }
 
     @Override
     protected void onStop() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[ActivityRecognitionProbe] onStop");
         super.onStop();
     }
 

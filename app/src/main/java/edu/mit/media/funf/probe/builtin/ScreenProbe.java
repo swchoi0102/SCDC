@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -122,6 +123,7 @@ public class ScreenProbe extends Base implements ContinuousProbe, ScreenKeys  {
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] onStart");
 		super.onStart();
 		initializeScreenStatus();
 
@@ -138,7 +140,8 @@ public class ScreenProbe extends Base implements ContinuousProbe, ScreenKeys  {
 
 	@Override
 	protected void onStop() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
+		Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] onStop");
+		super.onStop();
 		getContext().unregisterReceiver(screenReceiver);
 		onPause();
 	}

@@ -30,6 +30,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.CallLog.Calls;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.PhoneNumberCell;
@@ -39,6 +41,18 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @Schedule.DefaultSchedule(interval=36000)
 @RequiredPermissions({android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_CALL_LOG})
 public class CallLogProbe extends DatedContentProviderProbe {
+
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[CallLogProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[CallLogProbe] onStop");
+		super.onStop();
+	}
 
 	@Override
 	protected Uri getContentProviderUri() {

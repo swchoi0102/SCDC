@@ -42,6 +42,7 @@ import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.time.TimeUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @DisplayName("Nearby Bluetooth Devices Probe")
 @Schedule.DefaultSchedule(interval=300)
@@ -102,6 +103,7 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[BluetoothProbe] onStart");
 		super.onStart();
 		startDiscovery();
 		if (maxScanTime != null) {
@@ -111,6 +113,7 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 
 	@Override
 	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[BluetoothProbe] onStop");
 		super.onStop();
 		getHandler().removeMessages(STOP_MESSAGE);
 		try { 

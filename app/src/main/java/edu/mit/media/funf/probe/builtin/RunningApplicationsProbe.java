@@ -52,6 +52,7 @@ import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.RunningApplicationsKeys;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @DisplayName("Running Applications")
 @Description("Emits the applications the user is running using a polling method.")
@@ -149,6 +150,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[RunningApplicationsProbe] onStart");
 		super.onStart();
 //		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onStart");
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).registerListener(screenListener);
@@ -184,6 +186,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 
 	@Override
 	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[RunningApplicationsProbe] onStop");
 		super.onStop();
 		onPause();
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).unregisterListener(screenListener);

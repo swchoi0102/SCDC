@@ -24,9 +24,12 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.TemperatureSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Used to record temperature.  Implementation depends on the device and does not exist on all devices.  
@@ -48,8 +51,15 @@ public class TemperatureSensorProbe extends SensorProbe implements TemperatureSe
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[TemperatureSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[TemperatureSensorProbe] onStop");
+		super.onStop();
+	}
 }

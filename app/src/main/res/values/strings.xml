@@ -33,12 +33,17 @@
             "@schedule": { "interval": 86400 }
         },
         "data": [
+            {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+            },
+
             {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
             },
             {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
             },
+
             {"@type": "kr.ac.snu.imlab.scdc.service.probe.SystemSettingsProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
             },

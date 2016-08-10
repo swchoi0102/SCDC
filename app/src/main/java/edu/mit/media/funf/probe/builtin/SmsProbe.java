@@ -28,6 +28,8 @@ import java.util.Map;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
@@ -44,6 +46,18 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @DisplayName("SMS Log Probe")
 @RequiredPermissions(android.Manifest.permission.READ_SMS)
 public class SmsProbe extends DatedContentProviderProbe implements SmsKeys {
+
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[SmsProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[SmsProbe] onStop");
+		super.onStop();
+	}
 
 	@Override
 	protected Uri getContentProviderUri() {

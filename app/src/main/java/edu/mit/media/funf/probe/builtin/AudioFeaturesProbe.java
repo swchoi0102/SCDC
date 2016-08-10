@@ -28,6 +28,7 @@ import java.util.Arrays;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -40,6 +41,7 @@ import edu.mit.media.funf.probe.Probe.ContinuousProbe;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.AudioFeaturesKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * @author Max Little and Alan Gardner
@@ -80,6 +82,7 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AudioFeaturesProbe] onStart");
 		super.onStart();
 		
 
@@ -126,6 +129,7 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 
 	@Override
 	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AudioFeaturesProbe] onStop");
 		super.onStop();
 		audioRecorder.stop();
         audioRecorder.release();
@@ -148,9 +152,10 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 	    	readAudioSamples = audioRecorder.read(data16bit, 0, bufferSamples);
 	    	double currentSecs = (double)(System.currentTimeMillis())/1000.0d;
 	    	double diffSecs = currentSecs - prevSecs;
-	    	prevSecs = currentSecs;
-	    	
+
 	    	JsonObject data = new JsonObject();
+			data.addProperty(AudioFeaturesKeys.TIMESTAMP, prevSecs);
+			prevSecs = currentSecs;
 	    	if (readAudioSamples > 0)
 	    	{
 	    		double fN = (double)readAudioSamples;

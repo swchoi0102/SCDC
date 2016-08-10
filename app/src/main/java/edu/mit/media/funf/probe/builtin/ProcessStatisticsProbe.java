@@ -48,6 +48,7 @@ import com.google.gson.JsonObject;
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Reads various information from the /proc file system. 
@@ -68,6 +69,7 @@ public class ProcessStatisticsProbe extends Base {
     
     @Override
     protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ProcessStatisticsProbe] onStart");
     	ActivityManager am = (ActivityManager)getContext().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
 		ArrayList<RunningAppProcessInfo> runningProcesses = new ArrayList<RunningAppProcessInfo>(am.getRunningAppProcesses());
 		final int numProcesses = runningProcesses.size();
@@ -89,6 +91,12 @@ public class ProcessStatisticsProbe extends Base {
 		sendData(data);
 		stop();
     }
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ProcessStatisticsProbe] onStop");
+		super.onStop();
+	}
 	
     public Bundle getMemInfo()
     {

@@ -72,6 +72,18 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 	private VersionMap dataIdToVersion = new VersionMap();
 
 	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ContactProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ContactProbe] onStop");
+		super.onStop();
+	}
+
+	@Override
 	protected Cursor getCursor(String[] projection) {
 		return getContext().getContentResolver().query(
 				ContactsContract.Data.CONTENT_URI,

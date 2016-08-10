@@ -29,12 +29,14 @@ import java.util.List;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ServicesKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 public class ServicesProbe extends Base implements ServicesKeys {
 
@@ -47,6 +49,7 @@ public class ServicesProbe extends Base implements ServicesKeys {
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ServicesProbe] onStart");
 		super.onStart();
 		Gson gson = getGson();
 		ActivityManager am = (ActivityManager)getContext().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -59,5 +62,10 @@ public class ServicesProbe extends Base implements ServicesKeys {
 		}
 		stop();
 	}
-	
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ServicesProbe] onStop");
+		super.onStop();
+	}
 }

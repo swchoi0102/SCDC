@@ -47,6 +47,7 @@ import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Schedule.DefaultSchedule(interval=300)
 @RequiredPermissions({Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE})
@@ -126,6 +127,7 @@ public class WifiProbe extends Base {
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[WifiProbe] onStart");
 		super.onStart();
 		acquireWifiLock();
 		saveWifiStateAndRunScan();
@@ -133,6 +135,7 @@ public class WifiProbe extends Base {
 
 	@Override
 	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[WifiProbe] onStop");
 		super.onStop();
 		releaseWifiLock();
 		loadPreviousWifiState();

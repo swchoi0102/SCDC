@@ -27,10 +27,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Schedule.DefaultSchedule(interval=300)
 @RequiredPermissions(android.Manifest.permission.BATTERY_STATS)
@@ -48,12 +51,14 @@ public class BatteryProbe extends Base implements PassiveProbe {
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[BatteryProbe] onStart");
 		super.onStart();
 		getContext().registerReceiver(receiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
 	@Override
 	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[BatteryProbe] onStop");
 		super.onStop();
 		getContext().unregisterReceiver(receiver);
 	}

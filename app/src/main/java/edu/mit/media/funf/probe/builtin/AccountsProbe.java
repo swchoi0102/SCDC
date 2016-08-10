@@ -28,6 +28,7 @@ import java.lang.reflect.Type;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -61,6 +62,9 @@ public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
 
 	@Override
 	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AccountsProbe] onStart");
+		super.onStart();
+
 		long currentTime = System.currentTimeMillis();
 		long lastSavedTime = getLastSavedTime();
 
@@ -73,6 +77,12 @@ public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
 			setLastSavedTime(currentTime);
 		}
 		disable();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AccountsProbe] onStop");
+		super.onStop();
 	}
 
 	protected void setLastSavedTime(long lastSavedTime) {

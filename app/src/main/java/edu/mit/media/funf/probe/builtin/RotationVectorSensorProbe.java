@@ -23,10 +23,13 @@
  */
 package edu.mit.media.funf.probe.builtin;
 
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.RotationVectorSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Description("Returns sensor distance in centimeters or only a binary near/far measurement.")
 @RequiredFeatures("android.hardware.sensor.gyroscope")
@@ -43,8 +46,15 @@ public class RotationVectorSensorProbe extends SensorProbe implements RotationVe
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[RotationVectorSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[RotationVectorSensorProbe] onStop");
+		super.onStop();
+	}
 }

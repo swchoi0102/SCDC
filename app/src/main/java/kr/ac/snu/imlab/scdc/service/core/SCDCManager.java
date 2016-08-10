@@ -73,6 +73,7 @@ import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.StringUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
+import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 /**
@@ -139,7 +140,7 @@ public class SCDCManager extends FunfManager {
   @Override
   public void onCreate() {
     // super.onCreate();
-    Log.d(LogKeys.DEBUG, "SCDCManager.onCreate(): entering onCreate()");
+//    Log.d(LogKeys.DEBUG, "SCDCManager.onCreate(): entering onCreate()");
     Log.d(SCDCKeys.LogKeys.DEB, TAG+".onCreate()");
     this.parser = new JsonParser();
     this.scheduler = new Scheduler();
@@ -167,8 +168,8 @@ public class SCDCManager extends FunfManager {
       return;
     }
     Set<String> pipelineNames = new HashSet<String>();
-    Log.d(LogKeys.DEBUG, "SCDCManager.reload(): prefs=" + prefs.getAll().toString());
-    Log.d(SCDCKeys.LogKeys.DEB, TAG+".reload()");
+//    Log.d(LogKeys.DEBUG, "SCDCManager.reload(): prefs=" + prefs.getAll().toString());
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".reload(): prefs=" + prefs.getAll().toString());
     pipelineNames.addAll(prefs.getAll().keySet());
     pipelineNames.remove(DISABLED_PIPELINE_LIST);
     Bundle metadata = getMetadata();
@@ -195,8 +196,8 @@ public class SCDCManager extends FunfManager {
     } else if (metadata.containsKey(name)) {
       pipelineConfig = metadata.getString(name);
     }
-    Log.d(SCDCKeys.LogKeys.DEB, TAG+".reload(pipeline)");
-    Log.d(LogKeys.DEBUG, "SCDCManager.reload(): pipelineConfig=" + pipelineConfig);
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".reload(pipeline): pipelineConfig=" + pipelineConfig);
+//    Log.d(LogKeys.DEBUG, "SCDCManager.reload(): pipelineConfig=" + pipelineConfig);
     if (disabledPipelineNames.contains(name)) {
       // Disabled, so don't load any config
       Pipeline disabledPipeline = gson.fromJson(pipelineConfig, Pipeline.class);
@@ -293,8 +294,8 @@ public class SCDCManager extends FunfManager {
               String currProbeConfig = probeConfig.toString();
               int currExpId = spHandler.getExpId(currProbeConfig);
               spHandler.setExpId(currProbeConfig, currExpId+1);
-              Log.d(LogKeys.DEBUG, "SCDCManager.onStartCommand(): probeConfig=" + probeConfig.toString() +
-                      ", probeAction=" + probeAction + ", currExpId=" + spHandler.getExpId(currProbeConfig));
+//              Log.d(LogKeys.DEBUG, "SCDCManager.onStartCommand(): probeConfig=" + probeConfig.toString() +
+//                      ", probeAction=" + probeAction + ", currExpId=" + spHandler.getExpId(currProbeConfig));
 
 //              // FIXME: Request GC once
 //              Log.d(LogKeys.DEBUG, "SCDCManager.onStartCommand(): request GC");
@@ -322,7 +323,7 @@ public class SCDCManager extends FunfManager {
                 probe.registerListener(listenerArray);
               }
 
-              Log.d(LogKeys.DEBUG, "Request: " + probe.getClass().getName());
+//              Log.d(LogKeys.DEBUG, "Request: " + probe.getClass().getName());
 
               // Schedule unregister if continuous
               // TODO: do different durations for each schedule
@@ -330,11 +331,15 @@ public class SCDCManager extends FunfManager {
                 Schedule mergedSchedule = getMergedSchedule(infoForListenersThatNeedData);
                 if (mergedSchedule != null) {
                   long duration = TimeUtil.secondsToMillis(mergedSchedule.getDuration());
-                  Log.d(LogKeys.DEBUG, "DURATION: " + duration);
+//                  Log.d(LogKeys.DEBUG, "DURATION: " + duration);
                   if (duration > 0) {
                     handler.postDelayed(new Runnable() {
                       @Override
                       public void run() {
+                        if (probe instanceof InsensitiveProbe) {
+                          Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_REGISTER: call sendLastData()");
+                          ((InsensitiveProbe) probe).sendLastData();
+                        }
                         ((ContinuousProbe) probe).unregisterListener(listenerArray);
                       }
                     }, TimeUtil.secondsToMillis(mergedSchedule.getDuration()));
@@ -344,6 +349,10 @@ public class SCDCManager extends FunfManager {
             }
           } else if (PROBE_ACTION_UNREGISTER.equals(probeAction) && probe instanceof ContinuousProbe) {
             for (DataRequestInfo requestInfo : requests) {
+              if (probe instanceof InsensitiveProbe) {
+                Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_UNREGISTER: call sendLastData()");
+                ((InsensitiveProbe) probe).sendLastData();
+              }
               ((ContinuousProbe)probe).unregisterListener(requestInfo.listener);
             }
           } else if (PROBE_ACTION_REGISTER_PASSIVE.equals(probeAction) && probe instanceof PassiveProbe) {
@@ -475,7 +484,7 @@ public class SCDCManager extends FunfManager {
 
   public void registerPipeline(String name, Pipeline pipeline) {
     synchronized (pipelines) {
-      Log.d(LogKeys.DEBUG, "Registering pipeline: " + name);
+//      Log.d(LogKeys.DEBUG, "Registering pipeline: " + name);
       unregisterPipeline(name);
       pipelines.put(name, pipeline);
       pipeline.onCreate(this);
@@ -522,6 +531,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void requestData(DataListener listener, JsonElement probeConfig) {
+    Log.d(SCDCKeys.LogKeys.DEB, "requestData");
     requestData(listener, (JsonElement)probeConfig, null);
   }
 
@@ -572,6 +582,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void unrequestData(DataListener listener, JsonElement probeConfig) {
+    Log.d(SCDCKeys.LogKeys.DEB, "unrequestData");
     Probe probe = gson.fromJson(probeConfig, Probe.class);
     IJsonObject completeProbeConfig = (IJsonObject)JsonUtils.immutable(gson.toJsonTree(probe));  // Make sure probe config is complete and consistent
     unrequestData(listener, completeProbeConfig);

@@ -24,8 +24,11 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.PressureSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Description("Records a three dimensional vector of the magnetic field.")
 //@RequiredFeatures("android.hardware.sensor.barometer") // varies
@@ -41,8 +44,16 @@ public class PressureSensorProbe extends SensorProbe implements PressureSensorKe
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[PressureSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[PressureSensorProbe] onStop");
+		super.onStop();
+	}
+
 }

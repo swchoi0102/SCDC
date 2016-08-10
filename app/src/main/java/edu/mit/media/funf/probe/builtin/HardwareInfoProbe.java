@@ -30,6 +30,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.HardwareInfoKeys;
@@ -42,6 +44,7 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[HardwareInfoProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
@@ -52,6 +55,12 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 			setLastSavedTime(currentTime);
 		}
 		stop();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[HardwareInfoProbe] onStop");
+		super.onStop();
 	}
 
 	

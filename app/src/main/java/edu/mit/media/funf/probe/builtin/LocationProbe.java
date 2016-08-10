@@ -154,8 +154,8 @@ public class LocationProbe extends Base implements ContinuousProbe, LocationKeys
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart");
 		super.onStart();
-		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart()");
 		lastTimeMillis = System.currentTimeMillis();
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0f, locationListener);
 		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0f, locationListener);

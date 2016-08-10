@@ -86,6 +86,7 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 	
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ApplicationsProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
@@ -108,6 +109,13 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 //		stop();
 		disable();
 	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[ApplicationsProbe] onStop");
+		super.onStop();
+	}
+
 
 //	@Override
 //	protected void onDisable() {

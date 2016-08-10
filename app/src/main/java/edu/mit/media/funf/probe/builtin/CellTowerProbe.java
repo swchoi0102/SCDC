@@ -29,11 +29,14 @@ import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
+
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.CellKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @DisplayName("Nearby Cellular Towers Probe")
 @RequiredFeatures("android.hardware.telephony")
@@ -42,9 +45,16 @@ public class CellTowerProbe extends Base implements CellKeys {
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStart");
 		super.onStart();
 		sendData(getGson().toJsonTree(getData()).getAsJsonObject());
 		stop();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStop");
+		super.onStop();
 	}
 	
 	private Bundle getData() {

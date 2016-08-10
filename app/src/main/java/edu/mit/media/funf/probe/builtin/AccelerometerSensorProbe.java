@@ -24,9 +24,12 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.AccelerometerSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @RequiredFeatures("android.hardware.sensor.accelerometer")
 public class AccelerometerSensorProbe extends SensorProbe implements PassiveProbe, AccelerometerSensorKeys {
@@ -43,8 +46,15 @@ public class AccelerometerSensorProbe extends SensorProbe implements PassiveProb
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AccelerometerSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AccelerometerSensorProbe] onStop");
+		super.onStop();
+	}
 }

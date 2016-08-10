@@ -24,9 +24,12 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LightSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Schedule.DefaultSchedule(interval=300, duration=SensorProbe.DEFAULT_DURATION)
 @RequiredFeatures("android.hardware.sensor.light")
@@ -41,8 +44,15 @@ public class LightSensorProbe extends SensorProbe implements LightSensorKeys {
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LightSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LightSensorProbe] onStop");
+		super.onStop();
+	}
 }

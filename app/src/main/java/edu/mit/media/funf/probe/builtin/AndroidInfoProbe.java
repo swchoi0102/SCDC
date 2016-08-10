@@ -25,6 +25,7 @@ package edu.mit.media.funf.probe.builtin;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -36,6 +37,7 @@ public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AndroidInfoProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
@@ -55,6 +57,12 @@ public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 			setLastSavedTime(currentTime);
 		}
 		stop();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[AndroidInfoProbe] onStop");
+		super.onStop();
 	}
 
 	protected void setLastSavedTime(long lastSavedTime) {

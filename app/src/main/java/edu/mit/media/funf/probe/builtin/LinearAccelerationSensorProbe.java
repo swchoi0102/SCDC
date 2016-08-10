@@ -23,9 +23,12 @@
  */
 package edu.mit.media.funf.probe.builtin;
 
+import android.util.Log;
+
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LinearAccelerationSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Records a three dimensional vector indicating acceleration along each device axis, not including gravity. All values have units of m/s^2. The coordinate system is the same as is used by the acceleration sensor.  
@@ -49,8 +52,15 @@ public class LinearAccelerationSensorProbe extends SensorProbe implements Linear
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LinearAccelerationSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[LinearAccelerationSensorProbe] onStop");
+		super.onStop();
+	}
 }

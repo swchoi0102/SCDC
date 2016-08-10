@@ -25,6 +25,7 @@ package edu.mit.media.funf.probe.builtin;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -34,6 +35,7 @@ import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.TelephonyKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @RequiredPermissions(android.Manifest.permission.READ_PHONE_STATE)
 @RequiredFeatures("android.hardware.telephony")
@@ -43,6 +45,7 @@ public class TelephonyProbe extends ImpulseProbe implements TelephonyKeys {
 
 	@Override
 	protected void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[TelephonyProbe] onStart");
 		super.onStart();
 		TelephonyManager telephony = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
 		JsonObject data = new JsonObject();
@@ -68,6 +71,10 @@ public class TelephonyProbe extends ImpulseProbe implements TelephonyKeys {
 		stop();
 	}
 
-	
-	
+
+	@Override
+	protected void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[TelephonyProbe] onStop");
+		super.onStop();
+	}
 }

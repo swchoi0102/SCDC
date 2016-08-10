@@ -30,6 +30,8 @@ import android.Manifest;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore.Video;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
@@ -41,6 +43,18 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @Schedule.DefaultSchedule(interval=604800)
 @Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class VideoMediaProbe extends DatedContentProviderProbe {
+
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[VideoMediaProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[VideoMediaProbe] onStop");
+		super.onStop();
+	}
 
 	@Override
 	protected Uri getContentProviderUri() {

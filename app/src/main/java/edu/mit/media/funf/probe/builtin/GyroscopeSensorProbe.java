@@ -24,10 +24,13 @@
 package edu.mit.media.funf.probe.builtin;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.GyroscopeSensorKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Measures angular speed around each axis.
@@ -54,8 +57,15 @@ public class GyroscopeSensorProbe extends SensorProbe implements GyroscopeSensor
 		};
 	}
 
-//	@Override
-//	public void sendLastData() {
-//
-//	}
+	@Override
+	public void onStart() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[GyroscopeSensorProbe] onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[GyroscopeSensorProbe] onStop");
+		super.onStop();
+	}
 }

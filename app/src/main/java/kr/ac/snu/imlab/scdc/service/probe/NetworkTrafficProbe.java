@@ -64,24 +64,24 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
 
     @Override
     protected void onEnable() {
-        Log.i(TAG, "NetworkTrafficProbe onEnable");
+//        Log.i(TAG, "NetworkTrafficProbe onEnable");
         super.onEnable();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "NetworkTrafficProbe onStart");
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] onStart");
         onContinue();
     }
 
     protected void onContinue() {
-        Log.d(LogUtil.TAG, "NetworkTrafficProbe onContinue");
+//        Log.d(LogUtil.TAG, "NetworkTrafficProbe onContinue");
         getHandler().post(trafficChecker);
     }
 
     protected void onPause() {
-        Log.d(LogUtil.TAG, "NetworkTrafficProbe onPause");
+//        Log.d(LogUtil.TAG, "NetworkTrafficProbe onPause");
         getHandler().removeCallbacks(trafficChecker);
         trafficChecker.endCurrentTask();
     }
@@ -191,13 +191,14 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
 
     @Override
     protected void onStop() {
-        Log.i(TAG, "NetworkTrafficProbe onStop");
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] onStop");
         onPause();
+        super.onStop();
     }
 
     @Override
     protected void onDisable() {
-        Log.i(TAG, "NetworkTrafficProbe onDisable");
+//        Log.i(TAG, "NetworkTrafficProbe onDisable");
         trafficChecker.reset();
     }
 
@@ -208,6 +209,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
             if (DecimalTimeUnit.MILLISECONDS.toSeconds(currTime).longValue() > lastTimestamp.longValue() + 5) {
                 trafficStatsCurrent = snapTrafficStatsCurrent();
                 sendTraffic(trafficDataList());
+                Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] sendLastData!");
             }
         }
     }
