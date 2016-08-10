@@ -83,10 +83,10 @@ public class LocationProbe extends Base implements ContinuousProbe, LocationKeys
 	private JsonObject lastData;
 	private boolean replicateOn = false;
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 
 	private class LocationChecker implements Runnable {
 		@Override

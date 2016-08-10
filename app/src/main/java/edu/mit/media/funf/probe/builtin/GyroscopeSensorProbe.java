@@ -54,8 +54,8 @@ public class GyroscopeSensorProbe extends SensorProbe implements GyroscopeSensor
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

@@ -41,6 +41,12 @@
             },
             {"@type": "kr.ac.snu.imlab.scdc.service.probe.SystemSettingsProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+            },
+            {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkSettingsProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+            },
+            {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkTrafficProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
             }
         ]
     }

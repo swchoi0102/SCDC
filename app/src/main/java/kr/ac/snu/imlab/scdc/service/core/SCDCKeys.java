@@ -170,6 +170,10 @@ public class SCDCKeys {
       DEBUG = "DEBUG"              ;
   }
 
+  public interface InsensitiveKeys {
+    String DURATION = "value_duration";
+  }
+
   public interface SystemSettingsKeys {
 
     String SCREEN_BRIGHTNESS = "screenBrightness";
@@ -180,7 +184,6 @@ public class SCDCKeys {
     String VOLUME_RING = "volumeRing";
     String VOLUME_SYSTEM = "volumeSystem";
     String VOLUME_VOICE = "volumeVoice";
-    String DURATION = "duration";
   }
 
   public interface NetworkSettingsKeys {
@@ -224,6 +227,5 @@ public class SCDCKeys {
 
     public static final String RECEIVED = "received";
     public static final String TRANSMITTED = "transmitted";
-    public static final String DIFF_SECS = "diffSecs";
   }
 }

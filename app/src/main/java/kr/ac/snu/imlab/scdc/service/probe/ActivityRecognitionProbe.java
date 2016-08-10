@@ -367,10 +367,10 @@ public class ActivityRecognitionProbe extends Base
       sendData(data);
     }
 
-    @Override
-    public void sendLastData() {
-        
-    }
+//    @Override
+//    public void sendLastData() {
+//
+//    }
 
     /**
      * Receiver for intents sent by DetectedActivitiesIntentService via a sendBroadcast().

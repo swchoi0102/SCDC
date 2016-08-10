@@ -72,10 +72,10 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 	private int lastAccuracy;
 	private boolean replicateOn = false;
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 
 	private class SensorChecker implements Runnable {
 		@Override

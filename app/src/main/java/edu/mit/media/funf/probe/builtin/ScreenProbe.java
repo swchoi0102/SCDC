@@ -56,10 +56,10 @@ public class ScreenProbe extends Base implements ContinuousProbe, ScreenKeys  {
 	private boolean lastScreenOn;
 	private boolean replicateOn = false;
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 
 	private class ScreenChecker implements Runnable {
 		@Override

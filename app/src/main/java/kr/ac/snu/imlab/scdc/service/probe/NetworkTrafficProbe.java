@@ -23,21 +23,17 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 @Probe.DisplayName("Network Traffic Probe")
 @Probe.Description("records network traffic(mobile data network, all network) generated for interval in bytes. also records network traffic with applications.")
 @Schedule.DefaultSchedule(interval = 60)
-public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousProbe {
+public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.ContinuousProbe {
 
     private static final String TAG = "debug1013";
     private TrafficStatsDummy trafficStatsCurrent;
-    public static TrafficStatsDummy trafficStatsPast;
-    private int expId;
-    private double checkInterval = 2.5;
+    private TrafficStatsDummy trafficStatsPast;
+    public BigDecimal currTimestamp = null;
+    public BigDecimal lastTimestamp = null;
+
+    private double checkInterval = 10.0;
     private TrafficChecker trafficChecker = new TrafficChecker();
-    public long currSecs = 0;
-    public long prevSecs = 0;
 
-    @Override
-    public void sendLastData() {
-
-    }
 
     private class TrafficChecker implements Runnable {
 
@@ -45,9 +41,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         public void run() {
             trafficStatsCurrent = snapTrafficStatsCurrent();
             if (trafficStatsPast != null) {
-                double diffSecs = (double) (currSecs - prevSecs) / 1000.0d;
-                BigDecimal currTimestamp = DecimalTimeUnit.MILLISECONDS.toSeconds(currSecs);
-                sendTraffic(trafficDataList(), currTimestamp, diffSecs);
+                sendTraffic(trafficDataList());
             }
             setTrafficStatsPast();
             getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
@@ -58,10 +52,12 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         }
 
         public void reset() {
+            sendLastData();
+
             trafficStatsCurrent = null;
             trafficStatsPast = null;
-            currSecs = 0;
-            prevSecs = 0;
+            currTimestamp = null;
+            lastTimestamp = null;
         }
     }
 
@@ -76,21 +72,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     protected void onStart() {
         super.onStart();
         Log.i(TAG, "NetworkTrafficProbe onStart");
-//        if (trafficStatsPast == null) {
-//            trafficStatsCurrent = snapTrafficStatsCurrent();
-//            setTrafficStatsPast();
-//        }
         onContinue();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                trafficStatsCurrent = snapTrafficStatsCurrent();
-//                if (trafficStatsPast != null) {
-//                    sendTraffic(trafficDataList());
-//                }
-//                setTrafficStatsPast();
-//            }
-//        }, TimeUtil.secondsToMillis(checkInterval));
     }
 
     protected void onContinue() {
@@ -105,7 +87,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     }
 
     private TrafficStatsDummy snapTrafficStatsCurrent() {
-        currSecs = System.currentTimeMillis();
+        currTimestamp = TimeUtil.getTimestamp();
 
         TrafficStatsDummy currentTrafficStats = new TrafficStatsDummy();
         currentTrafficStats.totalRxBytes = TrafficStats.getTotalRxBytes();
@@ -177,11 +159,12 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
         }
     }
 
-    private void sendTraffic(ArrayList<JsonObject> trafficDataList, BigDecimal currTimestamp, double diffSecs) {
+    private void sendTraffic(ArrayList<JsonObject> trafficDataList) {
+        BigDecimal duration = currTimestamp.subtract(lastTimestamp);
         if (isValidTrafficDataList(trafficDataList)) {
             for (JsonObject trafficData : trafficDataList) {
-                trafficData.addProperty(SCDCKeys.NetworkTrafficKeys.DIFF_SECS, diffSecs);
-                trafficData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, currTimestamp);
+                trafficData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration);
+                trafficData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, lastTimestamp);
                 sendData(trafficData);
             }
         }
@@ -203,7 +186,7 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
 
     private void setTrafficStatsPast() {
         trafficStatsPast = trafficStatsCurrent;
-        prevSecs = currSecs;
+        lastTimestamp = currTimestamp;
     }
 
     @Override
@@ -216,6 +199,17 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     protected void onDisable() {
         Log.i(TAG, "NetworkTrafficProbe onDisable");
         trafficChecker.reset();
+    }
+
+    @Override
+    public void sendLastData() {
+        if (trafficStatsPast != null) {
+            Long currTime = System.currentTimeMillis();
+            if (DecimalTimeUnit.MILLISECONDS.toSeconds(currTime).longValue() > lastTimestamp.longValue() + 5) {
+                trafficStatsCurrent = snapTrafficStatsCurrent();
+                sendTraffic(trafficDataList());
+            }
+        }
     }
 
     private class TrafficStatsDummy {

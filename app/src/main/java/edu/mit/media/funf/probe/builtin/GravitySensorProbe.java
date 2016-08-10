@@ -69,8 +69,8 @@ public class GravitySensorProbe extends SensorProbe implements GravitySensorKeys
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

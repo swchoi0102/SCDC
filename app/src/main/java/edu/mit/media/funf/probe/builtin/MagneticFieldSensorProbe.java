@@ -41,8 +41,8 @@ public class MagneticFieldSensorProbe extends SensorProbe implements MagneticFie
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

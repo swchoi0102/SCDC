@@ -26,6 +26,7 @@ import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.SCDCServiceKeys;
+import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.R;
 
@@ -106,9 +107,9 @@ public class SCDCService extends Service {
     Log.d(LogKeys.DEBUG, TAG+".onDestroy() called");
 
     for (Object probeObject : scdcManager.getProbeFactory().getCached()) {
-      if (probeObject instanceof Probe.ContinuousProbe) {
+      if (probeObject instanceof InsensitiveProbe) {
         Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): call sendLastData()");
-        ((Probe.ContinuousProbe) probeObject).sendLastData();
+        ((InsensitiveProbe) probeObject).sendLastData();
       }
     }
 

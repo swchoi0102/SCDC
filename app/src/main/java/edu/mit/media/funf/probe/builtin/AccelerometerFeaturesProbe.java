@@ -80,10 +80,10 @@ public class AccelerometerFeaturesProbe extends Base implements ContinuousProbe,
     private Window featureWin = null;
     private static int[] freqBandIdx = null;
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 
 	private class AccelerometerListener implements DataListener {
 

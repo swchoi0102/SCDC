@@ -43,8 +43,8 @@ public class RotationVectorSensorProbe extends SensorProbe implements RotationVe
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

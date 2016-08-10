@@ -41,8 +41,8 @@ public class PressureSensorProbe extends SensorProbe implements PressureSensorKe
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

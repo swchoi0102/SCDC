@@ -46,7 +46,7 @@ public class ProbeKeys {
 		// TODO: add probe version
 		TIMESTAMP = "timestamp";
 	}
-	
+
 	public static interface SensorKeys extends BaseProbeKeys {
 		public static final String 
 		MAXIMUM_RANGE = "maximumRange",

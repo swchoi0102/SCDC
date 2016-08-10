@@ -50,8 +50,8 @@ public class ProximitySensorProbe extends SensorProbe implements ProximitySensor
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

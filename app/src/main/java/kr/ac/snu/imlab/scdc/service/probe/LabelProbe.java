@@ -122,10 +122,10 @@ public class LabelProbe extends Base implements ContinuousProbe, LabelKeys {
 
     }
 
-    @Override
-    public void sendLastData() {
-
-    }
+//    @Override
+//    public void sendLastData() {
+//
+//    }
 
     /*
     private void sendData(boolean isLabelled) {

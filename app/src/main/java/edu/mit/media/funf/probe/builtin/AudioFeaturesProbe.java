@@ -233,8 +233,8 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }

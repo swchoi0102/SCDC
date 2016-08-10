@@ -49,8 +49,8 @@ public class LinearAccelerationSensorProbe extends SensorProbe implements Linear
 		};
 	}
 
-	@Override
-	public void sendLastData() {
-
-	}
+//	@Override
+//	public void sendLastData() {
+//
+//	}
 }
