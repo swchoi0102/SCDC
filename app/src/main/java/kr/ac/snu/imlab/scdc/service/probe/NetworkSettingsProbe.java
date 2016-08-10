@@ -183,4 +183,9 @@ public class NetworkSettingsProbe extends Probe.Base implements Probe.Continuous
     private void unregisterContentObserver() {
         getContext().getContentResolver().unregisterContentObserver(settingsContentObserver);
     }
+
+    @Override
+    public void sendLastData() {
+
+    }
 }

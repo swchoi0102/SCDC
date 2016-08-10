@@ -79,8 +79,13 @@ public class AccelerometerFeaturesProbe extends Base implements ContinuousProbe,
 	private FFT featureFFT = null;
     private Window featureWin = null;
     private static int[] freqBandIdx = null;
-	
-    private class AccelerometerListener implements DataListener {
+
+	@Override
+	public void sendLastData() {
+
+	}
+
+	private class AccelerometerListener implements DataListener {
 
     	private Gson gson = getGson();
     	

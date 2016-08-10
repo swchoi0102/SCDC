@@ -126,6 +126,7 @@ public interface Probe {
 		 * @param listener
 		 */
 		public void unregisterListener(DataListener... listener);
+		public void sendLastData();
 
 	}
 

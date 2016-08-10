@@ -64,7 +64,12 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	
 	// Used as the flag for polling vs paused
 	private PowerManager pm;
-	
+
+	@Override
+	public void sendLastData() {
+
+	}
+
 	private class RunningAppsPoller implements Runnable {
 		
 		private RecentTaskInfo currentRunningTask = null;

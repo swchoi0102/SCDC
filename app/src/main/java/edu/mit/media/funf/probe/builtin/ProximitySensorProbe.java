@@ -49,4 +49,9 @@ public class ProximitySensorProbe extends SensorProbe implements ProximitySensor
 			DISTANCE
 		};
 	}
+
+	@Override
+	public void sendLastData() {
+
+	}
 }

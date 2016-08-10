@@ -34,6 +34,11 @@ public class NetworkTrafficProbe extends Probe.Base implements Probe.ContinuousP
     public long currSecs = 0;
     public long prevSecs = 0;
 
+    @Override
+    public void sendLastData() {
+
+    }
+
     private class TrafficChecker implements Runnable {
 
         @Override

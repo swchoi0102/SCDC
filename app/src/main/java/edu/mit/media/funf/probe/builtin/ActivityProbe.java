@@ -76,7 +76,12 @@ public class ActivityProbe extends Base implements ContinuousProbe, PassiveProbe
 		return getGson().fromJson(DEFAULT_CONFIG, AccelerometerSensorProbe.class);
 	}
 
-	
+	@Override
+	public void sendLastData() {
+
+	}
+
+
 	private class ActivityCounter implements DataListener {
 		private double intervalStartTime;
 		private float varianceSum;

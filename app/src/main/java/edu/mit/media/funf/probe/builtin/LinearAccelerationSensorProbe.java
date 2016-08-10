@@ -48,4 +48,9 @@ public class LinearAccelerationSensorProbe extends SensorProbe implements Linear
 			X, Y, Z
 		};
 	}
+
+	@Override
+	public void sendLastData() {
+
+	}
 }

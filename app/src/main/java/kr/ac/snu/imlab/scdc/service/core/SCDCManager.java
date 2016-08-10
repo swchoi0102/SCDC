@@ -500,6 +500,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void enablePipeline(String name) {
+    Log.d(LogKeys.DEB, "SCDCManager: enablePipeline");
     boolean previouslyDisabled = disabledPipelineNames.remove(name);
     if (previouslyDisabled) {
       prefs.edit().putString(DISABLED_PIPELINE_LIST, StringUtil.join(disabledPipelineNames, ",")).commit();
@@ -512,6 +513,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void disablePipeline(String name) {
+    Log.d(LogKeys.DEB, "SCDCManager: disablePipeline");
     boolean previouslyEnabled = disabledPipelineNames.add(name);
     if (previouslyEnabled) {
       prefs.edit().putString(DISABLED_PIPELINE_LIST, StringUtil.join(disabledPipelineNames, ",")).commit();

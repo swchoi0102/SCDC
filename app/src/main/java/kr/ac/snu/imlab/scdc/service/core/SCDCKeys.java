@@ -180,6 +180,7 @@ public class SCDCKeys {
     String VOLUME_RING = "volumeRing";
     String VOLUME_SYSTEM = "volumeSystem";
     String VOLUME_VOICE = "volumeVoice";
+    String DURATION = "duration";
   }
 
   public interface NetworkSettingsKeys {

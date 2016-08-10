@@ -68,4 +68,9 @@ public class GravitySensorProbe extends SensorProbe implements GravitySensorKeys
 			X, Y, Z
 		};
 	}
+
+	@Override
+	public void sendLastData() {
+
+	}
 }

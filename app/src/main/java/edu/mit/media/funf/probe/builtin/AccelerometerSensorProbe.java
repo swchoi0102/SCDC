@@ -43,4 +43,8 @@ public class AccelerometerSensorProbe extends SensorProbe implements PassiveProb
 		};
 	}
 
+	@Override
+	public void sendLastData() {
+
+	}
 }

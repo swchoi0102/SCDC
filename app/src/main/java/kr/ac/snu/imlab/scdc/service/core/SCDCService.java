@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import java.io.File;
 
 import edu.mit.media.funf.pipeline.Pipeline;
+import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.util.EqualsUtil;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
@@ -103,6 +104,14 @@ public class SCDCService extends Service {
     Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy()");
     super.onDestroy();
     Log.d(LogKeys.DEBUG, TAG+".onDestroy() called");
+
+    for (Object probeObject : scdcManager.getProbeFactory().getCached()) {
+      if (probeObject instanceof Probe.ContinuousProbe) {
+        Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): call sendLastData()");
+        ((Probe.ContinuousProbe) probeObject).sendLastData();
+      }
+    }
+
     stopForeground(true);
     unbindService(scdcManagerConn);
   }

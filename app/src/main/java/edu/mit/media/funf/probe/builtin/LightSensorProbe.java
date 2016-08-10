@@ -40,4 +40,9 @@ public class LightSensorProbe extends SensorProbe implements LightSensorKeys {
 			LUX
 		};
 	}
+
+	@Override
+	public void sendLastData() {
+
+	}
 }

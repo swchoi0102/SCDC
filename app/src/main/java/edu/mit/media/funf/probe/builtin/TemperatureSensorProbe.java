@@ -48,4 +48,8 @@ public class TemperatureSensorProbe extends SensorProbe implements TemperatureSe
 		};
 	}
 
+	@Override
+	public void sendLastData() {
+
+	}
 }

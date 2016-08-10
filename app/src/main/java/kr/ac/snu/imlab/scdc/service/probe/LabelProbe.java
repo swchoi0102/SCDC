@@ -122,6 +122,11 @@ public class LabelProbe extends Base implements ContinuousProbe, LabelKeys {
 
     }
 
+    @Override
+    public void sendLastData() {
+
+    }
+
     /*
     private void sendData(boolean isLabelled) {
         JsonObject data = new JsonObject();
