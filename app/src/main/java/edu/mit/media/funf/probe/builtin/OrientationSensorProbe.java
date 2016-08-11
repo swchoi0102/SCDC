@@ -65,60 +65,60 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
     private Sensor magnetometer;
     private SensorEventListener sensorListener;
 
-    private SensorChecker sensorChecker = new SensorChecker();
-    private long lastTimeMillis;
-    private float[] lastValues;
-    private int lastAccuracy;
-    private boolean replicateOn = false;
-
-//	@Override
-//	public void sendFinalData() {
+//    private SensorChecker sensorChecker = new SensorChecker();
+//    private long lastTimeMillis;
+//    private float[] lastValues;
+//    private int lastAccuracy;
+//    private boolean replicateOn = false;
 //
-//	}
-
-    private class SensorChecker implements Runnable {
-        @Override
-        public void run() {
-            getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
-            long currentTimeMillis = System.currentTimeMillis();
-            if (lastValues != null && replicateOn) {
-                if (currentTimeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
-//					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-                    replicateData(lastValues, currentTimeMillis, lastAccuracy);
-                }
-            }
-        }
-
-        public void endCurrentTask() {
-//			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
-            reset();
-        }
-
-        public void reset() {
-//			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
-            lastValues = null;
-            replicateOn = false;
-        }
-    }
-
-    protected void replicateData(float[] vArr, long timeMillis, int acc) {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
-        JsonObject data = new JsonObject();
-        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
-        data.addProperty(ACCURACY, acc);
-        data.addProperty("rep", true);
-        final String[] valueNames = getValueNames();
-
-        for (int i = 0; i < vArr.length; i++) {
-            String valueName = valueNames[i];
-            data.addProperty(valueName, vArr[i]);
-        }
-
-        // check one more time
-        if (timeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
-            sendData(data);
-        }
-    }
+////	@Override
+////	public void sendFinalData() {
+////
+////	}
+//
+//    private class SensorChecker implements Runnable {
+//        @Override
+//        public void run() {
+//            getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
+//            long currentTimeMillis = System.currentTimeMillis();
+//            if (lastValues != null && replicateOn) {
+//                if (currentTimeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
+////					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
+//                    replicateData(lastValues, currentTimeMillis, lastAccuracy);
+//                }
+//            }
+//        }
+//
+//        public void endCurrentTask() {
+////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
+//            reset();
+//        }
+//
+//        public void reset() {
+////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
+//            lastValues = null;
+//            replicateOn = false;
+//        }
+//    }
+//
+//    protected void replicateData(float[] vArr, long timeMillis, int acc) {
+////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
+//        JsonObject data = new JsonObject();
+//        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
+//        data.addProperty(ACCURACY, acc);
+//        data.addProperty("rep", true);
+//        final String[] valueNames = getValueNames();
+//
+//        for (int i = 0; i < vArr.length; i++) {
+//            String valueName = valueNames[i];
+//            data.addProperty(valueName, vArr[i]);
+//        }
+//
+//        // check one more time
+//        if (timeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
+//            sendData(data);
+//        }
+//    }
 
 
     @Override
@@ -128,7 +128,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         final String[] valueNames = getValueNames();
-        lastValues = new float[valueNames.length];
+//        lastValues = new float[valueNames.length];
         sensorListener = new SensorEventListener() {
 
             float[] mGravity;
@@ -145,9 +145,10 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
                     float I[] = new float[9];
                     boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
                     if (success) {
-                        lastTimeMillis = System.currentTimeMillis();
+//                        lastTimeMillis = System.currentTimeMillis();
                         JsonObject data = new JsonObject();
-                        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
+//                        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
+                        data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
                         data.addProperty(ACCURACY, event.accuracy);
 
                         float orientation[] = new float[3];
@@ -158,11 +159,11 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
                             float tempValue = (float) Math.toDegrees(orientation[i]);
 //							int tempValue = (int) ( Math.toDegrees( orientation[i] ) + 360 ) % 360;
                             data.addProperty(valueName, tempValue);
-                            lastValues[i] = tempValue;
-                            lastAccuracy = event.accuracy;
+//                            lastValues[i] = tempValue;
+//                            lastAccuracy = event.accuracy;
                         }
                         sendData(data);
-                        replicateOn = true;
+//                        replicateOn = true;
                     }
                 }
             }
@@ -179,33 +180,33 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
         super.onStart();
         getSensorManager().registerListener(sensorListener, accelerometer, getSensorDelay(sensorDelay));
         getSensorManager().registerListener(sensorListener, magnetometer, getSensorDelay(sensorDelay));
-        onContinue();
+//        onContinue();
     }
 
-    protected void onContinue() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
-        getHandler().post(sensorChecker);
-    }
+//    protected void onContinue() {
+////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
+//        getHandler().post(sensorChecker);
+//    }
 
     @Override
     protected void onStop() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[OrientationSensorProbe] onStop");
         super.onStop();
         getSensorManager().unregisterListener(sensorListener);
-        onPause();
+//        onPause();
     }
 
-    protected void onPause() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
-        getHandler().removeCallbacks(sensorChecker);
-        sensorChecker.endCurrentTask();
-    }
+//    protected void onPause() {
+////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
+//        getHandler().removeCallbacks(sensorChecker);
+//        sensorChecker.endCurrentTask();
+//    }
 
-    @Override
-    protected void onDisable() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onDisable");
-        sensorChecker.reset();
-    }
+//    @Override
+//    protected void onDisable() {
+////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onDisable");
+//        sensorChecker.reset();
+//    }
 
     protected SensorManager getSensorManager() {
         if (sensorManager == null) {

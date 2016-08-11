@@ -7,9 +7,7 @@ import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 
 import edu.mit.media.funf.probe.Probe;
-import edu.mit.media.funf.probe.builtin.LocationProbe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys;
-import edu.mit.media.funf.probe.builtin.ScreenProbe;
 import edu.mit.media.funf.time.TimeUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
@@ -42,17 +40,9 @@ public abstract class InsensitiveProbe extends Probe.Base {
                     TimeUtil.getTimestamp().subtract(lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal());
             lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration.floatValue());
             sendData(lastData);
-            Log.d(SCDCKeys.LogKeys.DEB, "[" + getProbeName() + "] sendFinalData!, " + duration);
+            String[] nameSplit = this.getClass().getName().split("\\.");
+            Log.d(SCDCKeys.LogKeys.DEB, "[" + nameSplit[nameSplit.length - 1] + "] sendFinalData!, " + duration);
         }
-    }
-
-    protected String getProbeName() {
-        if (this instanceof LocationProbe) return "LocationProbe";
-        if (this instanceof ScreenProbe) return "ScreenProbe";
-        if (this instanceof SystemSettingsProbe) return "SystemSettingsProbe";
-        if (this instanceof NetworkSettingsProbe) return "NetworkSettingsProbe";
-        if (this instanceof NetworkTrafficProbe) return "NetworkTrafficProbe";
-        return "InsensitiveProbe";
     }
 
     protected JsonObject getCurrData() {

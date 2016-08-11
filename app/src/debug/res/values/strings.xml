@@ -33,9 +33,16 @@
         "@schedule": { "interval": 86400 }
       },
       "data": [
+        {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.OrientationSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
         {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
          "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
         },
+
         {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
          "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
         },
@@ -73,6 +80,7 @@
     <string name="get_prefs_from_server_message">서버와 동기화 중입니다</string>
     <string name="archive_message">데이터 압축 중</string>
     <string name="truncate_message">데이터 삭제 중</string>
+    <string name="labeling_off_message">수집 종료 중</string>
     <string name="truncate_complete_message">데이터 삭제가 완료되었습니다</string>
     <string name="update_config_complete_message">환경설정 업데이트에 성공하였습니다</string>
     <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>

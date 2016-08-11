@@ -33,9 +33,16 @@
             "@schedule": { "interval": 86400 }
         },
         "data": [
+            {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+            },
+            {"@type": "edu.mit.media.funf.probe.builtin.OrientationSensorProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+            },
             {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
+
             {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
             },
@@ -77,6 +84,7 @@
     <string name="edit_bt">데이터 수정</string>
     <string name="sensor_bt">수집</string>
     <string name="push_bt">푸쉬</string>
+    <string name="labeling_off_message">수집 종료 중</string>
     <string name="user_name_tv">ID: </string>
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
