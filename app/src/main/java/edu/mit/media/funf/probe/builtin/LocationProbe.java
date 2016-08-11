@@ -90,25 +90,27 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
     }
 
     protected void initializeLocation() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] initializeLocation");
         Long currTime = System.currentTimeMillis();
+        JsonObject data = new JsonObject();
         lastGpsTimestamp = DecimalTimeUnit.MILLISECONDS.toSeconds(currTime);
-        lastData = new JsonObject();
-        lastData.addProperty("mAccuracy", -1);
-        lastData.addProperty("mAltitude", -1);
-        lastData.addProperty("mBearing", -1);
-        lastData.addProperty("mElapsedRealtimeNanos", -1);
-        lastData.addProperty("mExtras", "unknown");
-        lastData.addProperty("mHasAccuracy", false);
-        lastData.addProperty("mHasAltitude", false);
-        lastData.addProperty("mHasBearing", false);
-        lastData.addProperty("mHasSpeed", false);
-        lastData.addProperty("mIsFromMockProvider", false);
-        lastData.addProperty("mLatitude", -1);
-        lastData.addProperty("mLongitude", -1);
-        lastData.addProperty("mProvider", -1);
-        lastData.addProperty("mSpeed", -1);
-        lastData.addProperty("mTime", currTime);
-        lastData.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currTime));
+        data.addProperty("mAccuracy", -1);
+        data.addProperty("mAltitude", -1);
+        data.addProperty("mBearing", -1);
+        data.addProperty("mElapsedRealtimeNanos", -1);
+        data.addProperty("mExtras", "unknown");
+        data.addProperty("mHasAccuracy", false);
+        data.addProperty("mHasAltitude", false);
+        data.addProperty("mHasBearing", false);
+        data.addProperty("mHasSpeed", false);
+        data.addProperty("mIsFromMockProvider", false);
+        data.addProperty("mLatitude", -1);
+        data.addProperty("mLongitude", -1);
+        data.addProperty("mProvider", -1);
+        data.addProperty("mSpeed", -1);
+        data.addProperty("mTime", currTime);
+        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currTime));
+        lastData = data;
     }
 
     private class ProbeLocationListener implements LocationListener {

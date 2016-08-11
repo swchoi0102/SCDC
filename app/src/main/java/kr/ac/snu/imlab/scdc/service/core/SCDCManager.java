@@ -613,6 +613,7 @@ public class SCDCManager extends FunfManager {
   public void registerPipelineAction(Pipeline pipeline, String action, Schedule schedule) {
     String name = getPipelineName(pipeline);
     if (name != null) {
+      Log.d(LogKeys.DEB, TAG+".registerPipelineAction(): " + name);
       scheduler.set(PIPELINE_TYPE, getComponenentUri(name, action), schedule);
     }
   }
@@ -620,6 +621,7 @@ public class SCDCManager extends FunfManager {
   public void unregisterPipelineAction(Pipeline pipeline, String action) {
     String name = getPipelineName(pipeline);
     if (name != null) {
+      Log.d(LogKeys.DEB, TAG+".unregisterPipelineAction(): " + name);
       scheduler.cancel(PIPELINE_TYPE, getComponenentUri(name, action));
     }
   }
@@ -796,6 +798,7 @@ public class SCDCManager extends FunfManager {
         // FIXME: Cancel existing alarms
         alarmManager.cancel(operation);
         operation.cancel();
+        Log.d(LogKeys.DEB, TAG+".scheduler.cancel()");
       }
     }
 

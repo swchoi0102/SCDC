@@ -40,7 +40,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         public void run() {
             trafficStatsCurrent = snapTrafficStatsCurrent();
             if (trafficStatsPast != null) {
-                sendTraffic(trafficDataList());
+                sendTraffic(trafficDataList(), false);
             }
             setTrafficStatsPast();
             getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
@@ -51,7 +51,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         }
 
         public void reset() {
-            sendFinalData();
+//            sendFinalData();
 
             trafficStatsCurrent = null;
             trafficStatsPast = null;
@@ -86,6 +86,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
     }
 
     private TrafficStatsDummy snapTrafficStatsCurrent() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] snapTrafficStatsCurrent");
         currTimestamp = TimeUtil.getTimestamp();
 
         TrafficStatsDummy currentTrafficStats = new TrafficStatsDummy();
@@ -158,12 +159,13 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         }
     }
 
-    private void sendTraffic(ArrayList<JsonObject> trafficDataList) {
+    private void sendTraffic(ArrayList<JsonObject> trafficDataList, boolean isUrgent) {
         BigDecimal duration = currTimestamp.subtract(lastTimestamp);
         if (isValidTrafficDataList(trafficDataList)) {
             for (JsonObject trafficData : trafficDataList) {
                 trafficData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration);
                 trafficData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, lastTimestamp);
+                if (isUrgent) trafficData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
                 sendData(trafficData);
             }
         }
@@ -207,8 +209,9 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
             Long currTime = System.currentTimeMillis();
             if (DecimalTimeUnit.MILLISECONDS.toSeconds(currTime).longValue() > lastTimestamp.longValue() + 5) {
                 trafficStatsCurrent = snapTrafficStatsCurrent();
-                sendTraffic(trafficDataList());
+                sendTraffic(trafficDataList(), true);
                 Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] sendFinalData!");
+                trafficStatsPast = null;
             }
         }
     }

@@ -92,13 +92,15 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
     }
 
     private void initializeScreenStatus() {
-        lastData = new JsonObject();
+        Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] initializeScreenStatus");
+        JsonObject data = new JsonObject();
 
         boolean screeOn;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) screeOn = pm.isInteractive();
         else screeOn = pm.isScreenOn();
 
-        lastData.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
-        lastData.addProperty(SCREEN_ON, screeOn);
+        data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+        data.addProperty(SCREEN_ON, screeOn);
+        lastData = data;
     }
 }

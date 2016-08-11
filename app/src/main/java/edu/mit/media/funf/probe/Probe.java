@@ -534,7 +534,8 @@ public interface Probe {
 //				Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: Thread.currentThread() != looper.getThread()");
 				if (handler != null) {
 					Message dataMessage = handler.obtainMessage(SEND_DATA_MESSAGE, data);
-					handler.sendMessage(dataMessage);
+					if (data.has(SCDCKeys.InsensitiveKeys.IS_URGENT)) handler.sendMessageAtFrontOfQueue(dataMessage);
+					else handler.sendMessage(dataMessage);
 //					Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: handler != null, call handler.sendMessage(dataMessage)");
 				}
 			} else {

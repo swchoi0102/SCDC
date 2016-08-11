@@ -172,6 +172,7 @@ public class SCDCKeys {
 
   public interface InsensitiveKeys {
     String DURATION = "value_duration";
+    String IS_URGENT = "isUrgent";
   }
 
   public interface SystemSettingsKeys {

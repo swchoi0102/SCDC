@@ -1147,7 +1147,7 @@ public class LaunchActivity extends ActionBarActivity
 
   // fixed height for GridViews
   public void setGridViewHeightBasedOnChildren(GridView gridView, int columns) {
-    Log.d(LogKeys.DEB, TAG+".setGridViewHeightBasedOnChildren()");
+//    Log.d(LogKeys.DEB, TAG+".setGridViewHeightBasedOnChildren()");
     ListAdapter listAdapter = gridView.getAdapter();
     if (listAdapter == null) {
       // pre-condition
@@ -1162,7 +1162,7 @@ public class LaunchActivity extends ActionBarActivity
       View listItem = listAdapter.getView(i, null, gridView);
       listItem.measure(0, 0);
       totalHeight = listItem.getMeasuredHeight();
-      Log.d(LogKeys.DEB, TAG+".totalHeight: " +totalHeight);
+//      Log.d(LogKeys.DEB, TAG+".totalHeight: " +totalHeight);
 
       float x = 1;
       if( items > columns ){

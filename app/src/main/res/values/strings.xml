@@ -44,11 +44,11 @@
             },
 
             {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
 
             {"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
-             "@schedule": {"interval": 120, "opportunistic": true, "strict": true}
+             "@schedule": {"interval": 120, "opportunistic": true, "strict": true, "strict": true}
             },
             {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
@@ -58,13 +58,13 @@
             },
 
             {"@type": "kr.ac.snu.imlab.scdc.service.probe.SystemSettingsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
             {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkSettingsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
             {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkTrafficProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             }
         ]
     }

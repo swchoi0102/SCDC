@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
@@ -184,7 +185,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
     this.manager = (SCDCManager)manager;
     reloadDbHelper(manager);
     HandlerThread thread = new HandlerThread(getClass().getName());
-    Log.w("DEBUG", "new thread=" + thread.getName());
+//    Log.w("DEBUG", "new thread=" + thread.getName());
     thread.setPriority(Process.THREAD_PRIORITY_BACKGROUND); // FIXME: test if it works
     thread.start();
     this.looper = thread.getLooper();
@@ -206,12 +207,12 @@ public class SCDCPipeline implements Pipeline, DataListener {
    */
   public void setDataReceivedListener(OnDataReceivedListener listener) {
     odrl = listener;
-    Log.d(LogKeys.DEBUG, "SCDCPipeline.setDataReceivedListener(): odrl=" + odrl);
+//    Log.d(LogKeys.DEBUG, "SCDCPipeline.setDataReceivedListener(): odrl=" + odrl);
   }
 
   @Override
   public void onDestroy() {
-    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy()");
+    Log.d(LogKeys.DEB, TAG+".onDestroy()");
     for (JsonElement dataRequest : data) {
       manager.unrequestData(this, dataRequest);
     }
@@ -221,7 +222,15 @@ public class SCDCPipeline implements Pipeline, DataListener {
     if (uploader != null) {
       uploader.stop();
     }
-    looper.quit();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      looper.quitSafely();
+      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): safely quit! (build version >= API-17)");
+    } else {
+      looper.quit();
+      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): just quit... (build version < API-17)");
+    }
+
     enabled = false;
     odrl = null;
     databaseHelper.close();
@@ -437,7 +446,16 @@ public class SCDCPipeline implements Pipeline, DataListener {
 //    Log.d(LogKeys.DEBUG, "SCDCPipeline: availableMegs=" + availableMegs +
 //                         " (percentAvail: " + percentAvail + ")");
     if (handler != null) {
-      handler.sendMessage(message);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        handler.sendMessage(message);
+      } else {
+        if (dataClone.has("isUrgent")) {
+          handler.sendMessageAtFrontOfQueue(message);
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDataReceived: send urgent message at front of queue");
+        }
+        else handler.sendMessage(message);
+      }
+
 //      if (free < 0.1) {
 //        handler.removeMessages(5);
 //      }

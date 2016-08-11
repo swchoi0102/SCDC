@@ -1,11 +1,13 @@
 package kr.ac.snu.imlab.scdc.service.probe;
 
+import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
 
+import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys;
 import edu.mit.media.funf.time.TimeUtil;
@@ -39,9 +41,11 @@ public abstract class InsensitiveProbe extends Probe.Base {
             BigDecimal duration =
                     TimeUtil.getTimestamp().subtract(lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal());
             lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration.floatValue());
+            lastData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
             sendData(lastData);
             String[] nameSplit = this.getClass().getName().split("\\.");
             Log.d(SCDCKeys.LogKeys.DEB, "[" + nameSplit[nameSplit.length - 1] + "] sendFinalData!, " + duration);
+            lastData = null;
         }
     }
 
