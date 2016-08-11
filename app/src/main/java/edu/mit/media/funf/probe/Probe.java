@@ -42,6 +42,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.Process;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,6 +61,7 @@ import edu.mit.media.funf.security.HashUtil;
 import edu.mit.media.funf.security.HashUtil.HashingType;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LockUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 public interface Probe {
 
@@ -525,12 +527,15 @@ public interface Probe {
 
 		protected void sendData(final JsonObject data) {
 			if (data == null || looper == null) {
+//				Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: data==null, looper==null");
 				return;
 			} else if (Thread.currentThread() != looper.getThread()) {
 				// Ensure the data send runs on the probe's thread
+//				Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: Thread.currentThread() != looper.getThread()");
 				if (handler != null) {
 					Message dataMessage = handler.obtainMessage(SEND_DATA_MESSAGE, data);
 					handler.sendMessage(dataMessage);
+//					Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: handler != null, call handler.sendMessage(dataMessage)");
 				}
 			} else {
 				if (!data.has(TIMESTAMP)) {
@@ -541,6 +546,7 @@ public interface Probe {
 					for (DataListener listener : dataListeners) {
 						listener.onDataReceived(getConfig(), immutableData);
 					}
+//					Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: dataListeners.onDataReceived");
 				}
 				synchronized (passiveDataListeners) {
 					for (DataListener listener : passiveDataListeners) {
@@ -552,6 +558,7 @@ public interface Probe {
 							listener.onDataReceived(getConfig(), immutableData);
 						}
 					}
+//					Log.d(SCDCKeys.LogKeys.DEB, "[Probe] sendData: passiveDataListeners.onDataReceived");
 				}
 			}
 		}

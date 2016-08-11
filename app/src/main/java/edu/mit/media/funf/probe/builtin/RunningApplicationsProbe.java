@@ -67,7 +67,7 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	private PowerManager pm;
 
 //	@Override
-//	public void sendLastData() {
+//	public void sendFinalData() {
 //
 //	}
 

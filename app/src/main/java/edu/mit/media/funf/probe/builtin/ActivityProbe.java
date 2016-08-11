@@ -77,7 +77,7 @@ public class ActivityProbe extends Base implements ContinuousProbe, PassiveProbe
 	}
 
 //	@Override
-//	public void sendLastData() {
+//	public void sendFinalData() {
 //
 //	}
 

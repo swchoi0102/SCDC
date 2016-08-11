@@ -81,7 +81,7 @@ public class AccelerometerFeaturesProbe extends Base implements ContinuousProbe,
     private static int[] freqBandIdx = null;
 
 //	@Override
-//	public void sendLastData() {
+//	public void sendFinalData() {
 //
 //	}
 

@@ -1,7 +1,6 @@
 package kr.ac.snu.imlab.scdc.service.core;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -38,9 +37,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import edu.mit.media.funf.FunfManager;
@@ -333,13 +329,27 @@ public class SCDCManager extends FunfManager {
                   long duration = TimeUtil.secondsToMillis(mergedSchedule.getDuration());
 //                  Log.d(LogKeys.DEBUG, "DURATION: " + duration);
                   if (duration > 0) {
+                    if (probe instanceof InsensitiveProbe) {
+                      handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                          synchronized (listenerArray) {
+                            Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_REGISTER (1-sec earlier): call sendFinalData()");
+                            ((InsensitiveProbe) probe).sendFinalData();
+                          }
+                        }
+                      }, TimeUtil.secondsToMillis(mergedSchedule.getDuration().subtract(new BigDecimal(1))));
+                    }
+
                     handler.postDelayed(new Runnable() {
                       @Override
                       public void run() {
-                        if (probe instanceof InsensitiveProbe) {
-                          Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_REGISTER: call sendLastData()");
-                          ((InsensitiveProbe) probe).sendLastData();
-                        }
+//                        if (probe instanceof InsensitiveProbe) {
+//                          synchronized (listenerArray) {
+//                            Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_REGISTER: call sendFinalData()");
+//                            ((InsensitiveProbe) probe).sendFinalData();
+//                          }
+//                        }
                         ((ContinuousProbe) probe).unregisterListener(listenerArray);
                       }
                     }, TimeUtil.secondsToMillis(mergedSchedule.getDuration()));
@@ -350,8 +360,10 @@ public class SCDCManager extends FunfManager {
           } else if (PROBE_ACTION_UNREGISTER.equals(probeAction) && probe instanceof ContinuousProbe) {
             for (DataRequestInfo requestInfo : requests) {
               if (probe instanceof InsensitiveProbe) {
-                Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_UNREGISTER: call sendLastData()");
-                ((InsensitiveProbe) probe).sendLastData();
+                synchronized (requestInfo.listener) {
+                  Log.d(SCDCKeys.LogKeys.DEB, TAG+", PROBE_ACTION_UNREGISTER: call sendFinalData()");
+                  ((InsensitiveProbe) probe).sendFinalData();
+                }
               }
               ((ContinuousProbe)probe).unregisterListener(requestInfo.listener);
             }

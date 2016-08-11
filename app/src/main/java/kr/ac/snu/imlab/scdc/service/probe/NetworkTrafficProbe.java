@@ -17,7 +17,6 @@ import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 import edu.mit.media.funf.time.TimeUtil;
-import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Probe.DisplayName("Network Traffic Probe")
@@ -52,7 +51,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         }
 
         public void reset() {
-            sendLastData();
+            sendFinalData();
 
             trafficStatsCurrent = null;
             trafficStatsPast = null;
@@ -203,13 +202,13 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
     }
 
     @Override
-    public void sendLastData() {
+    public void sendFinalData() {
         if (trafficStatsPast != null) {
             Long currTime = System.currentTimeMillis();
             if (DecimalTimeUnit.MILLISECONDS.toSeconds(currTime).longValue() > lastTimestamp.longValue() + 5) {
                 trafficStatsCurrent = snapTrafficStatsCurrent();
                 sendTraffic(trafficDataList());
-                Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] sendLastData!");
+                Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] sendFinalData!");
             }
         }
     }

@@ -72,7 +72,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
     private boolean replicateOn = false;
 
 //	@Override
-//	public void sendLastData() {
+//	public void sendFinalData() {
 //
 //	}
 

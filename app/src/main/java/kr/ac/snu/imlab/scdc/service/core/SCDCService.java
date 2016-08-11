@@ -12,16 +12,12 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.io.File;
 
 import edu.mit.media.funf.pipeline.Pipeline;
-import edu.mit.media.funf.probe.Probe;
-import edu.mit.media.funf.util.EqualsUtil;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
@@ -108,8 +104,8 @@ public class SCDCService extends Service {
 
     for (Object probeObject : scdcManager.getProbeFactory().getCached()) {
       if (probeObject instanceof InsensitiveProbe) {
-        Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): call sendLastData()");
-        ((InsensitiveProbe) probeObject).sendLastData();
+        Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): call sendFinalData()");
+        ((InsensitiveProbe) probeObject).sendFinalData();
       }
     }
 

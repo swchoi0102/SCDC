@@ -36,7 +36,13 @@
             {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
+            {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+            },
 
+            {"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
+             "@schedule": {"interval": 120, "opportunistic": true, "strict": true}
+            },
             {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
             },

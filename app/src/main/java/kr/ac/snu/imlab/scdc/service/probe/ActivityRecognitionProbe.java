@@ -371,7 +371,7 @@ public class ActivityRecognitionProbe extends Base
     }
 
 //    @Override
-//    public void sendLastData() {
+//    public void sendFinalData() {
 //
 //    }
 

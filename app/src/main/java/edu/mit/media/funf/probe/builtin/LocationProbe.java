@@ -42,14 +42,14 @@ import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LocationKeys;
-import edu.mit.media.funf.time.TimeUtil;
+import edu.mit.media.funf.time.DecimalTimeUnit;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 
 /**
  * Sends all location points gathered by system.
- * @author alangardner
  *
+ * @author alangardner
  */
 @DisplayName("Continuous Location Probe")
 @RequiredPermissions({android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION})
@@ -57,84 +57,11 @@ import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 @Schedule.DefaultSchedule(interval = 1800)
 public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, LocationKeys {
 
-//	@Configurable
-//	private boolean useGps = true;
-//
-//	@Configurable
-//	private boolean useNetwork = false;
-//
-//	@Configurable
-//	private boolean useCache = true;
-
     private Gson gson;
     private LocationManager mLocationManager;
     private LocationListener locationListener;
-    //	private LocationListener passiveListener = new ProbeLocationListener();
-//
-//
-    private final long checkInterval = 4;
-    //	private LocationChecker locationChecker = new LocationChecker();
-//	private long lastTimeMillis;
+    private final long checkInterval = 3;
     private BigDecimal lastGpsTimestamp;
-//	private long lastNetTimeMillis;
-//	private JsonObject lastData;
-//	private boolean replicateOn = false;
-//
-////	@Override
-////	public void sendLastData() {
-////
-////	}
-//
-//	private class LocationChecker implements Runnable {
-//		@Override
-//		public void run() {
-//			getHandler().postDelayed(this, edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval));
-//			long currentTimeMillis = System.currentTimeMillis();
-//
-//			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] replicateOn: " + replicateOn + ", curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-//			if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-//				// even if gps and network are on, location is unknown.
-//				if (replicateOn) generateReplicateData(currentTimeMillis);
-//			}
-//		}
-//
-//		public void endCurrentTask() {
-//			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] End task");
-//			reset();
-//		}
-//
-//		public void reset() {
-//			Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Reset");
-//			replicateOn = false;
-//		}
-//	}
-//
-//	protected void generateReplicateData(long timeMillis) {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] Generate unknown data!");
-//
-//		JsonObject data = new JsonObject();
-//		data.addProperty("mAccuracy", -1);
-//		data.addProperty("mAltitude", lastData.get("mAltitude").getAsFloat());
-//		data.addProperty("mBearing", lastData.get("mBearing").getAsFloat());
-//		data.addProperty("mElapsedRealtimeNanos", lastData.get("mElapsedRealtimeNanos").getAsLong());
-//		data.addProperty("mExtras", "replicate");
-//		data.addProperty("mHasAccuracy", false);
-//		data.addProperty("mHasAltitude", lastData.get("mHasAltitude").getAsBoolean());
-//		data.addProperty("mHasBearing", lastData.get("mHasBearing").getAsBoolean());
-//		data.addProperty("mHasSpeed", lastData.get("mHasSpeed").getAsBoolean());
-//		data.addProperty("mIsFromMockProvider", lastData.get("mIsFromMockProvider").getAsBoolean());
-//		data.addProperty("mLatitude", lastData.get("mLatitude").getAsFloat());
-//		data.addProperty("mLongitude", lastData.get("mLongitude").getAsFloat());
-//		data.addProperty("mProvider", lastData.get("mProvider").getAsString());
-//		data.addProperty("mSpeed", lastData.get("mSpeed").getAsFloat());
-//		data.addProperty("mTime", lastData.get("mTime").getAsLong());
-//		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-//
-//		// check one more time
-//		if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2)){
-//			sendData(data);
-//		}
-//	}
 
 
     @Override
@@ -144,10 +71,6 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         gson = getGsonBuilder().addSerializationExclusionStrategy(new LocationExclusionStrategy()).create();
         mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new ProbeLocationListener();
-//		String passiveProvider = getPassiveProvider();
-//		if (passiveProvider != null) {
-//			mLocationManager.requestLocationUpdates(getPassiveProvider(), 0, 0, passiveListener);
-//		}
     }
 
     @Override
@@ -155,25 +78,8 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart");
         super.onStart();
         initializeLocation();
-//		lastTimeMillis = System.currentTimeMillis();
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0f, locationListener);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0f, locationListener);
-//		if (useGps) {
-//			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0.5f, locationListener);
-//			lastGpsTimestamp = lastTimeMillis;
-//		}
-//		if (useNetwork) {
-//			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0.5f, locationListener);
-//			lastNetTimeMillis = lastTimeMillis;
-//		}
-//		if (useCache) {
-//			locationListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-//			locationListener.onLocationChanged(mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-//		}
-//		if(!useGps && !useNetwork){
-//			stop();
-//		}
-//		getHandler().post(locationChecker);
     }
 
     @Override
@@ -181,23 +87,11 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStop()");
         super.onStop();
         mLocationManager.removeUpdates(locationListener);
-//		onPause();
     }
 
-//	protected void onPause() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onPause()");
-//		getHandler().removeCallbacks(locationChecker);
-//		locationChecker.endCurrentTask();
-//	}
-
-//	@Override
-//	protected void onDisable() {
-//		super.onDisable();
-//		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onDisable()");
-////		mLocationManager.removeUpdates(passiveListener);
-//	}
-
     protected void initializeLocation() {
+        Long currTime = System.currentTimeMillis();
+        lastGpsTimestamp = DecimalTimeUnit.MILLISECONDS.toSeconds(currTime);
         lastData = new JsonObject();
         lastData.addProperty("mAccuracy", -1);
         lastData.addProperty("mAltitude", -1);
@@ -213,8 +107,8 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         lastData.addProperty("mLongitude", -1);
         lastData.addProperty("mProvider", -1);
         lastData.addProperty("mSpeed", -1);
-        lastData.addProperty("mTime", TimeUtil.getTimestamp());
-        lastData.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+        lastData.addProperty("mTime", currTime);
+        lastData.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currTime));
     }
 
     private class ProbeLocationListener implements LocationListener {
@@ -223,16 +117,10 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         public void onLocationChanged(Location location) {
             if (location != null) {
                 String provider = location.getProvider();
-//				if (provider == null
-//						|| (useGps && LocationManager.GPS_PROVIDER.equals(provider))
-//						|| (useNetwork && LocationManager.NETWORK_PROVIDER.equals(provider))) {
-//					JsonObject data = gson.toJsonTree(location).getAsJsonObject();
-//					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(data.get("mTime").getAsBigDecimal()));
-//					sendData(gson.toJsonTree(location).getAsJsonObject());
-//				}
 
                 JsonObject data = gson.toJsonTree(location).getAsJsonObject();
-                data.addProperty(TIMESTAMP, data.get("mTime").getAsBigDecimal());
+                data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(data.get("mTime").getAsLong()));
+                Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + data.get("mTime").getAsBigDecimal());
 
                 if (lastData == null) {
                     lastData = data;
@@ -242,31 +130,13 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
                         lastGpsTimestamp = data.get(TIMESTAMP).getAsBigDecimal();
                         sendData();
                     } else {
-                        if (lastData.get(TIMESTAMP).getAsBigDecimal().subtract(lastGpsTimestamp)
-                                .compareTo(lastGpsTimestamp.add(new BigDecimal(1))) > 0) {
+                        if (data.get(TIMESTAMP).getAsBigDecimal().subtract(lastGpsTimestamp)
+                                .compareTo(new BigDecimal(checkInterval + 1)) > 0) {
                             currData = data;
                             sendData();
                         }
                     }
                 }
-
-//				JsonObject data = gson.toJsonTree(location).getAsJsonObject();
-//				lastTimeMillis = data.get("mTime").getAsLong();
-//				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + lastTimeMillis);
-//				if (provider.equals(LocationManager.GPS_PROVIDER)){
-//					lastGpsTimestamp = lastTimeMillis;
-//					Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] lastGps updated: " + lastGpsTimestamp);
-//				}
-//				if (provider.equals(LocationManager.NETWORK_PROVIDER) && (lastTimeMillis > lastGpsTimestamp + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval*2))){
-//					// write location given by network provider, when no location is given by gps provider for a long time.
-//					lastNetTimeMillis = lastTimeMillis;
-//					Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] lastNet updated: " + lastNetTimeMillis);
-//				}
-//				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
-//				sendData(gson.toJsonTree(location).getAsJsonObject());
-//				lastData = data;
-//				replicateOn = true;
-////				Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] data sended: " + lastNetTimeMillis);
             }
         }
 
@@ -308,6 +178,7 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
 
     /**
      * Supporting API level 7 which does not have PASSIVE provider
+     *
      * @return
      */
     private String getPassiveProvider() {

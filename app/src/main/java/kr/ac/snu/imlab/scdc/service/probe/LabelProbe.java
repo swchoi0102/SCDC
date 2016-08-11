@@ -123,7 +123,7 @@ public class LabelProbe extends Base implements ContinuousProbe, LabelKeys {
     }
 
 //    @Override
-//    public void sendLastData() {
+//    public void sendFinalData() {
 //
 //    }
 

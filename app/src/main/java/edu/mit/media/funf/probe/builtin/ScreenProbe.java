@@ -48,54 +48,6 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
     private BroadcastReceiver screenReceiver;
     private PowerManager pm;
 
-//	private double checkInterval = 1.0;
-//	private ScreenChecker screenChecker = new ScreenChecker();
-//	private long lastTimeMillis;
-//	private boolean lastScreenOn;
-//	private boolean replicateOn = false;
-//
-////	@Override
-////	public void sendLastData() {
-////
-////	}
-//
-//	private class ScreenChecker implements Runnable {
-//		@Override
-//		public void run() {
-//			getHandler().postDelayed(this, edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval));
-//			long currentTimeMillis = System.currentTimeMillis();
-//			if (replicateOn){
-//				if (currentTimeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
-////					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-//					replicateData(lastScreenOn, currentTimeMillis);
-//				}
-//			}
-//		}
-//
-//		public void endCurrentTask() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
-//			reset();
-//		}
-//
-//		public void reset() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
-//			replicateOn = false;
-//		}
-//	}
-//
-//	protected void replicateData(boolean so, long timeMillis) {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
-//		JsonObject data = new JsonObject();
-//		data.addProperty(SCREEN_ON, so);
-//		data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, edu.mit.media.funf.time.TimeUtil.getTimestamp());
-////		data.addProperty("rep", true);
-//
-//		// check one more time
-//		if (timeMillis > lastTimeMillis + edu.mit.media.funf.time.TimeUtil.secondsToMillis(checkInterval)){
-//			sendData(data);
-//		}
-//	}
-
     @Override
     protected void onEnable() {
         super.onEnable();
@@ -106,15 +58,14 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
                 final String action = intent.getAction();
                 if (Intent.ACTION_SCREEN_OFF.equals(action)
                         || Intent.ACTION_SCREEN_ON.equals(action)) {
+                    JsonObject data = new JsonObject();
+                    data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, TimeUtil.getTimestamp());
+                    data.addProperty(SCREEN_ON, Intent.ACTION_SCREEN_ON.equals(action));
                     if (lastData == null) {
                         Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] getCurrData");
-                        lastData = new JsonObject();
-                        lastData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, TimeUtil.getTimestamp());
-                        lastData.addProperty(SCREEN_ON, Intent.ACTION_SCREEN_ON.equals(action));
+                        lastData = data;
                     } else {
-                        currData = new JsonObject();
-                        currData.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, TimeUtil.getTimestamp());
-                        currData.addProperty(SCREEN_ON, Intent.ACTION_SCREEN_ON.equals(action));
+                        currData = data;
                         if (isDataChanged()) sendData();
                     }
                 }
@@ -131,32 +82,14 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         getContext().registerReceiver(screenReceiver, filter);
-//		onContinue();
     }
-
-//	protected void onContinue() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
-//		getHandler().post(screenChecker);
-//	}
 
     @Override
     protected void onStop() {
         Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] onStop");
         super.onStop();
         getContext().unregisterReceiver(screenReceiver);
-//		onPause();
     }
-
-//	protected void onPause() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
-//		getHandler().removeCallbacks(screenChecker);
-//		screenChecker.endCurrentTask();
-//	}
-
-//	@Override
-//	protected void onDisable() {
-//		screenChecker.reset();
-//	}
 
     private void initializeScreenStatus() {
         lastData = new JsonObject();
@@ -168,9 +101,4 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
         lastData.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
         lastData.addProperty(SCREEN_ON, screeOn);
     }
-
-//	@Override
-//	protected boolean isWakeLockedWhileRunning() {
-//		return false;
-//	}
 }
