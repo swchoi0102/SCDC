@@ -69,7 +69,6 @@ public class CellTowerProbe extends InsensitiveProbe implements Probe.Continuous
 	protected void onStart() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStart");
 		super.onStart();
-		sendData(getGson().toJsonTree(getData()).getAsJsonObject());
 		onContinue();
 	}
 

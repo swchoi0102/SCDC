@@ -109,7 +109,7 @@ public class ActivityRecognitionProbe extends Base
         LocalBroadcastManager.getInstance(getContext())
             .registerReceiver(arReceiver, filter);
 
-        // Intentionally wait 0.1 second for Google API Client to be connected
+        // Intentionally wait 2 seconds for Google API Client to be connected
         // then register activity updates handler
         handler.postDelayed(new Runnable() {
           @Override
@@ -117,7 +117,7 @@ public class ActivityRecognitionProbe extends Base
             // Register for activity recognition updates
             requestActivityUpdatesHandler();
           }
-        }, 500L);
+        }, 2000L);
     }
 
     @Override
@@ -352,9 +352,9 @@ public class ActivityRecognitionProbe extends Base
         int confidence = detectedActivitiesMap.containsKey(Constants.MONITORED_ACTIVITIES[i]) ?
                 detectedActivitiesMap.get(Constants.MONITORED_ACTIVITIES[i]) : 0;
 
-//        Log.d(LogKeys.DEBUG, TAG+"/ update activity: " +
-//                Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
-//                "=" + confidence);
+        Log.d(LogKeys.DEB, "[ActivityRecognitionProbe] " +
+                Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
+                "=" + confidence);
         tempMap.put(Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]),
                     confidence);
 //        tempList.add(new DetectedActivity(Constants.MONITORED_ACTIVITIES[i],
