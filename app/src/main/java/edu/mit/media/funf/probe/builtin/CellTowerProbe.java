@@ -54,10 +54,11 @@ public class CellTowerProbe extends InsensitiveProbe implements Probe.Continuous
 
 		@Override
 		public void run() {
+			JsonObject data = getCurrData();
 			if (lastData == null) {
-				lastData = getCurrData();
+				lastData = data;
 			} else {
-				currData = getCurrData();
+				currData = data;
 				if (isDataChanged()) sendData();
 			}
 			getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
