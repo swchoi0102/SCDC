@@ -61,7 +61,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 public class RunningApplicationsProbe extends Base implements ContinuousProbe, PassiveProbe, RunningApplicationsKeys {
 
 	@Configurable
-	private double pollInterval = 1.0;
+	private double pollInterval = 2.0;
 	
 	// Used as the flag for polling vs paused
 	private PowerManager pm;

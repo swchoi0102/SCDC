@@ -53,43 +53,14 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 	
 	private PackageManager pm;
-	
-//	private BroadcastReceiver packageChangeListener = new BroadcastReceiver()  {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
-//			try {
-//				if (Intent.ACTION_PACKAGE_ADDED.equals(action) || Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
-//					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), 0);
-//					sendData(info, true, TimeUtil.getTimestamp());
-//				} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-//					ApplicationInfo info = pm.getApplicationInfo(intent.getDataString(), PackageManager.GET_UNINSTALLED_PACKAGES);
-//					sendData(info, false, TimeUtil.getTimestamp());
-//				}
-//			} catch (NameNotFoundException e) {
-//				Log.w(LogUtil.TAG, "ApplicationsProbe: Package not found '" + intent.getDataString() + "'");
-//			}
-//		}
-//	};
-//
-//	@Override
-//	protected void onEnable() {
-//		super.onEnable();
-//		pm = getContext().getPackageManager();
-//		IntentFilter filter = new IntentFilter();
-//		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-//		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-//		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-//		getContext().registerReceiver(packageChangeListener, filter);
-//	}
-	
+	private long currentTime;
+
 	@Override
 	protected void onStart() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[ApplicationsProbe] onStart");
 		super.onStart();
 
-		long currentTime = System.currentTimeMillis();
+		currentTime = System.currentTimeMillis();
 		long lastSavedTime = getLastSavedTime();
 
 		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
@@ -106,7 +77,6 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 			setLastSavedTime(currentTime);
 		}
 
-//		stop();
 		disable();
 	}
 
@@ -117,14 +87,9 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 	}
 
 
-//	@Override
-//	protected void onDisable() {
-//		super.onDisable();
-//		getContext().unregisterReceiver(packageChangeListener);
-//	}
-
 	private void sendData(ApplicationInfo info, boolean installed, BigDecimal installedTimestamp) {
 		JsonObject data = getGson().toJsonTree(info).getAsJsonObject();
+		data.addProperty(TIMESTAMP, currentTime);
 		data.addProperty(INSTALLED, installed);
 		data.add(INSTALLED_TIMESTAMP, getGson().toJsonTree(installedTimestamp));
 		sendData(data);

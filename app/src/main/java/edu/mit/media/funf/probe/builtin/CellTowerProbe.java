@@ -31,30 +31,70 @@ import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 
-import edu.mit.media.funf.probe.Probe.Base;
+import com.google.gson.JsonObject;
+
+import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.CellKeys;
+import edu.mit.media.funf.time.TimeUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 
 @DisplayName("Nearby Cellular Towers Probe")
 @RequiredFeatures("android.hardware.telephony")
 @RequiredPermissions(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-public class CellTowerProbe extends Base implements CellKeys {
+public class CellTowerProbe extends InsensitiveProbe implements Probe.ContinuousProbe, CellKeys {
 
+	private double checkInterval = 10.0;
+	private CellTowerChecker cellTowerChecker = new CellTowerChecker();
+
+	private class CellTowerChecker implements Runnable {
+
+		@Override
+		public void run() {
+			if (lastData == null) {
+				lastData = getCurrData();
+			} else {
+				currData = getCurrData();
+				if (isDataChanged()) sendData();
+			}
+			getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
+		}
+	}
+	
 	@Override
 	protected void onStart() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStart");
 		super.onStart();
 		sendData(getGson().toJsonTree(getData()).getAsJsonObject());
-		stop();
+		onContinue();
+	}
+
+	protected void onContinue() {
+//        Log.d(LogUtil.TAG, "[CellTowerProbe] onContinue");
+		getHandler().post(cellTowerChecker);
+	}
+
+	protected void onPause() {
+//        Log.d(LogUtil.TAG, "[CellTowerProbe] onPause");
+		getHandler().removeCallbacks(cellTowerChecker);
 	}
 
 	@Override
 	protected void onStop() {
 		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStop");
+		onPause();
 		super.onStop();
+	}
+
+	@Override
+	protected JsonObject getCurrData() {
+		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] getCurrData");
+		JsonObject data = getGson().toJsonTree(getData()).getAsJsonObject();
+		data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+		return data;
 	}
 	
 	private Bundle getData() {
