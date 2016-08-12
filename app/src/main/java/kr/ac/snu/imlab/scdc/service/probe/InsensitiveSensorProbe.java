@@ -84,7 +84,7 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 					lastData = data;
 				} else {
 					currData = data;
-					sendData();
+					if (isDataChanged()) sendData();
 				}
 			}
 
