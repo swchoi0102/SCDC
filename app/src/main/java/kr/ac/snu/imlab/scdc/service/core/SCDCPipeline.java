@@ -223,13 +223,15 @@ public class SCDCPipeline implements Pipeline, DataListener {
       uploader.stop();
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      looper.quitSafely();
-      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): safely quit! (build version >= API-17)");
-    } else {
-      looper.quit();
-      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): just quit... (build version < API-17)");
-    }
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//      looper.quitSafely();
+//      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): safely quit! (build version >= API-17)");
+//    } else {
+//      looper.quit();
+//      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): just quit... (build version < API-17)");
+//    }
+    looper.quit();
+    Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDestroy(): just quit...");
 
     enabled = false;
     odrl = null;
@@ -446,19 +448,21 @@ public class SCDCPipeline implements Pipeline, DataListener {
 //    Log.d(LogKeys.DEBUG, "SCDCPipeline: availableMegs=" + availableMegs +
 //                         " (percentAvail: " + percentAvail + ")");
     if (handler != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        handler.sendMessage(message);
-      } else {
-        if (dataClone.has("isUrgent")) {
-          handler.sendMessageAtFrontOfQueue(message);
-          Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDataReceived: send urgent message at front of queue");
-        }
-        else handler.sendMessage(message);
-      }
-
-//      if (free < 0.1) {
-//        handler.removeMessages(5);
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//        handler.sendMessage(message);
+//      } else {
+//        if (dataClone.has("isUrgent")) {
+//          handler.sendMessageAtFrontOfQueue(message);
+//          Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDataReceived: send urgent message at front of queue");
+//        }
+//        else handler.sendMessage(message);
 //      }
+
+      if (dataClone.has("isUrgent")) {
+        handler.sendMessageAtFrontOfQueue(message);
+        Log.d(SCDCKeys.LogKeys.DEB, TAG+".onDataReceived: send urgent message at front of queue");
+      }
+      else handler.sendMessage(message);
     }
 
     // FIXME:

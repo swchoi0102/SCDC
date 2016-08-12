@@ -34,6 +34,8 @@ import android.util.Log;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.math.BigDecimal;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.Base;
@@ -71,9 +73,10 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
+				BigDecimal currTimestamp = TimeUtil.getTimestamp();
 				JsonObject data = new JsonObject();
         // FIXME: TIMESTAMP for all SensorProbe's
-				data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+				data.addProperty(TIMESTAMP, currTimestamp);
 				data.addProperty(ACCURACY, event.accuracy);
 				int valuesLength = Math.min(event.values.length, valueNames.length);
 				for (int i = 0; i < valuesLength; i++) {

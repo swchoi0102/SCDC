@@ -44,6 +44,7 @@ import com.google.gson.JsonObject;
 
 import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ApplicationsKeys;
+import edu.mit.media.funf.time.DecimalTimeUnit;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
@@ -89,7 +90,7 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 
 	private void sendData(ApplicationInfo info, boolean installed, BigDecimal installedTimestamp) {
 		JsonObject data = getGson().toJsonTree(info).getAsJsonObject();
-		data.addProperty(TIMESTAMP, currentTime);
+		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTime));
 		data.addProperty(INSTALLED, installed);
 		data.add(INSTALLED_TIMESTAMP, getGson().toJsonTree(installedTimestamp));
 		sendData(data);

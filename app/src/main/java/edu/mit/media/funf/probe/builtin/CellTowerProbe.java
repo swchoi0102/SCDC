@@ -47,7 +47,7 @@ import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
 @RequiredPermissions(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 public class CellTowerProbe extends InsensitiveProbe implements Probe.ContinuousProbe, CellKeys {
 
-	private double checkInterval = 10.0;
+	private double checkInterval = 15.0;
 	private CellTowerChecker cellTowerChecker = new CellTowerChecker();
 
 	private class CellTowerChecker implements Runnable {

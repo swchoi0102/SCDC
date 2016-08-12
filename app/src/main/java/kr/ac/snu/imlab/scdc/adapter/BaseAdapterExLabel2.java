@@ -3,10 +3,12 @@ package kr.ac.snu.imlab.scdc.adapter;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.nfc.cardemulation.OffHostApduService;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -179,6 +181,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName());
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).endLog();
+//          labelingOffWating();
 
 //          // Unbind/Stop SCDCService and bind SCDCManager instead
 //          mContext.unbindService(scdcServiceConn);
@@ -218,6 +221,41 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
     itemLayout.setClickable(true);
     return itemLayout;
   }
+
+
+  private void labelingOffWating() {
+    new AsyncTask<Void, Void, Boolean>() {
+      private ProgressDialog progressDialog;
+
+      @Override
+      protected void onPreExecute() {
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setMessage(mContext.getString(R.string.labeling_off_message));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+      }
+
+      @Override
+      protected Boolean doInBackground(Void... voids) {
+        try {
+          Thread.sleep(10000);         // one second sleep
+          publishProgress();          // trigger onProgressUpdate()
+        } catch(InterruptedException e) {
+          Log.e(SCDCKeys.LogKeys.DEB, TAG + ": " + Log.getStackTraceString(e));
+          return false;
+        }
+        return true;
+      }
+
+      @Override
+      protected void onPostExecute(Boolean isSuccess) {
+        progressDialog.dismiss();
+      }
+    }.execute();
+  }
+
+
+
 
   protected void notify(int mId, String title, String message,
                            String alert) {

@@ -39,6 +39,7 @@ import com.google.gson.JsonSerializer;
 
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.AccountsKeys;
+import edu.mit.media.funf.time.DecimalTimeUnit;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
@@ -72,7 +73,9 @@ public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
 			AccountManager am = (AccountManager)getContext().getSystemService(Context.ACCOUNT_SERVICE);
 			Gson gson = getGson();
 			for (Account account : am.getAccounts()) {
-				sendData(gson.toJsonTree(account).getAsJsonObject());
+				JsonObject data = gson.toJsonTree(account).getAsJsonObject();
+				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTime));
+				sendData(data);
 			}
 			setLastSavedTime(currentTime);
 		}

@@ -543,7 +543,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void requestData(DataListener listener, JsonElement probeConfig) {
-    Log.d(SCDCKeys.LogKeys.DEB, "requestData");
+//    Log.d(SCDCKeys.LogKeys.DEB, "requestData");
     requestData(listener, (JsonElement)probeConfig, null);
   }
 
@@ -594,7 +594,7 @@ public class SCDCManager extends FunfManager {
   }
 
   public void unrequestData(DataListener listener, JsonElement probeConfig) {
-    Log.d(SCDCKeys.LogKeys.DEB, "unrequestData");
+//    Log.d(SCDCKeys.LogKeys.DEB, "unrequestData");
     Probe probe = gson.fromJson(probeConfig, Probe.class);
     IJsonObject completeProbeConfig = (IJsonObject)JsonUtils.immutable(gson.toJsonTree(probe));  // Make sure probe config is complete and consistent
     unrequestData(listener, completeProbeConfig);
@@ -798,7 +798,7 @@ public class SCDCManager extends FunfManager {
         // FIXME: Cancel existing alarms
         alarmManager.cancel(operation);
         operation.cancel();
-        Log.d(LogKeys.DEB, TAG+".scheduler.cancel()");
+//        Log.d(LogKeys.DEB, TAG+".scheduler.cancel()");
       }
     }
 

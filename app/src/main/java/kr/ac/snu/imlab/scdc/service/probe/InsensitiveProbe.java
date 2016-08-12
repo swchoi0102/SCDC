@@ -31,17 +31,24 @@ public abstract class InsensitiveProbe extends Probe.Base {
     protected void sendData() {
         BigDecimal prevTimestamp = lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal();
         BigDecimal currTimestamp = currData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal();
-        lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, currTimestamp.subtract(prevTimestamp).floatValue());
-        sendData(lastData);
-        lastData = currData;
+        float duration = currTimestamp.subtract(prevTimestamp).floatValue();
+        if (duration > 0.005) {
+            lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration);
+            if (duration > 5) lastData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
+            sendData(lastData);
+            lastData = currData;
+        }
     }
 
     public void sendFinalData() {
         if (lastData != null) {
-            BigDecimal duration =
-                    TimeUtil.getTimestamp().subtract(lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal());
-            lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration.floatValue());
-            lastData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
+            float duration = TimeUtil.getTimestamp()
+                    .subtract(lastData.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsBigDecimal())
+                    .floatValue();
+            lastData.addProperty(SCDCKeys.InsensitiveKeys.DURATION, duration);
+            if (duration > 5) {
+                lastData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
+            }
             sendData(lastData);
             String[] nameSplit = this.getClass().getName().split("\\.");
             Log.d(SCDCKeys.LogKeys.DEB, "[" + nameSplit[nameSplit.length - 1] + "] sendFinalData!, " + duration);

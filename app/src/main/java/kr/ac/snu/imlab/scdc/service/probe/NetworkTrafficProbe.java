@@ -30,7 +30,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
     public BigDecimal currTimestamp = null;
     public BigDecimal lastTimestamp = null;
 
-    private double checkInterval = 10.0;
+    private double checkInterval = 15.0;
     private TrafficChecker trafficChecker = new TrafficChecker();
 
 

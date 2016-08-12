@@ -60,7 +60,7 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
     private Gson gson;
     private LocationManager mLocationManager;
     private LocationListener locationListener;
-    private final long checkInterval = 3;
+    private final long checkInterval = 5;
     private BigDecimal lastGpsTimestamp;
 
 

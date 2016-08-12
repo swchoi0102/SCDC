@@ -52,7 +52,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 
 	@Configurable
 	private String sensorDelay = SENSOR_DELAY_GAME;
-	private double checkInterval = 1.0;
+	private long lastTimeMillies;
 
 	public static final String
 		SENSOR_DELAY_FASTEST = "FASTEST",
@@ -64,84 +64,30 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 	private Sensor sensor;
 	private SensorEventListener sensorListener;
 
-//	private SensorChecker sensorChecker = new SensorChecker();
-//	private long lastTimeMillis;
-//	private float[] lastValues;
-//	private int lastAccuracy;
-//	private boolean replicateOn = false;
-//
-//	private class SensorChecker implements Runnable {
-//		@Override
-//		public void run() {
-//			getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
-//			long currentTimeMillis = System.currentTimeMillis();
-//			if (lastValues != null && replicateOn){
-//				if (currentTimeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)){
-////					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-//					replicateData(lastValues, currentTimeMillis);
-//				}
-//			}
-//		}
-//
-//		public void endCurrentTask() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
-//			reset();
-//		}
-//
-//		public void reset() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
-//			lastValues = null;
-//			replicateOn = false;
-//		}
-//	}
-//
-//	protected void replicateData(float[] vArr, long timeMillis) {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
-//		JsonObject data = new JsonObject();
-//		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
-//		data.addProperty(ACCURACY, 0);
-////		data.addProperty("rep", true);
-//		final String[] valueNames = getValueNames();
-//
-//		for (int i = 0; i < vArr.length; i++) {
-//			String valueName = valueNames[i];
-//			data.addProperty(valueName, vArr[i]);
-//		}
-//
-//		// check one more time
-//		if (timeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)){
-//			sendData(data);
-//		}
-//	}
-
-
 	@Override
 	protected void onEnable() {
 		super.onEnable();
 		sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
 		sensor = sensorManager.getDefaultSensor(getSensorType());
 		final String[] valueNames = getValueNames();
-//		lastValues = new float[valueNames.length];
+		lastTimeMillies = 0;
 		sensorListener = new SensorEventListener() {
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
-				JsonObject data = new JsonObject();
+				long currentTimeMillis = System.currentTimeMillis();
         // FIXME: TIMESTAMP for all SensorProbe's
-				// data.addProperty(TIMESTAMP, TimeUtil.uptimeNanosToTimestamp(event.timestamp));
-//				lastTimeMillis = System.currentTimeMillis();
-//        		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
-				data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
-				data.addProperty(ACCURACY, event.accuracy);
-				int valuesLength = Math.min(event.values.length, valueNames.length);
-				for (int i = 0; i < valuesLength; i++) {
-					String valueName = valueNames[i];
-					data.addProperty(valueName, event.values[i]);
-//					lastValues[i] = event.values[i];
-//					lastAccuracy = event.accuracy;
+				if (currentTimeMillis > lastTimeMillies + 5) {
+					JsonObject data = new JsonObject();
+					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
+					data.addProperty(ACCURACY, event.accuracy);
+					int valuesLength = Math.min(event.values.length, valueNames.length);
+					for (int i = 0; i < valuesLength; i++) {
+						String valueName = valueNames[i];
+						data.addProperty(valueName, event.values[i]);
+					}
+					sendData(data);
 				}
-				sendData(data);
-//				replicateOn = true;
 			}
 
 			@Override
@@ -154,32 +100,12 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 	protected void onStart() {
 		super.onStart();
 		getSensorManager().registerListener(sensorListener,sensor, getSensorDelay(sensorDelay));
-//		onContinue();
 	}
-
-//	protected void onContinue() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
-//		getHandler().post(sensorChecker);
-//	}
 
 	@Override
 	protected void onStop() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
 		getSensorManager().unregisterListener(sensorListener);
-//		onPause();
 	}
-
-//	protected void onPause() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
-//		getHandler().removeCallbacks(sensorChecker);
-//		sensorChecker.endCurrentTask();
-//	}
-
-//	@Override
-//	protected void onDisable() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onDisable");
-//		sensorChecker.reset();
-//	}
 
 	protected SensorManager getSensorManager() {
 		if (sensorManager == null) {
