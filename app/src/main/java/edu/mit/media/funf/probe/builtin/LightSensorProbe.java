@@ -30,10 +30,11 @@ import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.LightSensorKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.probe.InsensitiveSensorProbe;
 
 @Schedule.DefaultSchedule(interval=300, duration=SensorProbe.DEFAULT_DURATION)
 @RequiredFeatures("android.hardware.sensor.light")
-public class LightSensorProbe extends SensorProbe implements LightSensorKeys {
+public class LightSensorProbe extends InsensitiveSensorProbe implements LightSensorKeys {
 
 	public int getSensorType() {
 		return Sensor.TYPE_LIGHT;

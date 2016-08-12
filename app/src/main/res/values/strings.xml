@@ -39,7 +39,14 @@
             {"@type": "edu.mit.media.funf.probe.builtin.OrientationSensorProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
+
             {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+            },
+            {"@type": "edu.mit.media.funf.probe.builtin.LightSensorProbe",
+             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+            },
+            {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
 

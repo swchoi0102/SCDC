@@ -31,6 +31,7 @@ import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ProximitySensorKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.probe.InsensitiveSensorProbe;
 
 
 /**
@@ -41,7 +42,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 @Description("Returns sensor distance in centimeters or only a binary near/far measurement.")
 @RequiredFeatures("android.hardware.sensor.proximity")
 @Schedule.DefaultSchedule(interval=300, duration=15)
-public class ProximitySensorProbe extends SensorProbe implements ProximitySensorKeys {
+public class ProximitySensorProbe extends InsensitiveSensorProbe implements ProximitySensorKeys {
 
 	public int getSensorType() {
 		return Sensor.TYPE_PROXIMITY;
