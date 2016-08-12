@@ -49,7 +49,7 @@
              "@schedule": {"interval": 120, "duration": 40, "strict": true}
             },
 
-            {"@type": "edu.mit.media.funf.probe.builtin.MagneticSensorProbe",
+            {"@type": "edu.mit.media.funf.probe.builtin.MagneticFieldSensorProbe",
              "@schedule": {"interval": 120, "duration": 40, "strict": true}
             },
             {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
@@ -75,7 +75,7 @@
              "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
             },
 
-            {"@type": "edu.mit.media.funf.probe.builtin.CallProbe",
+            {"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
             },
             {"@type": "edu.mit.media.funf.probe.builtin.SmsProbe",
