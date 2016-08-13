@@ -3,19 +3,19 @@
  * Copyright (C) 2010-2011 Nadav Aharony, Wei Pan, Alex Pentland.
  * Acknowledgments: Alan Gardner
  * Contact: nadav@media.mit.edu
- * <p/>
+ * <p>
  * This file is part of Funf.
- * <p/>
+ * <p>
  * Funf is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * <p/>
+ * <p>
  * Funf is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
- * <p/>
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with Funf. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -38,7 +38,6 @@ import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.OrientationSensorKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
-import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
@@ -52,7 +51,8 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
-    private double checkInterval = 1.0;
+    private long lastTimeMillis;
+    private final long MIN_INTERVAL = 5;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
@@ -65,62 +65,6 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
     private Sensor magnetometer;
     private SensorEventListener sensorListener;
 
-//    private SensorChecker sensorChecker = new SensorChecker();
-//    private long lastTimeMillis;
-//    private float[] lastValues;
-//    private int lastAccuracy;
-//    private boolean replicateOn = false;
-//
-////	@Override
-////	public void sendFinalData() {
-////
-////	}
-//
-//    private class SensorChecker implements Runnable {
-//        @Override
-//        public void run() {
-//            getHandler().postDelayed(this, TimeUtil.secondsToMillis(checkInterval));
-//            long currentTimeMillis = System.currentTimeMillis();
-//            if (lastValues != null && replicateOn) {
-//                if (currentTimeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
-////					Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] curr: " + currentTimeMillis + ", last: " + lastTimeMillis);
-//                    replicateData(lastValues, currentTimeMillis, lastAccuracy);
-//                }
-//            }
-//        }
-//
-//        public void endCurrentTask() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] End replicate task");
-//            reset();
-//        }
-//
-//        public void reset() {
-////			Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Reset replicate task");
-//            lastValues = null;
-//            replicateOn = false;
-//        }
-//    }
-//
-//    protected void replicateData(float[] vArr, long timeMillis, int acc) {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] Replicate data!");
-//        JsonObject data = new JsonObject();
-//        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(timeMillis));
-//        data.addProperty(ACCURACY, acc);
-//        data.addProperty("rep", true);
-//        final String[] valueNames = getValueNames();
-//
-//        for (int i = 0; i < vArr.length; i++) {
-//            String valueName = valueNames[i];
-//            data.addProperty(valueName, vArr[i]);
-//        }
-//
-//        // check one more time
-//        if (timeMillis > lastTimeMillis + TimeUtil.secondsToMillis(checkInterval)) {
-//            sendData(data);
-//        }
-//    }
-
-
     @Override
     protected void onEnable() {
         super.onEnable();
@@ -128,7 +72,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         final String[] valueNames = getValueNames();
-//        lastValues = new float[valueNames.length];
+        lastTimeMillis = 0;
         sensorListener = new SensorEventListener() {
 
             float[] mGravity;
@@ -136,6 +80,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 
             @Override
             public void onSensorChanged(SensorEvent event) {
+                long currentTimeMillis = System.currentTimeMillis();
                 if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
                     mGravity = event.values;
                 if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
@@ -145,10 +90,8 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
                     float I[] = new float[9];
                     boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
                     if (success) {
-//                        lastTimeMillis = System.currentTimeMillis();
                         JsonObject data = new JsonObject();
-//                        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(lastTimeMillis));
-                        data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
+                        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
                         data.addProperty(ACCURACY, event.accuracy);
 
                         float orientation[] = new float[3];
@@ -157,13 +100,12 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
                         for (int i = 0; i < valueNames.length; i++) {
                             String valueName = valueNames[i];
                             float tempValue = (float) Math.toDegrees(orientation[i]);
-//							int tempValue = (int) ( Math.toDegrees( orientation[i] ) + 360 ) % 360;
                             data.addProperty(valueName, tempValue);
-//                            lastValues[i] = tempValue;
-//                            lastAccuracy = event.accuracy;
                         }
-                        sendData(data);
-//                        replicateOn = true;
+                        if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL) {
+                            lastTimeMillis = currentTimeMillis;
+                            sendData(data);
+                        }
                     }
                 }
             }
@@ -180,33 +122,14 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
         super.onStart();
         getSensorManager().registerListener(sensorListener, accelerometer, getSensorDelay(sensorDelay));
         getSensorManager().registerListener(sensorListener, magnetometer, getSensorDelay(sensorDelay));
-//        onContinue();
     }
-
-//    protected void onContinue() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onContinue");
-//        getHandler().post(sensorChecker);
-//    }
 
     @Override
     protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[OrientationSensorProbe] onStop");
+        Log.d(SCDCKeys.LogKeys.DEB, "[OrientationSensorProbe] onStop");
         super.onStop();
         getSensorManager().unregisterListener(sensorListener);
-//        onPause();
     }
-
-//    protected void onPause() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onPause");
-//        getHandler().removeCallbacks(sensorChecker);
-//        sensorChecker.endCurrentTask();
-//    }
-
-//    @Override
-//    protected void onDisable() {
-////		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onDisable");
-//        sensorChecker.reset();
-//    }
 
     protected SensorManager getSensorManager() {
         if (sensorManager == null) {
