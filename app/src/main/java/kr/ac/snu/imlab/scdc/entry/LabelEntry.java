@@ -1,10 +1,7 @@
 package kr.ac.snu.imlab.scdc.entry;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
-import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 /**
@@ -69,6 +66,15 @@ public class LabelEntry {
     if (!isLogged()) return;
     spHandler.setStartLoggingTime(getId(), -1L);
   }
+
+  public void endLog(long elapsedTime) {
+    if (!isLogged()) return;
+//    Log.d(SCDCKeys.LogKeys.DEBB+"."+TAG,getId()+"\t"+getName()+"\t"+ String.valueOf(elapsedTime));
+    spHandler.setAccumulatedTime(getId(), elapsedTime);
+    spHandler.setStartLoggingTime(getId(), -1L);
+  }
+
+  public long getTime() { return spHandler.getAccumulatedTime(getId()); }
 
   public long getStartLoggingTime() {
     return spHandler.getStartLoggingTime(getId());

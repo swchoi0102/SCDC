@@ -408,8 +408,8 @@ public class LaunchActivity extends ActionBarActivity
 //        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
         togetherToggleButton.setEnabled(!isChecked);
-        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
-                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+//        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
+//                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
         Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
@@ -466,8 +466,8 @@ public class LaunchActivity extends ActionBarActivity
         userNameButton.setEnabled(!isChecked);
         aloneToggleButton.setEnabled(!isChecked);
 
-        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
-                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+//        Log.d(LogKeys.DEBB, "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
+//                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
         Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
@@ -908,6 +908,15 @@ public class LaunchActivity extends ActionBarActivity
         if (showProgress) {
           progressDialog.dismiss();
         }
+
+        // reset all accumulated times !
+        for (LabelEntry entry : normalLabelEntries){
+          spHandler.resetAccumulatedTime(entry.getId());
+        }
+        for (LabelEntry entry : specialLabelEntries){
+          spHandler.resetAccumulatedTime(entry.getId());
+        }
+
         dataCountView.setText("Data size: 0.0 MB");
         updateLaunchActivityUi();
         Toast.makeText(getBaseContext(), getString(R.string.truncate_complete_message),

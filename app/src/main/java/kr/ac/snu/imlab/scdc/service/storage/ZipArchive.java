@@ -86,7 +86,8 @@ public class ZipArchive extends DefaultArchive {
     // NameGenerator nameGenerator = new CompositeNameGenerator(new UsernameNameGenerator(prefs), new IsFemaleNameGenerator(prefs), new ShortDatetimeNameGenerator(), new RequiredSuffixNameGenerator(".db"));
     NameGenerator nameGenerator = new CompositeNameGenerator(
       new UsernameNameGenerator(context, prefsName, mode),
-      new IsFemaleNameGenerator(context, prefsName, mode),
+      new AccumulatedTimeNameGenerator(context, prefsName, mode),
+//      new IsFemaleNameGenerator(context, prefsName, mode),
       new ShortDatetimeNameGenerator());
     // Use non-encrypting FileCopier
     FileCopier copier = new FileCopier.SimpleFileCopier();
@@ -161,7 +162,31 @@ public class ZipArchive extends DefaultArchive {
       return name == null ? null : spHandler.getUsername() + "_" + name;
     }
   }
+  /**
+   * New NameGenerator class: AccumulatedTimeNameGenerator
+   * Added by kyuyon.
+   */
+  static class AccumulatedTimeNameGenerator implements NameGenerator {
 
+    private SharedPrefsHandler spHandler;
+
+    public AccumulatedTimeNameGenerator(Context context, String name, int mode) {
+      spHandler = SharedPrefsHandler.getInstance(context, name, mode);
+    }
+
+    @Override
+    public String generateName(final String name) {
+      return name == null ?
+              null : "SL"+spHandler.getAccumulatedTime(0)
+                +"-EA"+ spHandler.getAccumulatedTime(1)
+                +"-DR"+ spHandler.getAccumulatedTime(2)
+                +"-IC"+ spHandler.getAccumulatedTime(3)
+                +"-ST"+ spHandler.getAccumulatedTime(4)
+                +"-MV"+ spHandler.getAccumulatedTime(5)
+                +"-NO"+ spHandler.getAccumulatedTime(6)
+                +"_"+ name;
+    }
+  }
   /**
    * New NameGenerator class: IsFemaleNameGenerator
    * Added by Kilho Kim.

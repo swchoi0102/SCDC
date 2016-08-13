@@ -72,6 +72,7 @@ public class SCDCKeys {
       IDLE_CONFIG = "idleConfig",
       LAST_CONFIG_UPDATE = "last_config_update",
       FIRST_RUN = "firstrun",
+      LABEL_ACCUMULATED_TIME_PREFIX = "accumulated_time_",
 
       ACCOUNTS_LOG_LAST_TIME = "ACCOUNTS_LT",
       ANDROID_INFO_LOG_LAST_TIME = "ANDROID_LT",

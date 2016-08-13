@@ -2,13 +2,11 @@ package kr.ac.snu.imlab.scdc.util;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.provider.Settings.Secure;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.RadioButton;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -117,7 +115,6 @@ public class SharedPrefsHandler {
     prefs.edit().putBoolean(SharedPrefs.IS_FEMALE, isFemale).apply();
   }
 
-
   // Id's related to data collection
   // Methods to track expId's for each data emission from Probe
   public int getExpId(String probeConfig) {
@@ -174,6 +171,21 @@ public class SharedPrefsHandler {
   public void setStartLoggingTime(int labelId, long startLoggingTime) {
     prefs.edit().putLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX +
             String.valueOf(labelId), startLoggingTime).apply();
+  }
+
+  public long getAccumulatedTime(int labelId){
+    return prefs.getLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0);
+  }
+
+  public void setAccumulatedTime(int labelId, long elapsedTime){
+    long accum = getAccumulatedTime(labelId) + elapsedTime;
+    Log.d(LogKeys.DEBB, TAG+": accumulated time is "+String.valueOf(accum));
+    prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), accum).apply();
+  }
+
+  public void resetAccumulatedTime(int labelId){
+//    Log.d(LogKeys.DEBB, TAG+": accumlated time reset");
+    prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0).apply();
   }
 
   // Alone/Together status (trinary value)

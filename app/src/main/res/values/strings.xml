@@ -73,6 +73,7 @@
             },
 
 
+
             {"@type": "edu.mit.media.funf.probe.builtin.ServicesProbe",
              "@schedule": {"interval": 120, "opportunistic": true}
             },
