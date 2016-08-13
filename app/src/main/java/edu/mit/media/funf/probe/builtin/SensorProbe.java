@@ -49,7 +49,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
     private long lastTimeMillis;
-    private final long MIN_INTERVAL = 5;
+    private final long MIN_INTERVAL_MILLIS = 2;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
@@ -82,7 +82,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
                     data.addProperty(valueName, event.values[i]);
                 }
 
-                if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL){
+                if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL_MILLIS){
                     lastTimeMillis = currentTimeMillis;
                     sendData(data);
                 }

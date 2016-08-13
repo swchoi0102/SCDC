@@ -52,7 +52,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
     private long lastTimeMillis;
-    private final long MIN_INTERVAL = 5;
+    private final long MIN_INTERVAL_MILLIS = 2;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
@@ -102,7 +102,7 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
                             float tempValue = (float) Math.toDegrees(orientation[i]);
                             data.addProperty(valueName, tempValue);
                         }
-                        if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL) {
+                        if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL_MILLIS) {
                             lastTimeMillis = currentTimeMillis;
                             sendData(data);
                         }

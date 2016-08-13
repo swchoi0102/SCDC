@@ -126,22 +126,13 @@
          "@schedule": {"interval": 120, "duration": 40, "strict": true}
         },
 
-        {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe",
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
          "@schedule": {"interval": 120, "duration": 40, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
          "@schedule": {"interval": 120, "duration": 40, "strict": true}
         },
-        {"@type": "edu.mit.media.funf.probe.builtin.OrientationSensorProbe",
-         "@schedule": {"interval": 120, "duration": 40, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.GravitySensorProbe",
-         "@schedule": {"interval": 120, "duration": 40, "strict": true}
-        },
         {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-         "@schedule": {"interval": 120, "duration": 40, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.MagneticFieldSensorProbe",
          "@schedule": {"interval": 120, "duration": 40, "strict": true}
         }
       ]

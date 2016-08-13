@@ -48,6 +48,7 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
 
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
+    private final long MIN_INTERVAL_MILLIS = 2;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
@@ -67,7 +68,6 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
 
     private final String[] ACC_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.ACCEL_X, SCDCKeys.SensitiveSensorsKeys.ACCEL_Y, SCDCKeys.SensitiveSensorsKeys.ACCEL_Z};
     private final String[] GRVT_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.GRAVITY_X, SCDCKeys.SensitiveSensorsKeys.GRAVITY_Y, SCDCKeys.SensitiveSensorsKeys.GRAVITY_Z};
-    private final String[] LIN_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.LINEAR_X, SCDCKeys.SensitiveSensorsKeys.LINEAR_Y, SCDCKeys.SensitiveSensorsKeys.LINEAR_Z};
     private final String[] ORT_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.ORIENT_AZIMUTH, SCDCKeys.SensitiveSensorsKeys.ORIENT_PITCH, SCDCKeys.SensitiveSensorsKeys.ORIENT_ROLL};
     private final String[] MAG_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.MAGNET_X, SCDCKeys.SensitiveSensorsKeys.MAGNET_Y, SCDCKeys.SensitiveSensorsKeys.MAGNET_Z};
 
@@ -84,10 +84,7 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
             float[] accelerometerValues;
             float[] gravityValues;
             float[] magneticValues;
-
             float[] orientationValues;
-            float[] linearValues;
-
             long lastTimeMillis = 0;
 
             @Override
@@ -112,29 +109,19 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
                     }
                 }
 
-                if ((sensorType == Sensor.TYPE_GRAVITY || sensorType == Sensor.TYPE_ACCELEROMETER)
-                        && (gravityValues != null && accelerometerValues != null)) {
-                    linearValues = new float[3];
-                    for (int i = 0; i < 3; i++) {
-                        linearValues[i] = accelerometerValues[i] - gravityValues[i];
-                    }
-                }
-
-                if (accelerometerValues != null && gravityValues != null && magneticValues != null && orientationValues != null && linearValues != null) {
+                if (accelerometerValues != null && gravityValues != null && magneticValues != null && orientationValues != null) {
                     JsonObject data = new JsonObject();
                     data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
                     for (int i = 0; i < ACC_VALUE_NAMES.length; i++)
                         data.addProperty(ACC_VALUE_NAMES[i], accelerometerValues[i]);
                     for (int i = 0; i < GRVT_VALUE_NAMES.length; i++)
                         data.addProperty(GRVT_VALUE_NAMES[i], gravityValues[i]);
-                    for (int i = 0; i < LIN_VALUE_NAMES.length; i++)
-                        data.addProperty(LIN_VALUE_NAMES[i], linearValues[i]);
                     for (int i = 0; i < ORT_VALUE_NAMES.length; i++)
                         data.addProperty(ORT_VALUE_NAMES[i], orientationValues[i]);
                     for (int i = 0; i < MAG_VALUE_NAMES.length; i++)
                         data.addProperty(MAG_VALUE_NAMES[i], magneticValues[i]);
 
-                    if (currentTimeMillis > lastTimeMillis + 10) {
+                    if (currentTimeMillis > lastTimeMillis + MIN_INTERVAL_MILLIS) {
                         lastTimeMillis = currentTimeMillis;
                         sendData(data);
                     }
