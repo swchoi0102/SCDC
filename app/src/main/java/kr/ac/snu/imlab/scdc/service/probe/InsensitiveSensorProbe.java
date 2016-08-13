@@ -61,6 +61,8 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 
 	private SensorManager sensorManager;
 	private Sensor sensor;
+	private Sensor accelerometer;
+	private Sensor magnetometer;
 	private SensorEventListener sensorListener;
 
 	@Override
@@ -75,7 +77,7 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 			public void onSensorChanged(SensorEvent event) {
 				BigDecimal currTimestamp = TimeUtil.getTimestamp();
 				JsonObject data = new JsonObject();
-        // FIXME: TIMESTAMP for all SensorProbe's
+        // FIXME: TIMESTAMP for all SensitiveSensorsProbe's
 				data.addProperty(TIMESTAMP, currTimestamp);
 				data.addProperty(ACCURACY, event.accuracy);
 				int valuesLength = Math.min(event.values.length, valueNames.length);

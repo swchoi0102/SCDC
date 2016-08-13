@@ -21,8 +21,7 @@
  * License along with Funf. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package edu.mit.media.funf.probe.builtin;
-
+package kr.ac.snu.imlab.scdc.service.probe;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -34,25 +33,25 @@ import android.util.Log;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
+
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.Probe.ContinuousProbe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.SensorKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
-import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
-@Schedule.DefaultSchedule(interval=SensorProbe.DEFAULT_PERIOD, duration=SensorProbe.DEFAULT_DURATION)
-public abstract class SensorProbe extends Base implements ContinuousProbe, SensorKeys {
+@Schedule.DefaultSchedule(interval= CorrelatedSensitiveSensorsProbe.DEFAULT_PERIOD, duration= CorrelatedSensitiveSensorsProbe.DEFAULT_DURATION)
+public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousProbe, SensorKeys {
 
 	public static final double DEFAULT_PERIOD = 3600;
 	public static final double DEFAULT_DURATION = 60;
 
 	@Configurable
 	private String sensorDelay = SENSOR_DELAY_GAME;
-	private long lastTimeMillies;
 
 	public static final String
 		SENSOR_DELAY_FASTEST = "FASTEST",
@@ -60,23 +59,96 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 		SENSOR_DELAY_UI = "UI",
 		SENSOR_DELAY_NORMAL = "NORMAL";
 
+	private String[] mods = new String[]{SCDCKeys.SensitiveSensorsKeys.GYRO, SCDCKeys.SensitiveSensorsKeys.GRAVITY,
+			SCDCKeys.SensitiveSensorsKeys.LINEAR, SCDCKeys.SensitiveSensorsKeys.GYRO, SCDCKeys.SensitiveSensorsKeys.MAGNET,
+			SCDCKeys.SensitiveSensorsKeys.ORIENT, SCDCKeys.SensitiveSensorsKeys.ROTATION};
 	private SensorManager sensorManager;
-	private Sensor sensor;
+	private Sensor accSensor;
+	private Sensor grvtSensor;
+	private Sensor gyroSensor;
+	private Sensor magSensor;
+	private Sensor rotSensor;
+
 	private SensorEventListener sensorListener;
+	
+	private final String[] ACC_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.ACCEL_X, SCDCKeys.SensitiveSensorsKeys.ACCEL_Y, SCDCKeys.SensitiveSensorsKeys.ACCEL_Z};
+	private final String[] GRVT_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.GRAVITY_X, SCDCKeys.SensitiveSensorsKeys.GRAVITY_Y, SCDCKeys.SensitiveSensorsKeys.GRAVITY_Z};
+	private final String[] LIN_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.LINEAR_X, SCDCKeys.SensitiveSensorsKeys.LINEAR_Y, SCDCKeys.SensitiveSensorsKeys.LINEAR_Z};
+	private final String[] ORT_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.ORIENT_AZIMUTH, SCDCKeys.SensitiveSensorsKeys.ORIENT_PITCH, SCDCKeys.SensitiveSensorsKeys.ORIENT_ROLL};
+	private final String[] MAG_VALUE_NAMES = new String[]{SCDCKeys.SensitiveSensorsKeys.MAGNET_X, SCDCKeys.SensitiveSensorsKeys.MAGNET_Y, SCDCKeys.SensitiveSensorsKeys.MAGNET_Z};
+	
+
+	protected ArrayList<String> getValueNames() {
+		ArrayList<String> totalValueNames = new ArrayList<>();
+		for (String mod: mods) {
+			String[] modValueNames = getModValueNames(mod);
+			for (String mvn: modValueNames) {
+				totalValueNames.add(mvn);
+			}
+		}
+		return totalValueNames;
+	}
 
 	@Override
 	protected void onEnable() {
 		super.onEnable();
 		sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-		sensor = sensorManager.getDefaultSensor(getSensorType());
-		final String[] valueNames = getValueNames();
-		lastTimeMillies = 0;
+		accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		grvtSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+		magSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
 		sensorListener = new SensorEventListener() {
+			float[] accValues;
+			float[] grvtValues;
+			float[] magValues;
+
+			float[] ortValues;
+			float[] linValues;
+
+			long lastTimeMillis = 0;
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				long currentTimeMillis = System.currentTimeMillis();
-        // FIXME: TIMESTAMP for all SensitiveSensorsProbe's
+				int sensorType = event.sensor.getType();
+				if (sensorType == Sensor.TYPE_ACCELEROMETER)
+					accValues = event.values;
+				if (sensorType == Sensor.TYPE_GRAVITY)
+					grvtValues = event.values;
+				if (sensorType == Sensor.TYPE_MAGNETIC_FIELD)
+					magValues = event.values;
+
+				if ((sensorType == Sensor.TYPE_GRAVITY || sensorType == Sensor.TYPE_MAGNETIC_FIELD)
+						&& (grvtValues != null && magValues != null)) {
+					float R[] = new float[9];
+					float I[] = new float[9];
+					boolean success = SensorManager.getRotationMatrix(R, I, grvtValues, magValues);
+					if (success) {
+						ortValues = new float[3];
+						SensorManager.getOrientation(R, ortValues);
+					}
+				}
+
+				if ((sensorType == Sensor.TYPE_GRAVITY || sensorType == Sensor.TYPE_ACCELEROMETER)
+						&& (grvtValues != null && accValues != null)){
+					linValues = new float[3];
+					for(int i=0; i<3; i++){
+						linValues[i] = accValues[i] - grvtValues[i];
+					}
+				}
+
+				JsonObject data = new JsonObject();
+				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
+
+				if (sensorType == Sensor.TYPE_GYROEROMETER &&
+						((lastTimeMillis > currentTimeMillis + 0.005)
+								|| (lastLinTimeMillis > currentTimeMillis + 0.005))){
+					for (int i = 0; i < 3; i++) {
+						data.addProperty(valueName, event.values[i]);
+					}
+					sendData(data);
+				}
+
 				if (currentTimeMillis > lastTimeMillies + 5) {
 					JsonObject data = new JsonObject();
 					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
@@ -99,7 +171,11 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 	@Override
 	protected void onStart() {
 		super.onStart();
-		getSensorManager().registerListener(sensorListener,sensor, getSensorDelay(sensorDelay));
+		getSensorManager().registerListener(sensorListener, accSensor, getSensorDelay(sensorDelay));
+		getSensorManager().registerListener(sensorListener, grvtSensor, getSensorDelay(sensorDelay));
+		getSensorManager().registerListener(sensorListener, gyroSensor, getSensorDelay(sensorDelay));
+		getSensorManager().registerListener(sensorListener, magSensor, getSensorDelay(sensorDelay));
+		getSensorManager().registerListener(sensorListener, rotSensor, getSensorDelay(sensorDelay));
 	}
 
 	@Override
@@ -145,7 +221,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 					sensorDelay = SensorManager.SENSOR_DELAY_NORMAL;
 				}
 			} catch (ClassCastException cce) {
-				Log.w(LogUtil.TAG, "Unknown sensor delay value: " + specifiedSensorDelay);
+				Log.w(LogUtil.TAG, "Unknown accSensor delay value: " + specifiedSensorDelay);
 			}
 		}
 
@@ -155,7 +231,4 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 
 		return sensorDelay;
 	}
-
-	public abstract int getSensorType();
-	public abstract String[] getValueNames();
 }
