@@ -23,13 +23,10 @@
  */
 package edu.mit.media.funf.probe.builtin;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
@@ -46,10 +43,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
-import android.provider.MediaStore;
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -60,7 +54,6 @@ import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ContactKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
-import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @DisplayName("Contacts Probe")
 @RequiredPermissions(android.Manifest.permission.READ_CONTACTS)
@@ -70,17 +63,27 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 	private class VersionMap extends TreeMap<Integer,Integer> {private static final long serialVersionUID = 8835219249716647742L;}
 	
 	private VersionMap dataIdToVersion = new VersionMap();
+	private long lastLogIndex;
+	private long tempLastLogIndex;
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ContactProbe] onStart");
-		super.onStart();
+	public ContactProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.CONTACT_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.CONTACT_COLLECT_TEMP_LAST_TIME;
+		lastLogIndexKey = SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_INDEX;
+		lastLogIndexTempKey = SCDCKeys.SharedPrefs.CONTACT_LOG_TEMP_LAST_INDEX;
 	}
 
 	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ContactProbe] onStop");
-		super.onStop();
+	protected void onEnable() {
+		super.onEnable();
+		lastLogIndex = getLastLogIndex();
+		tempLastLogIndex = getTempLastLogIndex();
+	}
+
+	@Override
+	protected void onDisable() {
+		super.onDisable();
+		setTempLastLogIndex(tempLastLogIndex);
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 				ContactsContract.Data.CONTENT_URI,
                 projection,
 				Data.CONTACT_ID + " > ?",
-				new String[]{"" + getLastSavedId()},
+				new String[]{"" + getLastLogIndex()},
 //                null, //Data.MIMETYPE + " IN ('" + Email.CONTENT_ITEM_TYPE + "')",
 //                null,//new String[] {"('" + Utils.join(Arrays.asList(Email.MIMETYPE, Event.MIMETYPE), "','") +"')"},
                 Data.CONTACT_ID + " ASC");
@@ -304,26 +307,16 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 		return hasChanged ? contact : null;
 	}
 
-	protected void setLastSavedId(int lastSavedId) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedId(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_ID, lastSavedId);
-	}
-
-	protected int getLastSavedId() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedId(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_ID);
-	}
-
 	@Override
 	protected void sendData(JsonObject data) {
-		int tempId = getLastSavedId();
+		long tempLogIndex = lastLogIndex;
 		try{
-			tempId = data.get(Data.CONTACT_ID).getAsInt();
+			tempLogIndex = data.get(Data.CONTACT_ID).getAsInt();
 		} catch (Exception e){}
-		if (tempId > getLastSavedId()){
-//			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last Id: " + tempId);
+		if (tempLogIndex > lastLogIndex && tempLogIndex > tempLastLogIndex){
+//			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] new data is collected!!!");
 			super.sendData(data);
-			setLastSavedId(tempId);
+			tempLastLogIndex = tempLogIndex;
 		}
 	}
 

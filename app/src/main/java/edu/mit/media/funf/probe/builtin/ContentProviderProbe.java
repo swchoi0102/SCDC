@@ -48,29 +48,54 @@ import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.LongCell
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.StringCell;
 import edu.mit.media.funf.security.HashUtil;
 import edu.mit.media.funf.util.LogUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @Schedule.DefaultSchedule(interval=3600)
 public abstract class ContentProviderProbe extends ImpulseProbe {
 
 	private Gson gson;
+	protected String lastLogIndexKey;
+	protected String lastLogIndexTempKey;
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		gson = getGson();
-		for (JsonObject data : parseCursorResults()) {
-			if (data != null) {
-				BigDecimal customTimestamp = getTimestamp(data);
-				if (customTimestamp != null) {
-					data.addProperty(TIMESTAMP, customTimestamp);
+		if (itIsTimeToStart()){
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] It is time to start!!!");
+			gson = getGson();
+			boolean success = false;
+			for (JsonObject data : parseCursorResults()) {
+				if (data != null) {
+					BigDecimal customTimestamp = getTimestamp(data);
+					if (customTimestamp != null) {
+						data.addProperty(TIMESTAMP, customTimestamp);
+					}
+					sendData(data);
+					success = true;
 				}
-				sendData(data);
 			}
+			if (success) setTempLastCollectTime(System.currentTimeMillis());
+		} else {
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}
 		stop();
 	}
 
+	protected void setTempLastLogIndex(long lastSavedTime) {
+		SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setLastSavedIndex(lastLogIndexTempKey, lastSavedTime);
+	}
 
+	protected long getTempLastLogIndex() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getLastSavedIndex(lastLogIndexTempKey);
+	}
+
+	protected long getLastLogIndex() {
+		return SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getLastSavedIndex(lastLogIndexKey);
+	}
 
 	private Iterable<JsonObject> parseCursorResults() {
         return new Iterable<JsonObject>() {

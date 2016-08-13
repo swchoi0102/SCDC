@@ -47,16 +47,11 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @RequiredPermissions(android.Manifest.permission.READ_SMS)
 public class SmsProbe extends DatedContentProviderProbe implements SmsKeys {
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[SmsProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[SmsProbe] onStop");
-		super.onStop();
+	public SmsProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.SMS_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.SMS_COLLECT_TEMP_LAST_TIME;
+		lastLogIndexKey = SCDCKeys.SharedPrefs.SMS_LOG_LAST_INDEX;
+		lastLogIndexTempKey = SCDCKeys.SharedPrefs.SMS_LOG_TEMP_LAST_INDEX;
 	}
 
 	@Override
@@ -90,17 +85,5 @@ public class SmsProbe extends DatedContentProviderProbe implements SmsKeys {
 		//projectionMap.put(Sms.ERROR_CODE, intCell());  //Not Supported on all devices
 		//projectionMap.put(Sms.META_DATA, hashedStringCell());  Doesn't exist for some reason
 		return projectionMap;
-	}
-
-	@Override
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.SMS_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	@Override
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.SMS_LOG_LAST_TIME);
 	}
 }

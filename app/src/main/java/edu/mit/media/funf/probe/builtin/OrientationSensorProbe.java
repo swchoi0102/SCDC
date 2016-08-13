@@ -39,7 +39,6 @@ import edu.mit.media.funf.probe.Probe.RequiredFeatures;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.OrientationSensorKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 import edu.mit.media.funf.util.LogUtil;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Description("Records a three dimensional vector of the magnetic field.")
 @RequiredFeatures("android.hardware.sensor.gyroscope")
@@ -75,20 +74,26 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
         lastTimeMillis = 0;
         sensorListener = new SensorEventListener() {
 
-            float[] mGravity;
-            float[] mGeomagnetic;
+            float[] mAccelerometer = new float[3];
+            float[] mGeomagnetic = new float[3];
+            boolean acceleInitialized = false;
+            boolean magneticInitialized = false;
 
             @Override
             public void onSensorChanged(SensorEvent event) {
                 long currentTimeMillis = System.currentTimeMillis();
-                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-                    mGravity = event.values;
-                if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-                    mGeomagnetic = event.values;
-                if (mGravity != null && mGeomagnetic != null) {
+                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    System.arraycopy(event.values, 0, mAccelerometer, 0, mAccelerometer.length);
+                    acceleInitialized = true;
+                }
+                if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                    System.arraycopy(event.values, 0, mGeomagnetic, 0, mGeomagnetic.length);
+                    magneticInitialized = true;
+                }
+                if (acceleInitialized && magneticInitialized) {
                     float R[] = new float[9];
                     float I[] = new float[9];
-                    boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+                    boolean success = SensorManager.getRotationMatrix(R, I, mAccelerometer, mGeomagnetic);
                     if (success) {
                         JsonObject data = new JsonObject();
                         data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
@@ -118,7 +123,6 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 
     @Override
     protected void onStart() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[OrientationSensorProbe] onStart");
         super.onStart();
         getSensorManager().registerListener(sensorListener, accelerometer, getSensorDelay(sensorDelay));
         getSensorManager().registerListener(sensorListener, magnetometer, getSensorDelay(sensorDelay));
@@ -126,7 +130,6 @@ public class OrientationSensorProbe extends Probe.Base implements Probe.Continuo
 
     @Override
     protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[OrientationSensorProbe] onStop");
         super.onStop();
         getSensorManager().unregisterListener(sensorListener);
     }

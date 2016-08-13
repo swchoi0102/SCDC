@@ -27,7 +27,6 @@ public class SystemSettingsProbe extends InsensitiveProbe implements Probe.Conti
     @Override
     protected void onEnable() {
         super.onEnable();
-//        Log.d(SCDCKeys.LogKeys.DEB, "[SysSet] onEnable");
         initializeAudioManager();
         initializeSettingsContentObserver();
     }
@@ -35,16 +34,13 @@ public class SystemSettingsProbe extends InsensitiveProbe implements Probe.Conti
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(SCDCKeys.LogKeys.DEB, "[SystemSettingsProbe] onStart");
         initializeSystemSettings();
         registerContentObserver();
     }
 
     @Override
     protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[SystemSettingsProbe] onStop");
         super.onStop();
-//        Log.d(SCDCKeys.LogKeys.DEB, "[SysSet] onStop");
         unregisterContentObserver();
     }
 
@@ -58,7 +54,7 @@ public class SystemSettingsProbe extends InsensitiveProbe implements Probe.Conti
 
     @Override
     protected JsonObject getCurrData() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[SystemSettingsProbe] getCurrData");
+        super.getCurrData();
         JsonObject systemSettings = new JsonObject();
 
         systemSettings.addProperty(SCDCKeys.SystemSettingsKeys.SCREEN_BRIGHTNESS, getCurrentValue(Settings.System.SCREEN_BRIGHTNESS));

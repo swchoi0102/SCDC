@@ -45,16 +45,4 @@ public class RotationVectorSensorProbe extends SensorProbe implements RotationVe
 			X_SIN_THETA_OVER_2, Y_SIN_THETA_OVER_2, Z_SIN_THETA_OVER_2, COS_THETA_OVER_2
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[RotationVectorSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[RotationVectorSensorProbe] onStop");
-		super.onStop();
-	}
 }

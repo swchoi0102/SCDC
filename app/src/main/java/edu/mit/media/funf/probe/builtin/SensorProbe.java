@@ -102,6 +102,7 @@ public abstract class SensorProbe extends Base implements ContinuousProbe, Senso
 
     @Override
     protected void onStop() {
+        super.onStop();
         getSensorManager().unregisterListener(sensorListener);
     }
 

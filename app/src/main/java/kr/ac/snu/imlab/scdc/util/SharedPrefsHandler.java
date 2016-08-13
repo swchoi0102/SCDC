@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 import edu.mit.media.funf.config.HttpConfigUpdater;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LabelKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
@@ -444,12 +445,81 @@ public class SharedPrefsHandler {
                             isRunning).apply();
   }
 
-  // Last saved time for continuable probes
-  public void setCPLastSavedTime(String key, long lastTime){
+  public void saveTempLastIndex(){
+    long accountTT = prefs.getLong(SCDCKeys.SharedPrefs.ACCOUNTS_COLLECT_TEMP_LAST_TIME, 0L);
+    long androidTT = prefs.getLong(SCDCKeys.SharedPrefs.ANDROID_INFO_COLLECT_TEMP_LAST_TIME, 0L);
+    long appTT = prefs.getLong(SCDCKeys.SharedPrefs.APPLICATIONS_COLLECT_TEMP_LAST_TIME, 0L);
+    long hardwareTT = prefs.getLong(SCDCKeys.SharedPrefs.HARDWARE_INFO_COLLECT_TEMP_LAST_TIME, 0L);
+    long callTT = prefs.getLong(SCDCKeys.SharedPrefs.CALL_COLLECT_TEMP_LAST_TIME, 0L);
+    long audioTT = prefs.getLong(SCDCKeys.SharedPrefs.AUDIO_COLLECT_TEMP_LAST_TIME, 0L);
+    long bookmarkTT = prefs.getLong(SCDCKeys.SharedPrefs.BOOKMARK_COLLECT_TEMP_LAST_TIME, 0L);
+    long searchTT = prefs.getLong(SCDCKeys.SharedPrefs.SEARCH_COLLECT_TEMP_LAST_TIME, 0L);
+    long imageTT = prefs.getLong(SCDCKeys.SharedPrefs.IMAGE_COLLECT_TEMP_LAST_TIME, 0L);
+    long smsTT = prefs.getLong(SCDCKeys.SharedPrefs.SMS_COLLECT_TEMP_LAST_TIME, 0L);
+    long videoTT = prefs.getLong(SCDCKeys.SharedPrefs.VIDEO_COLLECT_TEMP_LAST_TIME, 0L);
+    long contactTT = prefs.getLong(SCDCKeys.SharedPrefs.CONTACT_COLLECT_TEMP_LAST_TIME, 0L);
+
+    long callTID = prefs.getLong(SCDCKeys.SharedPrefs.CALL_LOG_TEMP_LAST_INDEX, 0L);
+    long audioTID = prefs.getLong(SCDCKeys.SharedPrefs.AUDIO_LOG_TEMP_LAST_INDEX, 0L);
+    long bookmarkTID = prefs.getLong(SCDCKeys.SharedPrefs.BOOKMARK_LOG_TEMP_LAST_INDEX, 0L);
+    long searchTID = prefs.getLong(SCDCKeys.SharedPrefs.SEARCH_LOG_TEMP_LAST_INDEX, 0L);
+    long imageTID = prefs.getLong(SCDCKeys.SharedPrefs.IMAGE_LOG_TEMP_LAST_INDEX, 0L);
+    long smsTID = prefs.getLong(SCDCKeys.SharedPrefs.SMS_LOG_TEMP_LAST_INDEX, 0L);
+    long videoTID = prefs.getLong(SCDCKeys.SharedPrefs.VIDEO_LOG_TEMP_LAST_INDEX, 0L);
+    long contactTID = prefs.getLong(SCDCKeys.SharedPrefs.CONTACT_LOG_TEMP_LAST_INDEX, 0L);
+
+    if (accountTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.ACCOUNTS_COLLECT_LAST_TIME, accountTT).apply();
+    if (androidTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.ANDROID_INFO_COLLECT_LAST_TIME, androidTT).apply();
+    if (appTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.APPLICATIONS_COLLECT_LAST_TIME, appTT).apply();
+    if (hardwareTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.HARDWARE_INFO_COLLECT_LAST_TIME, hardwareTT).apply();
+    if (callTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.CALL_COLLECT_LAST_TIME, callTT).apply();
+    if (audioTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.AUDIO_COLLECT_LAST_TIME, audioTT).apply();
+    if (bookmarkTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.BOOKMARK_COLLECT_LAST_TIME, bookmarkTT).apply();
+    if (searchTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.SEARCH_COLLECT_LAST_TIME, searchTT).apply();
+    if (imageTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.IMAGE_COLLECT_LAST_TIME, imageTT).apply();
+    if (smsTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.SMS_COLLECT_LAST_TIME, smsTT).apply();
+    if (videoTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.VIDEO_COLLECT_LAST_TIME, videoTT).apply();
+    if (contactTT > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.CONTACT_COLLECT_LAST_TIME, contactTT).apply();
+
+    if (callTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.CALL_LOG_LAST_INDEX, callTID).apply();
+    if (audioTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.AUDIO_LOG_LAST_INDEX, audioTID).apply();
+    if (bookmarkTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.BOOKMARK_LOG_LAST_INDEX, bookmarkTID).apply();
+    if (searchTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_INDEX, searchTID).apply();
+    if (imageTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_INDEX, imageTID).apply();
+    if (smsTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.SMS_LOG_LAST_INDEX, smsTID).apply();
+    if (videoTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.VIDEO_LOG_LAST_INDEX, videoTID).apply();
+    if (contactTID > 0L) prefs.edit().putLong(SCDCKeys.SharedPrefs.CONTACT_LOG_LAST_INDEX, contactTID).apply();
+  }
+
+  public void rollbackTempLastIndex(){
+    prefs.edit().remove(SCDCKeys.SharedPrefs.ACCOUNTS_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.ANDROID_INFO_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.APPLICATIONS_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.HARDWARE_INFO_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.CALL_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.AUDIO_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.BOOKMARK_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.SEARCH_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.IMAGE_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.SMS_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.VIDEO_COLLECT_TEMP_LAST_TIME).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.CONTACT_COLLECT_TEMP_LAST_TIME).apply();
+
+    prefs.edit().remove(SCDCKeys.SharedPrefs.CALL_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.AUDIO_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.BOOKMARK_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.SEARCH_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.IMAGE_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.SMS_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.VIDEO_LOG_TEMP_LAST_INDEX).apply();
+    prefs.edit().remove(SCDCKeys.SharedPrefs.CONTACT_LOG_TEMP_LAST_INDEX).apply();
+  }
+
+  public void setLastSavedIndex(String key, long lastTime){
     prefs.edit().putLong(key, lastTime).apply();
   }
 
-  public long getCPLastSavedTime(String key){
+  public long getLastSavedIndex(String key){
     return prefs.getLong(key, 0L);
   }
 

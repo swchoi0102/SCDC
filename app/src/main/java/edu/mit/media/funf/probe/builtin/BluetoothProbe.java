@@ -93,6 +93,7 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 	
 	@Override
 	protected void onEnable() {
+		super.onEnable();
 		adapter = BluetoothAdapter.getDefaultAdapter();
 		IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
@@ -103,7 +104,6 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BluetoothProbe] onStart");
 		super.onStart();
 		startDiscovery();
 		if (maxScanTime != null) {
@@ -113,7 +113,6 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BluetoothProbe] onStop");
 		super.onStop();
 		getHandler().removeMessages(STOP_MESSAGE);
 		try { 
@@ -132,6 +131,7 @@ public class BluetoothProbe extends Base implements PassiveProbe {
 
 	@Override
 	protected void onDisable() {
+		super.onDisable();
 		try {
 			getContext().unregisterReceiver(receiver);
 		} catch (IllegalArgumentException e) {

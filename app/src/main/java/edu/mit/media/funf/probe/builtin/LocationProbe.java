@@ -66,17 +66,10 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
 
     @Override
     protected void onEnable() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onEnable()");
         super.onEnable();
         gson = getGsonBuilder().addSerializationExclusionStrategy(new LocationExclusionStrategy()).create();
         mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new ProbeLocationListener();
-    }
-
-    @Override
-    protected void onStart() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStart");
-        super.onStart();
         initializeLocation();
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, checkInterval, 0f, locationListener);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, checkInterval, 0f, locationListener);
@@ -84,13 +77,12 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
 
     @Override
     protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] onStop()");
         super.onStop();
         mLocationManager.removeUpdates(locationListener);
     }
 
     protected void initializeLocation() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] initializeLocation");
+        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] initializeLocation");
         Long currTime = System.currentTimeMillis();
         JsonObject data = new JsonObject();
         lastGpsTimestamp = DecimalTimeUnit.MILLISECONDS.toSeconds(currTime);
@@ -122,7 +114,7 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
 
                 JsonObject data = gson.toJsonTree(location).getAsJsonObject();
                 data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(data.get("mTime").getAsLong()));
-                Log.d(SCDCKeys.LogKeys.DEB, "[LocationProbe] location given by provider: " + provider + ", at: " + data.get("mTime").getAsBigDecimal());
+                Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] location given by provider: " + provider + ", at: " + data.get("mTime").getAsBigDecimal());
 
                 if (lastData == null) {
                     lastData = data;
@@ -133,7 +125,7 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
                         sendData();
                     } else {
                         if (data.get(TIMESTAMP).getAsBigDecimal().subtract(lastGpsTimestamp)
-                                .compareTo(new BigDecimal(checkInterval + 1)) > 0) {
+                                .compareTo(new BigDecimal(checkInterval)) > 0) {
                             currData = data;
                             sendData();
                         }

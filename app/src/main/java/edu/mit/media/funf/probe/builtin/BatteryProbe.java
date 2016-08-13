@@ -51,14 +51,12 @@ public class BatteryProbe extends Base implements PassiveProbe {
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BatteryProbe] onStart");
 		super.onStart();
 		getContext().registerReceiver(receiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BatteryProbe] onStop");
 		super.onStop();
 		getContext().unregisterReceiver(receiver);
 	}

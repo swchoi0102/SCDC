@@ -53,16 +53,4 @@ public class ProximitySensorProbe extends InsensitiveSensorProbe implements Prox
 			DISTANCE
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ProximitySensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ProximitySensorProbe] onStop");
-		super.onStop();
-	}
 }

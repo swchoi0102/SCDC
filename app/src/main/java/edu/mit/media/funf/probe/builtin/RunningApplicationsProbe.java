@@ -66,11 +66,6 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	// Used as the flag for polling vs paused
 	private PowerManager pm;
 
-//	@Override
-//	public void sendFinalData() {
-//
-//	}
-
 	private class RunningAppsPoller implements Runnable {
 		
 		private RecentTaskInfo currentRunningTask = null;
@@ -143,16 +138,13 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	@Override
 	protected synchronized void onEnable() {
 		super.onEnable();
-//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onEnable");
 		pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
 	}
 
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[RunningApplicationsProbe] onStart");
 		super.onStart();
-//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onStart");
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).registerListener(screenListener);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
 			if (pm.isInteractive()) {
@@ -186,7 +178,6 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[RunningApplicationsProbe] onStop");
 		super.onStop();
 		onPause();
 		getGson().fromJson(DEFAULT_CONFIG, ScreenProbe.class).unregisterListener(screenListener);
@@ -195,7 +186,6 @@ public class RunningApplicationsProbe extends Base implements ContinuousProbe, P
 	@Override
 	protected void onDisable() {
 		super.onDisable();
-//		Log.d(LogUtil.TAG, "RunningApplicationsProbe: onDisable");
 		runningAppsPoller.reset();
 	}
 	

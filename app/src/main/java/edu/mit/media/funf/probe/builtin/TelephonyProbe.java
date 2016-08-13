@@ -45,7 +45,6 @@ public class TelephonyProbe extends ImpulseProbe implements TelephonyKeys {
 
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TelephonyProbe] onStart");
 		super.onStart();
 		TelephonyManager telephony = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
 		JsonObject data = new JsonObject();
@@ -71,10 +70,4 @@ public class TelephonyProbe extends ImpulseProbe implements TelephonyKeys {
 		stop();
 	}
 
-
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TelephonyProbe] onStop");
-		super.onStop();
-	}
 }

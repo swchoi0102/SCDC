@@ -62,7 +62,7 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
                     data.addProperty(ProbeKeys.BaseProbeKeys.TIMESTAMP, TimeUtil.getTimestamp());
                     data.addProperty(SCREEN_ON, Intent.ACTION_SCREEN_ON.equals(action));
                     if (lastData == null) {
-                        Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] getCurrData");
+                        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] getCurrData");
                         lastData = data;
                     } else {
                         currData = data;
@@ -75,7 +75,6 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
 
     @Override
     protected void onStart() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] onStart");
         super.onStart();
         initializeScreenStatus();
 
@@ -86,13 +85,12 @@ public class ScreenProbe extends InsensitiveProbe implements ContinuousProbe, Sc
 
     @Override
     protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] onStop");
         super.onStop();
         getContext().unregisterReceiver(screenReceiver);
     }
 
     private void initializeScreenStatus() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[ScreenProbe] initializeScreenStatus");
+        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] initializeScreenStatus");
         JsonObject data = new JsonObject();
 
         boolean screeOn;

@@ -73,20 +73,52 @@ public class SCDCKeys {
       LAST_CONFIG_UPDATE = "last_config_update",
       FIRST_RUN = "firstrun",
       LABEL_ACCUMULATED_TIME_PREFIX = "accumulated_time_",
+      
+      ACCOUNTS_COLLECT_LAST_TIME = "ACCOUNTS_COL_LT",
+      ANDROID_INFO_COLLECT_LAST_TIME = "ANDROID_COL_LT",
+      APPLICATIONS_COLLECT_LAST_TIME = "APPLICATIONS_COL_LT",
+      HARDWARE_INFO_COLLECT_LAST_TIME = "HARDWARE_COL_LT",
 
-      ACCOUNTS_LOG_LAST_TIME = "ACCOUNTS_LT",
-      ANDROID_INFO_LOG_LAST_TIME = "ANDROID_LT",
-      APPLICATIONS_LOG_LAST_TIME = "APPLICATIONS_LT",
-      HARDWARE_INFO_LOG_LAST_TIME = "HARDWARE_LT",
+      CALL_COLLECT_LAST_TIME = "CALL_COL_LT",
+      AUDIO_COLLECT_LAST_TIME = "AUDIO_COL_LT",
+      BOOKMARK_COLLECT_LAST_TIME = "BOOKMARK_COL_LT",
+      SEARCH_COLLECT_LAST_TIME = "SEARCH_COL_LT",
+      IMAGE_COLLECT_LAST_TIME = "IMAGE_COL_LT",
+      SMS_COLLECT_LAST_TIME = "SMS_COL_LT",
+      VIDEO_COLLECT_LAST_TIME = "VIDEO_COL_LT",
+      CONTACT_COLLECT_LAST_TIME = "CONTACT_COL_LT",
 
-      CALL_LOG_LAST_TIME = "CALL_LT",
-      AUDIO_LOG_LAST_TIME = "AUDIO_LT",
-      BOOKMARK_LOG_LAST_TIME = "BOOKMARK_LT",
-      SEARCH_LOG_LAST_TIME = "SEARCH_LT",
-      IMAGE_LOG_LAST_TIME = "IMAGE_LT",
-      SMS_LOG_LAST_TIME = "SMS_LT",
-      VIDEO_LOG_LAST_TIME = "VIDEO_LT",
-      CONTACT_LOG_LAST_ID = "CONTACT_LI";
+      CALL_LOG_LAST_INDEX = "CALL_ID",
+      AUDIO_LOG_LAST_INDEX = "AUDIO_ID",
+      BOOKMARK_LOG_LAST_INDEX = "BOOKMARK_ID",
+      SEARCH_LOG_LAST_INDEX = "SEARCH_ID",
+      IMAGE_LOG_LAST_INDEX = "IMAGE_ID",
+      SMS_LOG_LAST_INDEX = "SMS_ID",
+      VIDEO_LOG_LAST_INDEX = "VIDEO_ID",
+      CONTACT_LOG_LAST_INDEX = "CONTACT_ID",
+
+      ACCOUNTS_COLLECT_TEMP_LAST_TIME = "ACCOUNTS_COL_TLT",
+      ANDROID_INFO_COLLECT_TEMP_LAST_TIME = "ANDROID_COL_TLT",
+      APPLICATIONS_COLLECT_TEMP_LAST_TIME = "APPLICATIONS_COL_TLT",
+      HARDWARE_INFO_COLLECT_TEMP_LAST_TIME = "HARDWARE_COL_TLT",
+
+      CALL_COLLECT_TEMP_LAST_TIME = "CALL_COL_TLT",
+      AUDIO_COLLECT_TEMP_LAST_TIME = "AUDIO_COL_TLT",
+      BOOKMARK_COLLECT_TEMP_LAST_TIME = "BOOKMARK_COL_TLT",
+      SEARCH_COLLECT_TEMP_LAST_TIME = "SEARCH_COL_TLT",
+      IMAGE_COLLECT_TEMP_LAST_TIME = "IMAGE_COL_TLT",
+      SMS_COLLECT_TEMP_LAST_TIME = "SMS_COL_TLT",
+      VIDEO_COLLECT_TEMP_LAST_TIME = "VIDEO_COL_TLT",
+      CONTACT_COLLECT_TEMP_LAST_TIME = "CONTACT_COL_TLT",
+
+      CALL_LOG_TEMP_LAST_INDEX = "CALL_TID",
+      AUDIO_LOG_TEMP_LAST_INDEX = "AUDIO_TID",
+      BOOKMARK_LOG_TEMP_LAST_INDEX = "BOOKMARK_TID",
+      SEARCH_LOG_TEMP_LAST_INDEX = "SEARCH_TID",
+      IMAGE_LOG_TEMP_LAST_INDEX = "IMAGE_TID",
+      SMS_LOG_TEMP_LAST_INDEX = "SMS_TID",
+      VIDEO_LOG_TEMP_LAST_INDEX = "VIDEO_TID",
+      CONTACT_LOG_TEMP_LAST_INDEX = "CONTACT_TID";
 
     public static final int
       DEFAULT_SENSOR_ID = 0;
@@ -232,22 +264,14 @@ public class SCDCKeys {
   }
 
   public class SensitiveSensorsKeys {
-    public static final int NUM_ACCEL = 0;
-    public static final int NUM_GRAVITY = 1;
-    public static final int NUM_GYRO = 2;
-    public static final int NUM_LINEAR = 3;
-    public static final int NUM_MAGNET = 4;
-    public static final int NUM_ORIENT = 5;
-    public static final int NUM_ROTATION = 6;
-
     public static final String DELIMITER = "_";
     public static final String ACCEL = "ACC";
     public static final String GRAVITY = "GRVT";
-    public static final String GYRO = "GYRO";
-    public static final String LINEAR = "LIN";
+//    public static final String GYRO = "GYRO";
+//    public static final String LINEAR = "LIN";
     public static final String MAGNET = "MAG";
     public static final String ORIENT = "ORT";
-    public static final String ROTATION = "ROT";
+//    public static final String ROTATION = "ROT";
 
     public static final String VALUE_X = "x";
     public static final String VALUE_Y = "y";
@@ -255,10 +279,10 @@ public class SCDCKeys {
     public static final String VALUE_AZIMUTH = "a";
     public static final String VALUE_PITCH = "p";
     public static final String VALUE_ROLL = "r";
-    public static final String VALUE_COS = "c";
-    public static final String VALUE_X_SIN = "xs";
-    public static final String VALUE_Y_SIN = "ys";
-    public static final String VALUE_Z_SIN = "zs";
+//    public static final String VALUE_COS = "c";
+//    public static final String VALUE_X_SIN = "xs";
+//    public static final String VALUE_Y_SIN = "ys";
+//    public static final String VALUE_Z_SIN = "zs";
 
     public static final String ACCEL_X = ACCEL + DELIMITER + VALUE_X;
     public static final String ACCEL_Y = ACCEL + DELIMITER + VALUE_Y;
@@ -267,26 +291,26 @@ public class SCDCKeys {
     public static final String GRAVITY_X = GRAVITY + DELIMITER + VALUE_X;
     public static final String GRAVITY_Y = GRAVITY + DELIMITER + VALUE_Y;
     public static final String GRAVITY_Z= GRAVITY + DELIMITER + VALUE_Z;
-
-    public static final String GYRO_X = GYRO + DELIMITER + VALUE_X;
-    public static final String GYRO_Y = GYRO + DELIMITER + VALUE_Y;
-    public static final String GYRO_Z= GYRO + DELIMITER + VALUE_Z;
-
-    public static final String LINEAR_X = LINEAR + DELIMITER + VALUE_X;
-    public static final String LINEAR_Y = LINEAR + DELIMITER + VALUE_Y;
-    public static final String LINEAR_Z= LINEAR + DELIMITER + VALUE_Z;
+//
+//    public static final String GYRO_X = GYRO + DELIMITER + VALUE_X;
+//    public static final String GYRO_Y = GYRO + DELIMITER + VALUE_Y;
+//    public static final String GYRO_Z= GYRO + DELIMITER + VALUE_Z;
+//
+//    public static final String LINEAR_X = LINEAR + DELIMITER + VALUE_X;
+//    public static final String LINEAR_Y = LINEAR + DELIMITER + VALUE_Y;
+//    public static final String LINEAR_Z= LINEAR + DELIMITER + VALUE_Z;
 
     public static final String MAGNET_X = MAGNET + DELIMITER + VALUE_X;
     public static final String MAGNET_Y = MAGNET + DELIMITER + VALUE_Y;
     public static final String MAGNET_Z= MAGNET + DELIMITER + VALUE_Z;
 
     public static final String ORIENT_AZIMUTH = ORIENT + DELIMITER + VALUE_AZIMUTH;
-    public static final String ORIENT_PITCH = ORIENT + DELIMITER + VALUE_PITCH;;
+    public static final String ORIENT_PITCH = ORIENT + DELIMITER + VALUE_PITCH;
     public static final String ORIENT_ROLL= ORIENT + DELIMITER + VALUE_ROLL;
-    
-    public static final String ROTATION_COS = ROTATION + DELIMITER + VALUE_COS;
-    public static final String ROTATION_X_SIN = ROTATION + DELIMITER + VALUE_X_SIN;
-    public static final String ROTATION_Y_SIN = ROTATION + DELIMITER + VALUE_Y_SIN;
-    public static final String ROTATION_Z_SIN = ROTATION + DELIMITER + VALUE_Z_SIN;
+//
+//    public static final String ROTATION_COS = ROTATION + DELIMITER + VALUE_COS;
+//    public static final String ROTATION_X_SIN = ROTATION + DELIMITER + VALUE_X_SIN;
+//    public static final String ROTATION_Y_SIN = ROTATION + DELIMITER + VALUE_Y_SIN;
+//    public static final String ROTATION_Z_SIN = ROTATION + DELIMITER + VALUE_Z_SIN;
   }
 }

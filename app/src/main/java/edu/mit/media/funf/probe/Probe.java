@@ -30,6 +30,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,6 +63,7 @@ import edu.mit.media.funf.security.HashUtil.HashingType;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LockUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 public interface Probe {
 
@@ -363,6 +365,7 @@ public interface Probe {
 	public abstract class Base implements Probe, BaseProbeKeys {
 
 		private Context context;
+		protected String probeName;
 
 		/**
 		 * No argument constructor requires that setContext be called manually.
@@ -623,7 +626,9 @@ public interface Probe {
 		 * using the onStart method.
 		 */
 		protected void onEnable() {
-
+			String[] nameSplit = this.getClass().getName().split("\\.");
+			probeName = nameSplit[nameSplit.length - 1];
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] onEnable");
 		}
 
 		/**
@@ -635,7 +640,7 @@ public interface Probe {
 		 * threads looper one at a time, to allow for the probe to change state.
 		 */
 		protected void onStart() {
-
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] onStart");
 		}
 
 		/**
@@ -645,7 +650,7 @@ public interface Probe {
 		 * thread's looper. Any passive listeners should continue running.
 		 */
 		protected void onStop() {
-
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] onStop");
 		}
 
 		/**
@@ -655,7 +660,7 @@ public interface Probe {
 		 * release any resources before the probe is destroyed.
 		 */
 		protected void onDisable() {
-
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] onDisable");
 		}
 
 		protected volatile Looper looper;
@@ -790,6 +795,54 @@ public interface Probe {
 		 */
 		protected boolean isWakeLockedWhileRunning() {
 			return true;
+		}
+
+
+		protected String lastCollectTimeKey;
+		protected String lastCollectTimeTempKey;
+
+		protected boolean itIsTimeToStart() {
+			// Is it first time?
+			long lastSavedTime = getLastCollectTime();
+			long tempLastSavedTime = getTempLastCollectTime();
+			boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] is it first time?: " + firstTime);
+
+			// Is it 24 hours passed from the last collection?
+			long currentTime = System.currentTimeMillis();
+			boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
+
+			// Is it sleeping context?
+			//		FIXME: sleeping label ID is just assigned as integer value not as a variable
+			long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
+					SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
+			boolean sleepingContext = startLoggingTime != -1;
+
+			// Is it 2 hours passed from the start logging time?
+//			boolean labeling2Hours = currentTime > startLoggingTime + 150000L;
+			boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
+
+//			return sleepingContext && labeling2Hours;
+			if (firstTime) {
+				return sleepingContext && labeling2Hours;
+			} else {
+				return passed24Hours && sleepingContext && labeling2Hours;
+			}
+		}
+
+		protected void setTempLastCollectTime(long lastSavedTime) {
+			SharedPrefsHandler.getInstance(this.getContext(),
+					SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setLastSavedIndex(lastCollectTimeTempKey, lastSavedTime);
+		}
+
+		protected long getTempLastCollectTime() {
+			return SharedPrefsHandler.getInstance(this.getContext(),
+					SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getLastSavedIndex(lastCollectTimeTempKey);
+		}
+
+		protected long getLastCollectTime() {
+			return SharedPrefsHandler.getInstance(this.getContext(),
+					SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getLastSavedIndex(lastCollectTimeKey);
 		}
 	}
 }

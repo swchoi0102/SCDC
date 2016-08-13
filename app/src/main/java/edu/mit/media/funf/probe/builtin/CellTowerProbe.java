@@ -67,31 +67,27 @@ public class CellTowerProbe extends InsensitiveProbe implements Probe.Continuous
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStart");
 		super.onStart();
 		onContinue();
 	}
 
 	protected void onContinue() {
-//        Log.d(LogUtil.TAG, "[CellTowerProbe] onContinue");
 		getHandler().post(cellTowerChecker);
 	}
 
 	protected void onPause() {
-//        Log.d(LogUtil.TAG, "[CellTowerProbe] onPause");
 		getHandler().removeCallbacks(cellTowerChecker);
 	}
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] onStop");
 		onPause();
 		super.onStop();
 	}
 
 	@Override
 	protected JsonObject getCurrData() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[CellTowerProbe] getCurrData");
+		super.getCurrData();
 		JsonObject data = getGson().toJsonTree(getData()).getAsJsonObject();
 		data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
 		return data;

@@ -50,16 +50,4 @@ public class TemperatureSensorProbe extends SensorProbe implements TemperatureSe
 			TEMPERATURE	
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TemperatureSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TemperatureSensorProbe] onStop");
-		super.onStop();
-	}
 }

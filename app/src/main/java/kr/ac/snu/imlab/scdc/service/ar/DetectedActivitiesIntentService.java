@@ -64,6 +64,7 @@ public class DetectedActivitiesIntentService extends IntentService implements SC
 
     // Broadcast the list of detected activities
     localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);
+    localIntent.putExtra(Constants.DETECTION_TIME, result.getTime());
     LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
   }
 }

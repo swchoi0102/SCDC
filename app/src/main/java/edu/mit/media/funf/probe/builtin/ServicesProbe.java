@@ -49,7 +49,6 @@ public class ServicesProbe extends Base implements ServicesKeys {
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ServicesProbe] onStart");
 		super.onStart();
 		Gson gson = getGson();
 		ActivityManager am = (ActivityManager)getContext().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -63,9 +62,4 @@ public class ServicesProbe extends Base implements ServicesKeys {
 		stop();
 	}
 
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ServicesProbe] onStop");
-		super.onStop();
-	}
 }

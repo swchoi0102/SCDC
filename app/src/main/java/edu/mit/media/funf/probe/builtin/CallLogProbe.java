@@ -42,16 +42,11 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @RequiredPermissions({android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.READ_CALL_LOG})
 public class CallLogProbe extends DatedContentProviderProbe {
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[CallLogProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[CallLogProbe] onStop");
-		super.onStop();
+	public CallLogProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.CALL_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.CALL_COLLECT_TEMP_LAST_TIME;
+		lastLogIndexKey = SCDCKeys.SharedPrefs.CALL_LOG_LAST_INDEX;
+		lastLogIndexTempKey = SCDCKeys.SharedPrefs.CALL_LOG_TEMP_LAST_INDEX;
 	}
 
 	@Override
@@ -62,18 +57,6 @@ public class CallLogProbe extends DatedContentProviderProbe {
 	@Override
 	protected String getDateColumnName() {
 		return Calls.DATE;
-	}
-
-	@Override
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.CALL_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	@Override
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.CALL_LOG_LAST_TIME);
 	}
 
 	@Override

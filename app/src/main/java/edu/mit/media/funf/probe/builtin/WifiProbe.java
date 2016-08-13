@@ -127,7 +127,6 @@ public class WifiProbe extends Base {
 
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[WifiProbe] onStart");
 		super.onStart();
 		acquireWifiLock();
 		saveWifiStateAndRunScan();
@@ -135,7 +134,6 @@ public class WifiProbe extends Base {
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[WifiProbe] onStop");
 		super.onStop();
 		releaseWifiLock();
 		loadPreviousWifiState();

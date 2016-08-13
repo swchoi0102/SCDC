@@ -44,16 +44,4 @@ public class LightSensorProbe extends InsensitiveSensorProbe implements LightSen
 			LUX
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[LightSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[LightSensorProbe] onStop");
-		super.onStop();
-	}
 }

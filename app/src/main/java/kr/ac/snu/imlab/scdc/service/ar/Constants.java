@@ -22,6 +22,8 @@ public class Constants {
 
   public static final String ACTIVITY_EXTRA = PACKAGE_NAME + ".ACTIVITY_EXTRA";
 
+  public static final String DETECTION_TIME = PACKAGE_NAME + ".DETECTION_TIME";
+
   public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES";
 
   public static final String ACTIVITY_UPDATES_REQUESTED_KEY = PACKAGE_NAME +
@@ -35,7 +37,7 @@ public class Constants {
    * fastest possible rate. Getting frequent updates negatively impact battery life and a real
    * app may prefer to request less frequent updates.
    */
-  public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 0;
+  public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 1000L;
 
   /**
    * List of DetectedActivity types that we monitor in this sample.

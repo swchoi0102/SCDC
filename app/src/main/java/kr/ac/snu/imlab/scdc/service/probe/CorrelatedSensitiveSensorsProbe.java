@@ -48,7 +48,7 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
 
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
-    private final long MIN_INTERVAL_MILLIS = 5;
+    private final long MIN_INTERVAL_MILLIS = 7;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
@@ -56,9 +56,6 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
             SENSOR_DELAY_UI = "UI",
             SENSOR_DELAY_NORMAL = "NORMAL";
 
-    private String[] mods = new String[]{SCDCKeys.SensitiveSensorsKeys.GYRO, SCDCKeys.SensitiveSensorsKeys.GRAVITY,
-            SCDCKeys.SensitiveSensorsKeys.LINEAR, SCDCKeys.SensitiveSensorsKeys.GYRO, SCDCKeys.SensitiveSensorsKeys.MAGNET,
-            SCDCKeys.SensitiveSensorsKeys.ORIENT, SCDCKeys.SensitiveSensorsKeys.ROTATION};
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
     private Sensor gravitySensor;
@@ -81,35 +78,45 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         sensorListener = new SensorEventListener() {
-            float[] accelerometerValues;
-            float[] gravityValues;
-            float[] magneticValues;
-            float[] orientationValues;
+            float[] accelerometerValues = new float[ACC_VALUE_NAMES.length];
+            float[] gravityValues = new float[GRVT_VALUE_NAMES.length];
+            float[] magneticValues = new float[MAG_VALUE_NAMES.length];
+            float[] orientationValues = new float[ORT_VALUE_NAMES.length];
             long lastTimeMillis = 0;
+            boolean accelerometerInitialized = false;
+            boolean gravityInitialized = false;
+            boolean magneticInitialized = false;
+            boolean orientationInitialized = false;
 
             @Override
             public void onSensorChanged(SensorEvent event) {
                 long currentTimeMillis = System.currentTimeMillis();
                 int sensorType = event.sensor.getType();
-                if (sensorType == Sensor.TYPE_ACCELEROMETER)
-                    accelerometerValues = event.values;
-                if (sensorType == Sensor.TYPE_GRAVITY)
-                    gravityValues = event.values;
-                if (sensorType == Sensor.TYPE_MAGNETIC_FIELD)
-                    magneticValues = event.values;
-
-                if ((sensorType == Sensor.TYPE_GRAVITY || sensorType == Sensor.TYPE_MAGNETIC_FIELD)
-                        && (gravityValues != null && magneticValues != null)) {
+                if (sensorType == Sensor.TYPE_ACCELEROMETER){
+                    System.arraycopy(event.values, 0, accelerometerValues, 0, accelerometerValues.length);
+                    accelerometerInitialized = true;
+                }
+                if (sensorType == Sensor.TYPE_GRAVITY) {
+                    System.arraycopy(event.values, 0, gravityValues, 0, gravityValues.length);
+                    gravityInitialized = true;
+                }
+                if (sensorType == Sensor.TYPE_MAGNETIC_FIELD) {
+                    System.arraycopy(event.values, 0, magneticValues, 0, magneticValues.length);
+                    magneticInitialized = true;
+                }
+                if ((sensorType == Sensor.TYPE_ACCELEROMETER || sensorType == Sensor.TYPE_MAGNETIC_FIELD)
+                        && (accelerometerInitialized && magneticInitialized)) {
                     float R[] = new float[9];
                     float I[] = new float[9];
-                    boolean success = SensorManager.getRotationMatrix(R, I, gravityValues, magneticValues);
+                    boolean success = SensorManager.getRotationMatrix(R, I, accelerometerValues, magneticValues);
                     if (success) {
                         orientationValues = new float[3];
                         SensorManager.getOrientation(R, orientationValues);
+                        orientationInitialized = true;
                     }
                 }
 
-                if (accelerometerValues != null && gravityValues != null && magneticValues != null && orientationValues != null) {
+                if (accelerometerInitialized && gravityInitialized && magneticInitialized && orientationInitialized) {
                     JsonObject data = new JsonObject();
                     data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTimeMillis));
                     for (int i = 0; i < ACC_VALUE_NAMES.length; i++)
@@ -144,6 +151,7 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
 
     @Override
     protected void onStop() {
+        super.onStop();
         getSensorManager().unregisterListener(sensorListener);
     }
 

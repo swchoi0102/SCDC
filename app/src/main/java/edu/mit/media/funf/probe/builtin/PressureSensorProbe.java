@@ -44,16 +44,4 @@ public class PressureSensorProbe extends SensorProbe implements PressureSensorKe
 		};
 	}
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[PressureSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[PressureSensorProbe] onStop");
-		super.onStop();
-	}
-
 }

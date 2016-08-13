@@ -65,7 +65,6 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TimeOffsetProbe] onStart");
 		super.onStart();
 		try {
 			DatagramSocket socket = new DatagramSocket();
@@ -114,9 +113,4 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 		stop();
 	}
 
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[TimeOffsetProbe] onStop");
-		super.onStop();
-	}
 }

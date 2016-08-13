@@ -156,7 +156,6 @@ public class SimpleLocationProbe extends Base implements PassiveProbe, LocationK
 
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[SimpleLocationProbe] onStart");
 		super.onStart();
 		startTime = TimeUtil.getTimestamp();
 		locationProbe.registerListener(listener);
@@ -166,7 +165,6 @@ public class SimpleLocationProbe extends Base implements PassiveProbe, LocationK
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d(SCDCKeys.LogKeys.DEB, "[SimpleLocationProbe] onStop");
 		getHandler().removeMessages(STOP_MESSAGE);
 		locationProbe.unregisterListener(listener);
 		sendCurrentBestLocation();

@@ -71,16 +71,4 @@ public class GravitySensorProbe extends SensorProbe implements GravitySensorKeys
 			X, Y, Z
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[GravitySensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[GravitySensorProbe] onStop");
-		super.onStop();
-	}
 }

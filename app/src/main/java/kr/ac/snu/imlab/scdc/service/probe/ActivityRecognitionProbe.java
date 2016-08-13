@@ -1,6 +1,5 @@
 package kr.ac.snu.imlab.scdc.service.probe;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,12 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -21,36 +25,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.mit.media.funf.Schedule;
-import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.probe.Probe.Base;
 import edu.mit.media.funf.probe.Probe.ContinuousProbe;
 import edu.mit.media.funf.probe.Probe.Description;
 import edu.mit.media.funf.probe.Probe.DisplayName;
-import edu.mit.media.funf.time.TimeUtil;
-import kr.ac.snu.imlab.scdc.R;
-import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
+import edu.mit.media.funf.time.DecimalTimeUnit;
 import kr.ac.snu.imlab.scdc.service.ar.Constants;
 import kr.ac.snu.imlab.scdc.service.ar.DetectedActivitiesIntentService;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.ActivityRecognitionKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.AlertKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.ActivityRecognitionKeys;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.DetectedActivity;
 
 /**
  * Created by kilho on 2015. 6. 28..
  */
 @DisplayName("Activity Recognition Log Probe")
 @Description("Records label for all time")
-@Schedule.DefaultSchedule(interval=600, duration=60, opportunistic=true)
+@Schedule.DefaultSchedule(interval = 600, duration = 60, opportunistic = true)
 public class ActivityRecognitionProbe extends Base
         implements ContinuousProbe, ActivityRecognitionKeys,
         ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status> {
@@ -77,6 +69,17 @@ public class ActivityRecognitionProbe extends Base
     private Map<String, Integer> mDetectedActivities;
 //    private ArrayList<DetectedActivity> mDetectedActivities;
 
+    private long checkInterval = 2000L;
+    private ActivityChecker activityChecker = new ActivityChecker();
+
+    private class ActivityChecker implements Runnable {
+        @Override
+        public void run() {
+            removeActivityUpdatesHandler();
+            requestActivityUpdatesHandler();
+            getHandler().postDelayed(this, checkInterval);
+        }
+    }
 
     /**
      * Called when the probe switches from the disabled to the enabled
@@ -87,12 +90,13 @@ public class ActivityRecognitionProbe extends Base
      */
     @Override
     protected void onEnable() {
+        super.onEnable();
         mDetectedActivities = new HashMap<String, Integer>();
 //        mDetectedActivities = new ArrayList<DetectedActivity>();
         // Set the confidence level of each monitored activity to zero.
         for (int i = 0; i < Constants.MONITORED_ACTIVITIES.length; i++) {
-          mDetectedActivities.put(
-            Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]), 0);
+            mDetectedActivities.put(
+                    Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]), 0);
 //          mDetectedActivities.add(new DetectedActivity(Constants.MONITORED_ACTIVITIES[i], 0));
         }
 
@@ -107,70 +111,37 @@ public class ActivityRecognitionProbe extends Base
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_AR_LOG);
         LocalBroadcastManager.getInstance(getContext())
-            .registerReceiver(arReceiver, filter);
+                .registerReceiver(arReceiver, filter);
 
         // Intentionally wait 2 seconds for Google API Client to be connected
         // then register activity updates handler
         handler.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            // Register for activity recognition updates
-            requestActivityUpdatesHandler();
-          }
+            @Override
+            public void run() {
+                // Register for activity recognition updates
+                requestActivityUpdatesHandler();
+            }
         }, 2000L);
-    }
 
-    @Override
-    protected void onStart() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[ActivityRecognitionProbe] onStart");
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[ActivityRecognitionProbe] onStop");
-        super.onStop();
+        handler.postDelayed(activityChecker, checkInterval);
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Register for activity recognition updates
+//                requestActivityUpdatesHandler();
+//            }
+//        }, 2000L);
     }
 
     @Override
     protected void onDisable() {
-        // super.onDisable();
+        super.onDisable();
+        getHandler().removeCallbacks(activityChecker);
         // Remove activity recognition updates
         removeActivityUpdatesHandler();
         LocalBroadcastManager.getInstance(getContext())
-            .unregisterReceiver(arReceiver);
+                .unregisterReceiver(arReceiver);
         mGoogleApiClient.disconnect();
-    }
-
-    @Override
-    protected void sendData(final JsonObject data) {
-      if (data == null || looper == null) {
-        return;
-      } else if (Thread.currentThread() != looper.getThread()) {
-        // Ensure the data send runs on the probe's thread
-        if (handler != null) {
-          Message dataMessage = handler.obtainMessage(SEND_DATA_MESSAGE, data);
-          handler.sendMessageAtFrontOfQueue(dataMessage);
-        }
-      } else {
-        if (!data.has(TIMESTAMP)) {
-          data.addProperty(TIMESTAMP, TimeUtil.getTimestamp());
-        }
-        IJsonObject immutableData = new IJsonObject(data);
-        synchronized (dataListeners) {
-          for (DataListener listener : dataListeners) {
-            listener.onDataReceived(getConfig(), immutableData);
-          }
-        }
-        synchronized (passiveDataListeners) {
-          for (DataListener listener : passiveDataListeners) {
-            if (!dataListeners.contains(listener)) {
-              // Don't send data twice to passive listeners
-              listener.onDataReceived(getConfig(), immutableData);
-            }
-          }
-        }
-      }
     }
 
     /**
@@ -178,11 +149,11 @@ public class ActivityRecognitionProbe extends Base
      * ActivityRecognition API.
      */
     protected synchronized void buildGoogleApiClient() {
-      mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-              .addConnectionCallbacks(this)
-              .addOnConnectionFailedListener(this)
-              .addApi(ActivityRecognition.API)
-              .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(ActivityRecognition.API)
+                .build();
     }
 
     /**
@@ -195,25 +166,25 @@ public class ActivityRecognitionProbe extends Base
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-      // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
-      // onConnectionFailed.
-      String message = "Failed to connect to Google API";
-      Intent intent = new Intent();
-      intent.setAction(AlertKeys.ACTION_ALERT);
-      intent.putExtra(AlertKeys.EXTRA_ALERT_ERROR_CODE, result.getErrorCode());
-      intent.putExtra(AlertKeys.EXTRA_ALERT_ERROR_MESSAGE, message);
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        String message = "Failed to connect to Google API";
+        Intent intent = new Intent();
+        intent.setAction(AlertKeys.ACTION_ALERT);
+        intent.putExtra(AlertKeys.EXTRA_ALERT_ERROR_CODE, result.getErrorCode());
+        intent.putExtra(AlertKeys.EXTRA_ALERT_ERROR_MESSAGE, message);
 
-      getContext().sendBroadcast(intent);
+        getContext().sendBroadcast(intent);
 //      Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode()=" + result.getErrorCode() +
 //                  ", ConnectionResult.getErrorMessage()=" + result.getErrorMessage());
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-      // The connection to Google Play services was lost for some reason. We call connect() to
-      // attempt to re-establish the connection.
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
 //      Log.i(TAG, "Connection suspended");
-      mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
     }
 
     /**
@@ -226,17 +197,18 @@ public class ActivityRecognitionProbe extends Base
      * activities are detected.
      */
     public void requestActivityUpdatesHandler() {
-      if (!mGoogleApiClient.isConnected()) {
+        if (!mGoogleApiClient.isConnected()) {
 //        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
 //        Toast.makeText(getContext(), getContext().getString(R.string.not_connected),
 //                Toast.LENGTH_SHORT).show();
-        return;
-      }
-      ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-              mGoogleApiClient,
-              Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
-              getActivityDetectionPendingIntent()
-      ).setResultCallback(this);
+            return;
+        }
+        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] requestActivityUpdates() called");
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient,
+                Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
+                getActivityDetectionPendingIntent()
+        ).setResultCallback(this);
     }
 
     /**
@@ -249,17 +221,17 @@ public class ActivityRecognitionProbe extends Base
      * detected activities.
      */
     public void removeActivityUpdatesHandler() {
-      if (!mGoogleApiClient.isConnected()) {
+        if (!mGoogleApiClient.isConnected()) {
 //        Log.d(LogKeys.DEBUG, TAG+"/ " + getContext().getString(R.string.not_connected));
 //        Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
-        return;
-      }
-      // Remove all activity updates for the PendingIntent that was used to request activity
-      // updates.
-      ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
-              mGoogleApiClient,
-              getActivityDetectionPendingIntent()
-      ).setResultCallback(this);
+            return;
+        }
+        // Remove all activity updates for the PendingIntent that was used to request activity
+        // updates.
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
+                mGoogleApiClient,
+                getActivityDetectionPendingIntent()
+        ).setResultCallback(this);
     }
 
     /**
@@ -270,10 +242,10 @@ public class ActivityRecognitionProbe extends Base
      *               or removeActivityUpdates() are called.
      */
     public void onResult(Status status) {
-      if (status.isSuccess()) {
-        // Toggle the status of activity updates requested, and save in shared preferences.
-        boolean requestingUpdates = !getUpdatesRequestedState();
-        setUpdatesRequestedState(requestingUpdates);
+        if (status.isSuccess()) {
+            // Toggle the status of activity updates requested, and save in shared preferences.
+            boolean requestingUpdates = !getUpdatesRequestedState();
+            setUpdatesRequestedState(requestingUpdates);
 
 //        Log.d(LogKeys.DEBUG, TAG+"/ ActivityUpdates status changed");
 //        setButtonsEnabledState();
@@ -282,31 +254,25 @@ public class ActivityRecognitionProbe extends Base
 //                getContext().getString(requestingUpdates ?
 //                                R.string.activity_updates_added :
 //                                R.string.activity_updates_removed));
-      } else {
-        Log.e(LogKeys.DEBUG, TAG+"/ Error adding or removing activity detection: "
-                              + status.getStatusMessage());
-      }
+        } else {
+            Log.e(LogKeys.DEBUG, TAG + "/ Error adding or removing activity detection: "
+                    + status.getStatusMessage());
+        }
     }
 
     /**
      * Gets a PendingIntent to be sent for each activity detection.
      */
     private PendingIntent getActivityDetectionPendingIntent() {
-      Intent intent = new Intent(getContext(), DetectedActivitiesIntentService.class);
+        Intent intent = new Intent(getContext(), DetectedActivitiesIntentService.class);
 
-      // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-      // requestActivityUpdates() and removeActivityUpdates().
-      return PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // requestActivityUpdates() and removeActivityUpdates().
+        return PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /**
-     * Retrieves a SharedPreference object used to store or read values in this app. If a
-     * preferences file passed as the first argument to {@link #getSharedPreferences}
-     * does not exist, it is created when {@link SharedPreferences.Editor} is used to commit
-     * data.
-     */
     private SharedPreferences getSharedPreferencesInstance() {
-      return getContext().getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        return getContext().getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     /**
@@ -314,8 +280,8 @@ public class ActivityRecognitionProbe extends Base
      * updates.
      */
     private boolean getUpdatesRequestedState() {
-      return getSharedPreferencesInstance()
-              .getBoolean(Constants.ACTIVITY_UPDATES_REQUESTED_KEY, false);
+        return getSharedPreferencesInstance()
+                .getBoolean(Constants.ACTIVITY_UPDATES_REQUESTED_KEY, false);
     }
 
     /**
@@ -323,10 +289,10 @@ public class ActivityRecognitionProbe extends Base
      * updates.
      */
     private void setUpdatesRequestedState(boolean requestingUpdates) {
-      getSharedPreferencesInstance()
-              .edit()
-              .putBoolean(Constants.ACTIVITY_UPDATES_REQUESTED_KEY, requestingUpdates)
-              .commit();
+        getSharedPreferencesInstance()
+                .edit()
+                .putBoolean(Constants.ACTIVITY_UPDATES_REQUESTED_KEY, requestingUpdates)
+                .commit();
     }
 
     /**
@@ -335,39 +301,41 @@ public class ActivityRecognitionProbe extends Base
      *
      * @param detectedActivities the freshly detected activities
      */
-    private void updateDetectedActivities(ArrayList<DetectedActivity> detectedActivities) {
+    private void updateDetectedActivities(ArrayList<DetectedActivity> detectedActivities, long detectionTime) {
 //      Log.d(LogKeys.DEBUG, TAG+"/ entered updateDetectedActivities()");
-      HashMap<Integer, Integer> detectedActivitiesMap = new HashMap<>();
-      for (DetectedActivity activity : detectedActivities) {
-        detectedActivitiesMap.put(activity.getType(), activity.getConfidence());
-      }
-      // Every time we detect new activities, we want to reset the confidence level of ALL
-      // activities that we monitor. Since we cannot directly change the confidence
-      // of a DetectedActivity, we use a temporary list of DetectedActivity objects. If an
-      // activity was freshly detected, we use its confidence level. Otherwise, we set the
-      // confidence level to zero.
-      Map<String, Integer> tempMap = new HashMap<String, Integer>();
+        HashMap<Integer, Integer> detectedActivitiesMap = new HashMap<>();
+        for (DetectedActivity activity : detectedActivities) {
+            detectedActivitiesMap.put(activity.getType(), activity.getConfidence());
+        }
+        // Every time we detect new activities, we want to reset the confidence level of ALL
+        // activities that we monitor. Since we cannot directly change the confidence
+        // of a DetectedActivity, we use a temporary list of DetectedActivity objects. If an
+        // activity was freshly detected, we use its confidence level. Otherwise, we set the
+        // confidence level to zero.
+        Map<String, Integer> tempMap = new HashMap<String, Integer>();
 //      ArrayList<DetectedActivity> tempList = new ArrayList<DetectedActivity>();
-      for (int i = 0; i < Constants.MONITORED_ACTIVITIES.length; i++) {
-        int confidence = detectedActivitiesMap.containsKey(Constants.MONITORED_ACTIVITIES[i]) ?
-                detectedActivitiesMap.get(Constants.MONITORED_ACTIVITIES[i]) : 0;
+        for (int i = 0; i < Constants.MONITORED_ACTIVITIES.length; i++) {
+            int confidence = detectedActivitiesMap.containsKey(Constants.MONITORED_ACTIVITIES[i]) ?
+                    detectedActivitiesMap.get(Constants.MONITORED_ACTIVITIES[i]) : 0;
 
-        Log.d(LogKeys.DEB, "[ActivityRecognitionProbe] " +
-                Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
-                "=" + confidence);
-        tempMap.put(Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]),
+            Log.d(LogKeys.DEB, "[ActivityRecognitionProbe] " +
+                    Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
+                    "=" + confidence);
+            tempMap.put(Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]),
                     confidence);
 //        tempList.add(new DetectedActivity(Constants.MONITORED_ACTIVITIES[i],
 //                confidence));
-      }
+        }
 
-      JsonObject data = new JsonObject();
-      for (String key: tempMap.keySet()) {
-        data.addProperty(key, tempMap.get(key));
-      }
+        JsonObject data = new JsonObject();
+        for (String key : tempMap.keySet()) {
+            data.addProperty(key, tempMap.get(key));
+        }
 
 //      Log.d(LogKeys.DEBUG, TAG+"/ JsonObject data=" + data.toString());
-      sendData(data);
+        data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(detectionTime));
+        data.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
+        sendData(data);
     }
 
 //    @Override
@@ -381,16 +349,17 @@ public class ActivityRecognitionProbe extends Base
      * the device.
      */
     public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
-      protected static final String TAG = "activity-detection-response-receiver";
+        protected static final String TAG = "activity-detection-response-receiver";
 
-      @Override
-      public void onReceive(Context context, Intent intent) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 //        Log.d(LogKeys.DEBUG, TAG+"/ Received broadcast");
-        ArrayList<DetectedActivity> updatedActivities =
-                intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
+            ArrayList<DetectedActivity> updatedActivities =
+                    intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
+            long detectionTime = intent.getLongExtra(Constants.DETECTION_TIME, System.currentTimeMillis());
 
-        ActivityRecognitionProbe.this.updateDetectedActivities(updatedActivities);
-      }
+            ActivityRecognitionProbe.this.updateDetectedActivities(updatedActivities, detectionTime);
+        }
     }
 
 

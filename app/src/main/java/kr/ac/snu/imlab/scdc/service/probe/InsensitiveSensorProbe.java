@@ -105,7 +105,6 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 
 	@Override
 	protected void onStop() {
-//		Log.d(SCDCKeys.LogKeys.DEB, "[Sensor] onStop");
 		getSensorManager().unregisterListener(sensorListener);
 	}
 

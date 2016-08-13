@@ -51,8 +51,6 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         }
 
         public void reset() {
-//            sendFinalData();
-
             trafficStatsCurrent = null;
             trafficStatsPast = null;
             currTimestamp = null;
@@ -60,33 +58,23 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
         }
     }
 
-
-    @Override
-    protected void onEnable() {
-//        Log.i(TAG, "NetworkTrafficProbe onEnable");
-        super.onEnable();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] onStart");
         onContinue();
     }
 
     protected void onContinue() {
-//        Log.d(LogUtil.TAG, "NetworkTrafficProbe onContinue");
         getHandler().post(trafficChecker);
     }
 
     protected void onPause() {
-//        Log.d(LogUtil.TAG, "NetworkTrafficProbe onPause");
         getHandler().removeCallbacks(trafficChecker);
         trafficChecker.endCurrentTask();
     }
 
     private TrafficStatsDummy snapTrafficStatsCurrent() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] snapTrafficStatsCurrent");
+        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] snapTrafficStatsCurrent");
         currTimestamp = TimeUtil.getTimestamp();
 
         TrafficStatsDummy currentTrafficStats = new TrafficStatsDummy();
@@ -192,14 +180,13 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
 
     @Override
     protected void onStop() {
-        Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] onStop");
         onPause();
         super.onStop();
     }
 
     @Override
     protected void onDisable() {
-//        Log.i(TAG, "NetworkTrafficProbe onDisable");
+        super.onDisable();
         trafficChecker.reset();
     }
 
@@ -210,7 +197,7 @@ public class NetworkTrafficProbe extends InsensitiveProbe implements Probe.Conti
             if (DecimalTimeUnit.MILLISECONDS.toSeconds(currTime).longValue() > lastTimestamp.longValue() + 5) {
                 trafficStatsCurrent = snapTrafficStatsCurrent();
                 sendTraffic(trafficDataList(), true);
-                Log.d(SCDCKeys.LogKeys.DEB, "[NetworkTrafficProbe] sendFinalData!");
+                Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] sendFinalData!");
                 trafficStatsPast = null;
             }
         }

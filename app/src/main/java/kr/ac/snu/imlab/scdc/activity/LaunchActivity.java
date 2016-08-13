@@ -492,8 +492,10 @@ public class LaunchActivity extends ActionBarActivity
                 File dbFile = new File(db.getPath());
 
                 // Asynchronously archive and upload dbFile
+                spHandler.saveTempLastIndex();
                 archiveAndUploadDatabase(dbFile);
                 dropAndCreateTable(db, true);
+                spHandler.rollbackTempLastIndex();
 
                 // Wait 5 seconds for archive to finish, then refresh the UI
                 // (Note: this is kind of a hack since archiving is seamless
@@ -530,6 +532,7 @@ public class LaunchActivity extends ActionBarActivity
             if (pipeline.getDatabaseHelper() != null) {
               SQLiteDatabase db = pipeline.getWritableDb();
               dropAndCreateTable(db, true);
+              spHandler.rollbackTempLastIndex();
             }
       }
     });

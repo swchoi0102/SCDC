@@ -43,17 +43,4 @@ public class MagneticFieldSensorProbe extends SensorProbe implements MagneticFie
 			X, Y, Z
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[MagneticFieldSensorProbe] onStart");
-		super.onStart();
-	}
-
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[MagneticFieldSensorProbe] onStop");
-		super.onStop();
-	}
 }

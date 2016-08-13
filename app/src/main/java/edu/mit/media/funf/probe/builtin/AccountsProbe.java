@@ -41,10 +41,14 @@ import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.AccountsKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
-import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 @RequiredPermissions(android.Manifest.permission.GET_ACCOUNTS)
 public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
+
+	public AccountsProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.ACCOUNTS_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.ACCOUNTS_COLLECT_TEMP_LAST_TIME;
+	}
 
 	@Override
 	protected GsonBuilder getGsonBuilder() {
@@ -63,13 +67,11 @@ public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
 
 	@Override
 	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AccountsProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
-		long lastSavedTime = getLastSavedTime();
-
-		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+		if(itIsTimeToStart()){
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + this.probeName + "] It is time to start!!!");
 			AccountManager am = (AccountManager)getContext().getSystemService(Context.ACCOUNT_SERVICE);
 			Gson gson = getGson();
 			for (Account account : am.getAccounts()) {
@@ -77,24 +79,11 @@ public class AccountsProbe extends ImpulseProbe implements AccountsKeys {
 				data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTime));
 				sendData(data);
 			}
-			setLastSavedTime(currentTime);
+			setTempLastCollectTime(currentTime);
+		} else {
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}
 		disable();
 	}
 
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AccountsProbe] onStop");
-		super.onStop();
-	}
-
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.ACCOUNTS_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.ACCOUNTS_LOG_LAST_TIME);
-	}
 }

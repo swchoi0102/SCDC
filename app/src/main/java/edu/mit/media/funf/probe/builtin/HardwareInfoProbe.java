@@ -42,28 +42,50 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @RequiredPermissions({android.Manifest.permission.ACCESS_WIFI_STATE, android.Manifest.permission.BLUETOOTH, android.Manifest.permission.READ_PHONE_STATE})
 public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys {
 
+	public HardwareInfoProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.HARDWARE_INFO_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.HARDWARE_INFO_COLLECT_TEMP_LAST_TIME;
+	}
+
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[HardwareInfoProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
-		long lastSavedTime = getLastSavedTime();
-
-		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+		if(itIsTimeToStart()){
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] It is time to start!!!");
 			sendData(getGson().toJsonTree(getData()).getAsJsonObject());
-			setLastSavedTime(currentTime);
+			setTempLastCollectTime(currentTime);
+		} else {
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}
 		stop();
 	}
 
 	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[HardwareInfoProbe] onStop");
-		super.onStop();
+	protected boolean itIsTimeToStart() {
+		// Is it first time?
+		long lastSavedTime = getLastCollectTime();
+		long tempLastSavedTime = getTempLastCollectTime();
+		boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
+		Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] is it first time?: " + firstTime);
+
+		// Is it 24 hours passed from the last collection?
+		long currentTime = System.currentTimeMillis();
+		boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
+
+		// Is it sleeping context?
+		//		FIXME: sleeping label ID is just assigned as integer value not as a variable
+		long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
+		boolean sleepingContext = startLoggingTime != -1;
+
+		// Is it 2 hours passed from the start logging time?
+		boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
+
+		return firstTime || passed24Hours && sleepingContext && labeling2Hours;
 	}
 
-	
 	private Bundle getData() {
 		Context context = getContext();
 		Bundle data = new Bundle();
@@ -82,15 +104,5 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 	private String getBluetoothMac() {
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		return (adapter != null) ? adapter.getAddress() : null;
-	}
-
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.HARDWARE_INFO_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.HARDWARE_INFO_LOG_LAST_TIME);
 	}
 }

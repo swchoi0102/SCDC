@@ -50,13 +50,13 @@ public abstract class InsensitiveProbe extends Probe.Base {
                 lastData.addProperty(SCDCKeys.InsensitiveKeys.IS_URGENT, true);
             }
             sendData(lastData);
-            String[] nameSplit = this.getClass().getName().split("\\.");
-            Log.d(SCDCKeys.LogKeys.DEB, "[" + nameSplit[nameSplit.length - 1] + "] sendFinalData!, " + duration);
+            Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] sendFinalData!, " + duration);
             lastData = null;
         }
     }
 
     protected JsonObject getCurrData() {
+        Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] getCurrData");
         return null;
     }
 

@@ -35,15 +35,18 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 
+	public AndroidInfoProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.ANDROID_INFO_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.ANDROID_INFO_COLLECT_TEMP_LAST_TIME;
+	}
+
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AndroidInfoProbe] onStart");
 		super.onStart();
 
 		long currentTime = System.currentTimeMillis();
-		long lastSavedTime = getLastSavedTime();
-
-		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+		if(itIsTimeToStart()){
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] It is time to start!!!");
 			JsonObject data = new JsonObject();
 			data.addProperty(FIRMWARE_VERSION, Build.VERSION.RELEASE);
 			data.addProperty(BUILD_NUMBER,
@@ -54,24 +57,34 @@ public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 							+ " " + Build.TAGS);
 			data.addProperty(SDK, Build.VERSION.SDK_INT);
 			sendData(data);
-			setLastSavedTime(currentTime);
+			setTempLastCollectTime(currentTime);
+		} else {
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}
 		stop();
 	}
 
 	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AndroidInfoProbe] onStop");
-		super.onStop();
-	}
+	protected boolean itIsTimeToStart() {
+		// Is it first time?
+		long lastSavedTime = getLastCollectTime();
+		long tempLastSavedTime = getTempLastCollectTime();
+		boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
+		Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] is it first time?: " + firstTime);
 
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.ANDROID_INFO_LOG_LAST_TIME, lastSavedTime);
-	}
+		// Is it 24 hours passed from the last collection?
+		long currentTime = System.currentTimeMillis();
+		boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
 
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.ANDROID_INFO_LOG_LAST_TIME);
+		// Is it sleeping context?
+		//		FIXME: sleeping label ID is just assigned as integer value not as a variable
+		long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
+				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
+		boolean sleepingContext = startLoggingTime != -1;
+
+		// Is it 2 hours passed from the start logging time?
+		boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
+
+		return firstTime || passed24Hours && sleepingContext && labeling2Hours;
 	}
 }

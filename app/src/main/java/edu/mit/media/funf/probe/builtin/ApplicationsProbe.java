@@ -31,24 +31,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
 
-import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.builtin.ProbeKeys.ApplicationsKeys;
 import edu.mit.media.funf.time.DecimalTimeUnit;
-import edu.mit.media.funf.time.TimeUtil;
-import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
-import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 //public class ApplicationsProbe extends ImpulseProbe implements PassiveProbe, ApplicationsKeys{
 public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
@@ -56,15 +47,18 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 	private PackageManager pm;
 	private long currentTime;
 
+	public ApplicationsProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.APPLICATIONS_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.APPLICATIONS_COLLECT_TEMP_LAST_TIME;
+	}
+
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ApplicationsProbe] onStart");
 		super.onStart();
 
 		currentTime = System.currentTimeMillis();
-		long lastSavedTime = getLastSavedTime();
-
-		if(currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL){
+		if(itIsTimeToStart()){
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] It is time to start!!!");
 			pm = getContext().getPackageManager();
 			List<ApplicationInfo> allApplications = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
 			List<ApplicationInfo> installedApplications = new ArrayList<ApplicationInfo>(pm.getInstalledApplications(0));
@@ -75,18 +69,13 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 			for (ApplicationInfo info : uninstalledApplications) {
 				sendData(info, false, null);
 			}
-			setLastSavedTime(currentTime);
+			setTempLastCollectTime(currentTime);
+		} else {
+			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}
 
 		disable();
 	}
-
-	@Override
-	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ApplicationsProbe] onStop");
-		super.onStop();
-	}
-
 
 	private void sendData(ApplicationInfo info, boolean installed, BigDecimal installedTimestamp) {
 		JsonObject data = getGson().toJsonTree(info).getAsJsonObject();
@@ -113,16 +102,5 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 			}
 		}
 		return uninstalledApps;
-	}
-
-
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.APPLICATIONS_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.APPLICATIONS_LOG_LAST_TIME);
 	}
 }

@@ -45,16 +45,4 @@ public class AccelerometerSensorProbe extends SensorProbe implements PassiveProb
 				X, Y, Z
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AccelerometerSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AccelerometerSensorProbe] onStop");
-		super.onStop();
-	}
 }

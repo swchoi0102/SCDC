@@ -42,18 +42,13 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @Probe.RequiredPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
 public class ImageMediaProbe extends DatedContentProviderProbe {
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ImageMediaProbe] onStart");
-		super.onStart();
+	public ImageMediaProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.IMAGE_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.IMAGE_COLLECT_TEMP_LAST_TIME;
+		lastLogIndexKey = SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_INDEX;
+		lastLogIndexTempKey = SCDCKeys.SharedPrefs.IMAGE_LOG_TEMP_LAST_INDEX;
 	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[ImageMediaProbe] onStop");
-		super.onStop();
-	}
-
+	
 	@Override
 	protected Uri getContentProviderUri() {
 		return Images.Media.EXTERNAL_CONTENT_URI;
@@ -96,15 +91,4 @@ public class ImageMediaProbe extends DatedContentProviderProbe {
 		return DecimalTimeUnit.SECONDS;
 	}
 
-	@Override
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	@Override
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.IMAGE_LOG_LAST_TIME);
-	}
 }

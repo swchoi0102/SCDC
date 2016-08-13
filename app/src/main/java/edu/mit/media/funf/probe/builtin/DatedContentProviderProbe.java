@@ -26,21 +26,17 @@ package edu.mit.media.funf.probe.builtin;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import edu.mit.media.funf.config.Configurable;
 import edu.mit.media.funf.probe.Probe.ContinuableProbe;
 import edu.mit.media.funf.time.DecimalTimeUnit;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 public abstract class DatedContentProviderProbe extends ContentProviderProbe implements ContinuableProbe {
 
@@ -48,14 +44,30 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 	protected BigDecimal afterDate = null;
 	
 	private BigDecimal latestTimestamp = null;
-	
+	private long lastLogIndex;
+	private long tempLastLogIndex;
+
+	@Override
+	protected void onEnable() {
+		super.onEnable();
+		lastLogIndex = getLastLogIndex();
+		tempLastLogIndex = getTempLastLogIndex();
+	}
+
+	@Override
+	protected void onDisable() {
+		super.onDisable();
+		setTempLastLogIndex(tempLastLogIndex);
+		tempLastLogIndex = 0L;
+	}
+
 	@Override
 	protected Cursor getCursor(String[] projection) {
 		String dateColumn = getDateColumnName();
 		// Used the code below when we specified projection exactly
 		List<String> projectionList = Arrays.asList(projection);
 		if (!Arrays.asList(projection).contains(dateColumn)) {
-			projectionList = new ArrayList<String>(projectionList);
+			projectionList = new ArrayList<>(projectionList);
 			projectionList.add(dateColumn);
 			projection = new String[projectionList.size()];
 			projectionList.toArray(projection);
@@ -63,12 +75,12 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		String dateFilter = null;
 		String[] dateFilterParams = null;
 		dateFilter = dateColumn + " > ?";
-		dateFilterParams = new String[]{"" + getLastSavedTime()};
+		dateFilterParams = new String[]{"" + getLastLogIndex()};
 //		Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
 
 //		if (afterDate != null || latestTimestamp != null) {
 //			dateFilter = dateColumn + " > ?";
-//			dateFilterParams = new String[]{"" + getLastSavedTime()};
+//			dateFilterParams = new String[]{"" + getLastCollectTime()};
 //			Log.d(SCDCKeys.LogKeys.DEB, "query: " + dateFilter + dateFilterParams[0]);
 ////			BigDecimal startingDate = afterDate == null ? latestTimestamp :
 ////						afterDate.max(latestTimestamp == null ? BigDecimal.ZERO : latestTimestamp);
@@ -90,19 +102,16 @@ public abstract class DatedContentProviderProbe extends ContentProviderProbe imp
 		return DecimalTimeUnit.MILLISECONDS;
 	}
 
-	protected abstract void setLastSavedTime(long lastSavedTime);
-	protected abstract long getLastSavedTime();
-
 	@Override
 	protected void sendData(JsonObject data) {
-		long tempTime = getLastSavedTime();
+		long tempLogIndex = lastLogIndex;
 		try{
-			tempTime = data.get(getDateColumnName()).getAsLong();
+			tempLogIndex = data.get(getDateColumnName()).getAsLong();
 		} catch (Exception e){}
-		if (tempTime > getLastSavedTime()){
-//			Log.d(SCDCKeys.LogKeys.DEB, "send data, update last time: " + tempTime);
+		if (tempLogIndex > lastLogIndex && tempLogIndex > tempLastLogIndex){
+//			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] new data is collected!!!");
 			super.sendData(data);
-			setLastSavedTime(tempTime);
+			tempLastLogIndex = tempLogIndex;
 		}
 	}
 

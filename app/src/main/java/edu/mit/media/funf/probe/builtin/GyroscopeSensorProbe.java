@@ -56,16 +56,4 @@ public class GyroscopeSensorProbe extends SensorProbe implements GyroscopeSensor
 			X, Y, Z
 		};
 	}
-
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[GyroscopeSensorProbe] onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[GyroscopeSensorProbe] onStop");
-		super.onStop();
-	}
 }

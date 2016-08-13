@@ -249,12 +249,6 @@ public class AccelerometerFeaturesProbe extends Base implements ContinuousProbe,
 		reset();
 	}
 
-	@Override
-	protected void onDisable() {
-		// TODO Auto-generated method stub
-		super.onDisable();
-	}
-	
 	private void reset() {
 		prevSecs = 0;
 		prevFrameSecs = 0;

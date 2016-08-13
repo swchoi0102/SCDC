@@ -82,9 +82,7 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 	
 	@Override
 	protected void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AudioFeaturesProbe] onStart");
 		super.onStart();
-		
 
     	bufferSize = AudioRecord.getMinBufferSize(
         		RECORDER_SAMPLERATE,
@@ -129,7 +127,6 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 
 	@Override
 	protected void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[AudioFeaturesProbe] onStop");
 		super.onStop();
 		audioRecorder.stop();
         audioRecorder.release();
@@ -238,8 +235,4 @@ public class AudioFeaturesProbe extends Base implements ContinuousProbe, AudioFe
 
 	}
 
-//	@Override
-//	public void sendFinalData() {
-//
-//	}
 }

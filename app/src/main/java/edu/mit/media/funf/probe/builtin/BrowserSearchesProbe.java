@@ -32,7 +32,6 @@ import android.provider.Browser;
 import android.util.Log;
 
 import edu.mit.media.funf.Schedule;
-import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.Probe.DisplayName;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
@@ -43,18 +42,13 @@ import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 @RequiredPermissions(android.Manifest.permission.READ_HISTORY_BOOKMARKS)
 public class BrowserSearchesProbe extends DatedContentProviderProbe {
 
-	@Override
-	public void onStart() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BrowserSearchesProbe] onStart");
-		super.onStart();
+	public BrowserSearchesProbe(){
+		lastCollectTimeKey = SCDCKeys.SharedPrefs.SEARCH_COLLECT_LAST_TIME;
+		lastCollectTimeTempKey = SCDCKeys.SharedPrefs.SEARCH_COLLECT_TEMP_LAST_TIME;
+		lastLogIndexKey = SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_INDEX;
+		lastLogIndexTempKey = SCDCKeys.SharedPrefs.SEARCH_LOG_TEMP_LAST_INDEX;
 	}
-
-	@Override
-	public void onStop() {
-		Log.d(SCDCKeys.LogKeys.DEB, "[BrowserSearchesProbe] onStop");
-		super.onStop();
-	}
-
+	
 	@Override
 	protected Uri getContentProviderUri() {
 		return Browser.SEARCHES_URI;
@@ -63,18 +57,6 @@ public class BrowserSearchesProbe extends DatedContentProviderProbe {
 	@Override
 	protected String getDateColumnName() {
 		return Browser.SearchColumns.DATE;
-	}
-
-	@Override
-	protected void setLastSavedTime(long lastSavedTime) {
-		SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).setCPLastSavedTime(SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_TIME, lastSavedTime);
-	}
-
-	@Override
-	protected long getLastSavedTime() {
-		return SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getCPLastSavedTime(SCDCKeys.SharedPrefs.SEARCH_LOG_LAST_TIME);
 	}
 
 	@Override
