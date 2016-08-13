@@ -61,8 +61,6 @@ public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements
 
 	private SensorManager sensorManager;
 	private Sensor sensor;
-	private Sensor accelerometer;
-	private Sensor magnetometer;
 	private SensorEventListener sensorListener;
 
 	@Override

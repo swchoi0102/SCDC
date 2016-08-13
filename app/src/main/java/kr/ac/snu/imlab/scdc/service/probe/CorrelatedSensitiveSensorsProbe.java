@@ -48,7 +48,7 @@ public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousP
 
     @Configurable
     private String sensorDelay = SENSOR_DELAY_GAME;
-    private final long MIN_INTERVAL_MILLIS = 3;
+    private final long MIN_INTERVAL_MILLIS = 5;
 
     public static final String
             SENSOR_DELAY_FASTEST = "FASTEST",
