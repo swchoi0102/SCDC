@@ -65,25 +65,27 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 	@Override
 	protected boolean itIsTimeToStart() {
 		// Is it first time?
-		long lastSavedTime = getLastCollectTime();
+//		long lastSavedTime = getLastCollectTime();
 		long tempLastSavedTime = getTempLastCollectTime();
-		boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
+//		boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
+		boolean firstTime = tempLastSavedTime == 0L;
 		Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] is it first time?: " + firstTime);
+		return firstTime;
 
-		// Is it 24 hours passed from the last collection?
-		long currentTime = System.currentTimeMillis();
-		boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
-
-		// Is it sleeping context?
-		//		FIXME: sleeping label ID is just assigned as integer value not as a variable
-		long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
-				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
-		boolean sleepingContext = startLoggingTime != -1;
-
-		// Is it 2 hours passed from the start logging time?
-		boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
-
-		return firstTime || passed24Hours && sleepingContext && labeling2Hours;
+//		// Is it 24 hours passed from the last collection?
+//		long currentTime = System.currentTimeMillis();
+//		boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
+//
+//		// Is it sleeping context?
+//		//		FIXME: sleeping label ID is just assigned as integer value not as a variable
+//		long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
+//				SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
+//		boolean sleepingContext = startLoggingTime != -1;
+//
+//		// Is it 2 hours passed from the start logging time?
+//		boolean labeling2Hours = currentTime > startLoggingTime + 7200000L;
+//
+//		return firstTime || passed24Hours && sleepingContext && labeling2Hours;
 	}
 
 	private Bundle getData() {

@@ -221,26 +221,26 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 		if (dataProjectionMap == null) {
 			Map<String,CursorCell<?>> projectionKeyToType = new HashMap<String, CursorCell<?>>();
 			projectionKeyToType.put(Data._ID, intCell());
-			projectionKeyToType.put(Data.RAW_CONTACT_ID, longCell());
+//			projectionKeyToType.put(Data.RAW_CONTACT_ID, longCell());
 			projectionKeyToType.put(Data.MIMETYPE, stringCell());
-			projectionKeyToType.put(Data.IS_PRIMARY, intCell());
-			projectionKeyToType.put(Data.IS_SUPER_PRIMARY, intCell());
+//			projectionKeyToType.put(Data.IS_PRIMARY, intCell());
+//			projectionKeyToType.put(Data.IS_SUPER_PRIMARY, intCell());
 			projectionKeyToType.put(Data.DATA_VERSION, intCell());
 			projectionKeyToType.put(Data.DATA1, contactDataCell());
-			projectionKeyToType.put(Data.DATA2, contactDataCell());
-			projectionKeyToType.put(Data.DATA3, contactDataCell());
-			projectionKeyToType.put(Data.DATA4, contactDataCell());
-			projectionKeyToType.put(Data.DATA5, contactDataCell());
-			projectionKeyToType.put(Data.DATA6, contactDataCell());
-			projectionKeyToType.put(Data.DATA7, contactDataCell());
-			projectionKeyToType.put(Data.DATA8, contactDataCell());
-			projectionKeyToType.put(Data.DATA9, contactDataCell());
-			projectionKeyToType.put(Data.DATA10, contactDataCell());
-			projectionKeyToType.put(Data.DATA11, contactDataCell());
-			projectionKeyToType.put(Data.DATA12, contactDataCell());
-			projectionKeyToType.put(Data.DATA13, contactDataCell());
-			projectionKeyToType.put(Data.DATA14, contactDataCell());
-			projectionKeyToType.put(Data.DATA15, contactDataCell());
+//			projectionKeyToType.put(Data.DATA2, contactDataCell());
+//			projectionKeyToType.put(Data.DATA3, contactDataCell());
+//			projectionKeyToType.put(Data.DATA4, contactDataCell());
+//			projectionKeyToType.put(Data.DATA5, contactDataCell());
+//			projectionKeyToType.put(Data.DATA6, contactDataCell());
+//			projectionKeyToType.put(Data.DATA7, contactDataCell());
+//			projectionKeyToType.put(Data.DATA8, contactDataCell());
+//			projectionKeyToType.put(Data.DATA9, contactDataCell());
+//			projectionKeyToType.put(Data.DATA10, contactDataCell());
+//			projectionKeyToType.put(Data.DATA11, contactDataCell());
+//			projectionKeyToType.put(Data.DATA12, contactDataCell());
+//			projectionKeyToType.put(Data.DATA13, contactDataCell());
+//			projectionKeyToType.put(Data.DATA14, contactDataCell());
+//			projectionKeyToType.put(Data.DATA15, contactDataCell());
 			dataProjectionMap = projectionKeyToType;
 		}
 		return dataProjectionMap;
@@ -253,7 +253,7 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 			projectionKeyToType.put(Data.CONTACT_ID, longCell());
 			//projectionKeyToType.put(Data.AGGREGATION_MODE, intCell());  Doesn't exist for some reason
 			//projectionKeyToType.put(Data.DELETED, intCell());  Doesn't exist for some reason
-			projectionKeyToType.put(Data.LOOKUP_KEY, stringCell());
+//			projectionKeyToType.put(Data.LOOKUP_KEY, stringCell());
 			projectionKeyToType.put(Data.DISPLAY_NAME, sensitiveStringCell());
 			projectionKeyToType.put(Data.PHOTO_ID, longCell());
 			projectionKeyToType.put(Data.IN_VISIBLE_GROUP, intCell());
@@ -305,6 +305,7 @@ public class ContactProbe extends ContentProviderProbe implements ContactKeys, C
 		}
 		contact.add(CONTACT_DATA, contactData);
 		return hasChanged ? contact : null;
+//		return contact;
 	}
 
 	@Override

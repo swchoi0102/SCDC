@@ -62,6 +62,7 @@ import edu.mit.media.funf.security.HashUtil;
 import edu.mit.media.funf.security.HashUtil.HashingType;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LockUtil;
+import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
@@ -757,7 +758,7 @@ public interface Probe {
 		 * to funf@media.mit.edu in accordance with the LGPL license. *
 		 */
 		//@Configurable
-		private boolean hideSensitiveData = false;
+		private boolean hideSensitiveData = true;
 
 		protected final String sensitiveData(String data) {
 			return sensitiveData(data, null);
@@ -808,25 +809,31 @@ public interface Probe {
 			boolean firstTime = (lastSavedTime == 0L && tempLastSavedTime == 0L);
 			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] is it first time?: " + firstTime);
 
-			// Is it 24 hours passed from the last collection?
-			long currentTime = System.currentTimeMillis();
-			boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
+			if (LaunchActivity.DEBUGGING){
+				return firstTime;
+			}
 
-			// Is it sleeping context?
-			//		FIXME: sleeping label ID is just assigned as integer value not as a variable
-			long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
-					SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
-			boolean sleepingContext = startLoggingTime != -1;
+			else {
+				// Is it 24 hours passed from the last collection?
+				long currentTime = System.currentTimeMillis();
+				boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
 
-			// Is it 2 hours passed from the start logging time?
+				// Is it sleeping context?
+				//		FIXME: sleeping label ID is just assigned as integer value not as a variable
+				long startLoggingTime = SharedPrefsHandler.getInstance(this.getContext(),
+						SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE).getStartLoggingTime(0);
+				boolean sleepingContext = startLoggingTime != -1;
+
+				// Is it 2 hours passed from the start logging time?
 //			boolean labeling2Hours = currentTime > startLoggingTime + 150000L;
-			boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
+				boolean labeling2Hours = currentTime > startLoggingTime + 7200000L;
 
 //			return sleepingContext && labeling2Hours;
-			if (firstTime) {
-				return sleepingContext && labeling2Hours;
-			} else {
-				return passed24Hours && sleepingContext && labeling2Hours;
+				if (firstTime) {
+					return sleepingContext && labeling2Hours;
+				} else {
+					return passed24Hours && sleepingContext && labeling2Hours;
+				}
 			}
 		}
 

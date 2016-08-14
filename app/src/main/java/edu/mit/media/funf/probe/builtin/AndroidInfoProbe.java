@@ -83,7 +83,7 @@ public class AndroidInfoProbe extends ImpulseProbe implements AndroidInfoKeys {
 		boolean sleepingContext = startLoggingTime != -1;
 
 		// Is it 2 hours passed from the start logging time?
-		boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
+		boolean labeling2Hours = currentTime > startLoggingTime + 7200000L;
 
 		return firstTime || passed24Hours && sleepingContext && labeling2Hours;
 	}

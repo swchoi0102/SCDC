@@ -47,6 +47,8 @@ import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.IntCell;
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.LongCell;
 import edu.mit.media.funf.probe.builtin.ContentProviderProbe.CursorCell.StringCell;
 import edu.mit.media.funf.security.HashUtil;
+import edu.mit.media.funf.time.DecimalTimeUnit;
+import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
@@ -65,17 +67,19 @@ public abstract class ContentProviderProbe extends ImpulseProbe {
 			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] It is time to start!!!");
 			gson = getGson();
 			boolean success = false;
+			long currTimeMillis = System.currentTimeMillis();
 			for (JsonObject data : parseCursorResults()) {
 				if (data != null) {
-					BigDecimal customTimestamp = getTimestamp(data);
-					if (customTimestamp != null) {
-						data.addProperty(TIMESTAMP, customTimestamp);
-					}
+//					BigDecimal customTimestamp = getTimestamp(data);
+//					if (customTimestamp != null) {
+//						data.addProperty(TIMESTAMP, customTimestamp);
+//					}
+					data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currTimeMillis));
 					sendData(data);
 					success = true;
 				}
 			}
-			if (success) setTempLastCollectTime(System.currentTimeMillis());
+			if (success) setTempLastCollectTime(currTimeMillis);
 		} else {
 			Log.d(SCDCKeys.LogKeys.DEB, "[" + probeName + "] may be next time..");
 		}

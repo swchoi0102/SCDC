@@ -318,9 +318,9 @@ public class ActivityRecognitionProbe extends Base
             int confidence = detectedActivitiesMap.containsKey(Constants.MONITORED_ACTIVITIES[i]) ?
                     detectedActivitiesMap.get(Constants.MONITORED_ACTIVITIES[i]) : 0;
 
-            Log.d(LogKeys.DEB, "[ActivityRecognitionProbe] " +
-                    Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
-                    "=" + confidence);
+//            Log.d(LogKeys.DEB, "[ActivityRecognitionProbe] " +
+//                    Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]) +
+//                    "=" + confidence);
             tempMap.put(Constants.getActivityString(Constants.MONITORED_ACTIVITIES[i]),
                     confidence);
 //        tempList.add(new DetectedActivity(Constants.MONITORED_ACTIVITIES[i],

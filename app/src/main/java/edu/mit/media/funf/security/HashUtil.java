@@ -98,13 +98,14 @@ public class HashUtil {
 	public static String hashString(Context context, String msg,
 			HashingType hashingType) {
 		if (hashingType == HashingType.ONE_WAY_HASH) {
-			try {
-				return (new JSONObject()).put(HashingType.ONE_WAY_HASH.name(),
-						oneWayHashString(msg)).toString();
-			} catch (JSONException e) {
-				Log.e(LogUtil.TAG, "hashString: json error:", e);
-				return "JSON ERROR!";
-			}
+			return HashingType.ONE_WAY_HASH.name() + "_" + oneWayHashString(msg);
+//			try {
+//				return (new JSONObject()).put(HashingType.ONE_WAY_HASH.name(),
+//						oneWayHashString(msg)).toString();
+//			} catch (JSONException e) {
+//				Log.e(LogUtil.TAG, "hashString: json error:", e);
+//				return "JSON ERROR!";
+//			}
 		} else if (hashingType == HashingType.INTERMEDIATE_HASH_ENC) {
 			return oneWayHashAndRSA(context, msg);
 		} else {

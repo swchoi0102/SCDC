@@ -55,12 +55,15 @@ public class DetectedActivitiesIntentService extends IntentService implements SC
             (ArrayList)result.getProbableActivities();
 
     // Log each activity
-    Log.i(TAG, "activities detected");
-    for (DetectedActivity da : detectedActivities) {
-      Log.i(TAG, Constants.getActivityString(
-                      da.getType()) + " " + da.getConfidence() + "%"
-      );
-    }
+//    Log.i(TAG, "activities detected");
+    Log.d(SCDCKeys.LogKeys.DEB, "[ActivityRecognitionProbe] activities detected: "
+            + result.getMostProbableActivity().toString());
+
+//    for (DetectedActivity da : detectedActivities) {
+//      Log.i(TAG, Constants.getActivityString(
+//                      da.getType()) + " " + da.getConfidence() + "%"
+//      );
+//    }
 
     // Broadcast the list of detected activities
     localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);

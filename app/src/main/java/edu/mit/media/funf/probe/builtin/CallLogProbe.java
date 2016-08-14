@@ -68,8 +68,8 @@ public class CallLogProbe extends DatedContentProviderProbe {
 		projectionKeyToType.put(Calls.TYPE, intCell());
 		projectionKeyToType.put(Calls.DURATION, longCell());
 		projectionKeyToType.put(Calls.CACHED_NAME, sensitiveStringCell());
-		projectionKeyToType.put(Calls.CACHED_NUMBER_LABEL, sensitiveStringCell());
-		projectionKeyToType.put(Calls.CACHED_NUMBER_TYPE, sensitiveStringCell());
+		projectionKeyToType.put(Calls.CACHED_NUMBER_LABEL, stringCell());
+		projectionKeyToType.put(Calls.CACHED_NUMBER_TYPE, stringCell());
 		return projectionKeyToType;
 	}
 
