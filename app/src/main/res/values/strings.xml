@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SCDC v0.7</string>
+    <string name="app_name">SCDC v0.8</string>
     <string name="action_settings">Settings</string>
     <string name="default_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [ {@type: edu.mit.media.funf.probe.builtin.SimpleLocationProbe}, {@type: edu.mit.media.funf.probe.builtin.ActivityProbe}, {@type: edu.mit.media.funf.probe.builtin.AndroidInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.BatteryProbe}, {@type: edu.mit.media.funf.probe.builtin.BluetoothProbe}, {@type: edu.mit.media.funf.probe.builtin.CellTowerProbe}, {@type: edu.mit.media.funf.probe.builtin.HardwareInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ProximitySensorProbe}, {@type: edu.mit.media.funf.probe.builtin.RunningApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.ScreenProbe}, {@type: edu.mit.media.funf.probe.builtin.TimeOffsetProbe}, {@type: edu.mit.media.funf.probe.builtin.WifiProbe} ] }</string>
     <string name="all_probes_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [ {@type: edu.mit.media.funf.probe.builtin.AccelerometerFeaturesProbe}, {@type: edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.AccountsProbe}, {@type: edu.mit.media.funf.probe.builtin.ActivityProbe}, {@type: edu.mit.media.funf.probe.builtin.AndroidInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.AudioFeaturesProbe}, {@type: edu.mit.media.funf.probe.builtin.AudioMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.BatteryProbe}, {@type: edu.mit.media.funf.probe.builtin.BluetoothProbe}, {@type: edu.mit.media.funf.probe.builtin.BrowserBookmarksProbe}, {@type: edu.mit.media.funf.probe.builtin.BrowserSearchesProbe}, {@type: edu.mit.media.funf.probe.builtin.CallLogProbe}, {@type: edu.mit.media.funf.probe.builtin.CellTowerProbe}, {@type: edu.mit.media.funf.probe.builtin.ContactProbe}, {@type: edu.mit.media.funf.probe.builtin.GravitySensorProbe}, {@type: edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.HardwareInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ImageMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.LightSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.LinearAccelerationSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.LocationProbe}, {@type: edu.mit.media.funf.probe.builtin.MagneticFieldSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.OrientationSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.PressureSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.ProcessStatisticsProbe}, {@type: edu.mit.media.funf.probe.builtin.ProximitySensorProbe}, {@type: edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.RunningApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.ScreenProbe}, {@type: edu.mit.media.funf.probe.builtin.ServicesProbe}, {@type: edu.mit.media.funf.probe.builtin.SimpleLocationProbe}, {@type: edu.mit.media.funf.probe.builtin.SmsProbe}, {@type: edu.mit.media.funf.probe.builtin.TelephonyProbe}, {@type: edu.mit.media.funf.probe.builtin.TemperatureSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.TimeOffsetProbe}, {@type: edu.mit.media.funf.probe.builtin.VideoMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.WifiProbe} ] }</string>
@@ -14,133 +14,153 @@
             "name":"default",
             "version":1,
             "upload": {
-                "url": \"http://imlab-ws4.snu.ac.kr:7777/data\",
+                "url": \"http://imlab-ws4.snu.ac.kr:7000/data\",
                 "@schedule": {"interval": 10800}
             }
         }
     </string>
     <string name="scdc_pipeline">
     {
-        "@type": "kr.ac.snu.imlab.scdc.service.core.SCDCPipeline",
-        "name": "scdc",
-        "version": 1,
-        "upload": {
-            "url": \"http://imlab-ws4.snu.ac.kr:7777/data/\",
-            "@schedule": { "interval": 10800 }
+      "@type": "kr.ac.snu.imlab.scdc.service.core.SCDCPipeline",
+      "name": "scdc",
+      "version": 1,
+      "upload": {
+        "url": \"http://imlab-ws4.snu.ac.kr:7777/data/\",
+        "@schedule": { "interval": 10800 }
+      },
+      "update": {
+        "url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",
+        "@schedule": { "interval": 86400 }
+      },
+      "data": [
+        {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
         },
-        "update": {
-            "url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",
-            "@schedule": { "interval": 86400 }
+        {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
         },
-        "data": [
-            {"@type": "edu.mit.media.funf.probe.builtin.AndroidInfoProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
 
-            {"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.SmsProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.ContactProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
+        {"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.SmsProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ContactProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
 
-            {"@type": "edu.mit.media.funf.probe.builtin.BrowserBookmarksProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.BrowserSearchesProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.ImageMediaProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.VideoMediaProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.AudioMediaProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.ApplicationsProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.AccountsProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
+        {"@type": "edu.mit.media.funf.probe.builtin.BrowserBookmarksProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.BrowserSearchesProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ImageMediaProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.VideoMediaProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.AudioMediaProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ApplicationsProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.AccountsProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
 
 
-
-            {"@type": "edu.mit.media.funf.probe.builtin.ServicesProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.BatteryProbe",
-             "@schedule": {"interval": 120, "opportunistic": true}
-            },
-
-
-            {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.CellTowerProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.BluetoothProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.WifiProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
-            },
-
-            {"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.RunningApplicationsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
-
-            {"@type": "kr.ac.snu.imlab.scdc.service.probe.SystemSettingsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
-            {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkSettingsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
-            {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkTrafficProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
+        {"@type": "edu.mit.media.funf.probe.builtin.ServicesProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.BatteryProbe",
+         "@schedule": {"interval": 120, "opportunistic": true}
+        },
 
 
-            {"@type": "kr.ac.snu.imlab.scdc.service.probe.ActivityRecognitionProbe",
-             "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
-            },
+        {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.CellTowerProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.BluetoothProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.WifiProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true}
+        },
 
-            {"@type": "edu.mit.media.funf.probe.builtin.LightSensorProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            },
+        {"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.RunningApplicationsProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
 
-            {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            },
-            {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-             "@schedule": {"interval": 120, "duration": 40, "strict": true}
-            }
-        ]
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.SystemSettingsProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkSettingsProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.NetworkTrafficProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+
+
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.ActivityRecognitionProbe",
+         "@schedule": {"interval": 120, "duration": 40, "opportunistic": true, "strict": true}
+        },
+
+        {"@type": "edu.mit.media.funf.probe.builtin.LightSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        },
+
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
+         "@schedule": {"interval": 120, "duration": 40, "strict": true}
+        }
+      ]
     }
 
-
     </string>
+    <string name="user_name_tv">ID: </string>
+    <string name="edit">수정</string>
+    <string name="save">저장</string>
+    <string name="data_count_none_tv">Data size: </string>
+    <string name="truncate_bt">데이터 삭제</string>
+    <string name="archive_bt">데이터 업로드</string>
+    <string name="check_internet_connection_message">네트워크 연결 후 진행해주세요</string>
+    <string name="get_prefs_from_server_message">서버와 동기화 중입니다</string>
+    <string name="archive_message">데이터 압축 중</string>
+    <string name="truncate_message">데이터 삭제 중</string>
+    <string name="labeling_off_message">수집 종료 중</string>
+    <string name="truncate_complete_message">데이터 삭제가 완료되었습니다</string>
+    <string name="update_config_complete_message">환경설정 업데이트에 성공하였습니다</string>
+    <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>
+    <string name="change_config_complete_message">환경설정 변경에 성공하였습니다</string>
+    <string name="change_config_failed_message">환경설정 변경에 실패하였습니다</string>
+    <string name="alone_bt">혼자입니다</string>
+    <string name="together_bt">함께입니다</string>
+    <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>
+    <string name="select">현재 상황에 맞는 버튼을 눌러주세요</string>
+    <string name="time_count">" 동안 수집 중입니다"</string>
+
     <string name="notification_interval_tv">Push notifications time interval</string>
     <string name="title_activity_probe_reschedule">ProbeRescheduleActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
@@ -149,32 +169,12 @@
     <string name="label_alarm_content_info">Reminder</string>
     <string name="general_alarm_name">general</string>
     <string name="go_back_bt">Go back</string>
-    <string name="archive_bt">데이터 업로드</string>
-    <string name="truncate_bt">데이터 삭제</string>
     <string name="edit_bt">데이터 수정</string>
     <string name="sensor_bt">수집</string>
     <string name="push_bt">푸쉬</string>
-    <string name="labeling_off_message">수집 종료 중</string>
-    <string name="user_name_tv">ID: </string>
     <string name="radio_female">Female</string>
     <string name="radio_male">Male</string>
-    <string name="data_count_none_tv">Data size: </string>
     <string name="minutes">minutes</string>
-    <string name="save">저장</string>
-    <string name="edit">수정</string>
-    <string name="check_internet_connection_message">Please connect to network to proceed.</string>
-    <string name="get_prefs_from_server_message">Synchronizing preferences with server...</string>
-    <string name="archive_message">Archiving...</string>
-    <string name="truncate_message">Truncating...</string>
-    <string name="truncate_complete_message">Dropped and re-created data table.</string>
-    <string name="update_config_complete_message">Successfully updated pipeline config.</string>
-    <string name="update_config_failed_message">Failed to update pipeline config.</string>
-    <string name="change_config_complete_message">Successfully changed pipeline config.</string>
-    <string name="change_config_failed_message">Failed to change pipeline config.</string>
-    <string name="alone_bt">혼자입니다</string>
-    <string name="together_bt">함께입니다</string>
-    <string name="disabled">"위 버튼을 눌러 데이터 수집을 시작해주세요"</string>
-    <string name="select">"현재 상황에 맞는 버튼을 눌러주세요"</string>
 
 
 
