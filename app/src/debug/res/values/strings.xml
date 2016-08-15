@@ -25,11 +25,11 @@
       "name": "scdc",
       "version": 1,
       "upload": {
-        "url": \"http://imlab-ws4.snu.ac.kr:7000/data/\",
+        "url": \"http://imlab-ws4.snu.ac.kr:7777/data/\",
         "@schedule": { "interval": 10800 }
       },
       "update": {
-        "url": \"http://imlab-ws4.snu.ac.kr:7000/config/\",
+        "url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",
         "@schedule": { "interval": 86400 }
       },
       "data": [

@@ -826,7 +826,7 @@ public interface Probe {
 
 				// Is it 2 hours passed from the start logging time?
 //			boolean labeling2Hours = currentTime > startLoggingTime + 150000L;
-				boolean labeling2Hours = currentTime > startLoggingTime + 7200000L;
+				boolean labeling2Hours = currentTime > startLoggingTime + 1800000L;
 
 //			return sleepingContext && labeling2Hours;
 				if (firstTime) {

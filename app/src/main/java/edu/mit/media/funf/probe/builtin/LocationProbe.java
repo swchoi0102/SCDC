@@ -98,7 +98,7 @@ public class LocationProbe extends InsensitiveProbe implements ContinuousProbe, 
         data.addProperty("mIsFromMockProvider", false);
         data.addProperty("mLatitude", -1);
         data.addProperty("mLongitude", -1);
-        data.addProperty("mProvider", -1);
+        data.addProperty("mProvider", "location_is_unknown");
         data.addProperty("mSpeed", -1);
         data.addProperty("mTime", currTime);
         data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currTime));
