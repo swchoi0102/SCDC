@@ -817,6 +817,7 @@ public interface Probe {
 				// Is it 24 hours passed from the last collection?
 				long currentTime = System.currentTimeMillis();
 				boolean passed24Hours = currentTime > lastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL;
+				passed24Hours = passed24Hours && (currentTime > tempLastSavedTime + SCDCKeys.SharedPrefs.DEFAULT_IMPULSE_INTERVAL);
 
 				// Is it sleeping context?
 				//		FIXME: sleeping label ID is just assigned as integer value not as a variable
