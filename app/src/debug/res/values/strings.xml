@@ -160,6 +160,7 @@
     <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>
     <string name="select">현재 상황에 맞는 버튼을 눌러주세요</string>
     <string name="time_count">" 동안 수집 중입니다"</string>
+    <string name="too_much_data"> "데이터 업로드 후에 실험을 수행해주세요"</string>
 
     <string name="notification_interval_tv">Push notifications time interval</string>
     <string name="title_activity_probe_reschedule">ProbeRescheduleActivity</string>

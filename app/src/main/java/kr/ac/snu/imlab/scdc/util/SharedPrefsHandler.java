@@ -70,6 +70,14 @@ public class SharedPrefsHandler {
   }
 
 
+  public boolean isTooMuchData(){
+    return prefs.getBoolean(SharedPrefs.TOO_MUCH_DATA, false);
+  }
+  public boolean setTooMuchData(boolean isTooMuchData){
+    prefs.edit().putBoolean(SharedPrefs.TOO_MUCH_DATA, isTooMuchData).apply();
+    return true;
+  }
+
 
   // Funf sensor by each label & alone/together
   public boolean isSensorOn() {

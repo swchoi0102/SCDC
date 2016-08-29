@@ -15,8 +15,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -62,7 +60,6 @@ import kr.ac.snu.imlab.scdc.service.storage.MultipartEntityArchive;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCUploadService;
 import kr.ac.snu.imlab.scdc.service.storage.ZipArchive;
-import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel2;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
 import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
@@ -320,9 +317,10 @@ public class LaunchActivity extends ActionBarActivity
     truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
 
-    if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
-      spHandler.setSensorOn(false);
-    }
+    // fixme
+//    if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
+//      spHandler.setSensorOn(false);
+//    }
 
     if (spHandler.isSensorOn()){
       aloneToggleButton.setEnabled(false);
@@ -349,6 +347,9 @@ public class LaunchActivity extends ActionBarActivity
       bindService(new Intent(LaunchActivity.this, SCDCManager.class),
               scdcManagerConn, BIND_AUTO_CREATE);
       Log.d(LogKeys.DEBB, TAG+".bindService() : scdcManager");
+
+      if(spHandler.isTooMuchData()) Toast.makeText(LaunchActivity.this, getString(R.string.too_much_data), Toast.LENGTH_LONG).show();
+
     } else { // Bind SCDCService service if alone or together ON
       bindService(new Intent(LaunchActivity.this, SCDCService.class),
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
@@ -357,6 +358,7 @@ public class LaunchActivity extends ActionBarActivity
     Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
             + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
             + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+
 
     aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
@@ -1132,13 +1134,27 @@ public class LaunchActivity extends ActionBarActivity
             // Query the pipeline db for the count of rows in the data table
             SQLiteDatabase db = pipeline.getDb();
             final long dbSize = new File(db.getPath()).length();  // in bytes
+            double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
             dataCountView.setText("Data size: " +
-                    Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
+                    dbSizeDouble + " MB");
+
+            if(dbSizeDouble>2) spHandler.setTooMuchData(true);
+            else spHandler.setTooMuchData(false);
+
+//            dataCountView.setText("Data size: " +
+//                    Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
           }
         } else if (scdcService != null) {
           long dbSize = scdcService.getDBSize();
+          double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
           dataCountView.setText("Data size: " +
-                  Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
+                  dbSizeDouble + " MB");
+
+          if(dbSizeDouble>2) spHandler.setTooMuchData(true);
+          else spHandler.setTooMuchData(false);
+
+//          dataCountView.setText("Data size: " +
+//                  Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
         }
 
         /**

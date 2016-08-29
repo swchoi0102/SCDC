@@ -42,6 +42,7 @@ public class SCDCKeys {
       ALONE_ON = "alone_on",
       TOGETHER_ON = "together_on",
       IS_TOGETHER = "is_together",
+      TOO_MUCH_DATA = "too_much_data",
 
       USERNAME = "username",
       IS_FEMALE = "isFemale",
