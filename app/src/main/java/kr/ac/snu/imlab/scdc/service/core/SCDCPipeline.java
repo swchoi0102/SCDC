@@ -103,13 +103,15 @@ public class SCDCPipeline implements Pipeline, DataListener {
           }
           break;
         case UPLOAD:
-          if (archive != null && upload != null && uploader != null) {
-            Log.w(LogKeys.DEBUG,
-                    "SCDCPipeline.Handler.Callback().handleMessage(): " +
-                    "running uploader.run(archive, upload)");
-            // uploader.start();
-            uploader.run(archive, upload);
-          }
+//          if (archive != null && upload != null && uploader != null) {
+//            Log.w(LogKeys.DEBUG,
+//                    "SCDCPipeline.Handler.Callback().handleMessage(): " +
+//                    "running uploader.run(archive, upload)");
+//            // uploader.start();
+//            uploader.run(archive, upload);
+//          }
+          Log.w(LogKeys.DEBUG,
+                  "Pipeline upload is disabled!");
           break;
         case DATA:
           String name = ((JsonObject)msg.obj).get("name").getAsString();
