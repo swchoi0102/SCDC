@@ -6,6 +6,7 @@
   <color name="collecting_data">#222222</color>
 
   <color name="disabled">#808080</color>
+  <color name="too_much_data">#8e070d</color>
   <color name="select">#154f69</color>
   <color name="logging">#154f69</color>
 

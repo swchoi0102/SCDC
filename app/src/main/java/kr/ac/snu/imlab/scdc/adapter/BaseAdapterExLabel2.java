@@ -200,8 +200,15 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
         // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
         spHandler.setSensorOn(!wasChecked);
 
-        aloneToggleButton.setEnabled(wasChecked);
-        togetherToggleButton.setEnabled(wasChecked);
+        // when too much data
+        if(spHandler.isTooMuchData()){
+          aloneToggleButton.setEnabled(false);
+          togetherToggleButton.setEnabled(false);
+        }
+        else{
+          aloneToggleButton.setEnabled(wasChecked);
+          togetherToggleButton.setEnabled(wasChecked);
+        }
         viewHolder.labelLogToggleButton.setChecked(!wasChecked);
 
 //        Log.d(SCDCKeys.LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
