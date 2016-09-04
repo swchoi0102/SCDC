@@ -81,10 +81,15 @@ public class ApplicationsProbe extends ImpulseProbe implements ApplicationsKeys{
 		JsonObject data = getGson().toJsonTree(info).getAsJsonObject();
 		data.addProperty(TIMESTAMP, DecimalTimeUnit.MILLISECONDS.toSeconds(currentTime));
 		data.addProperty(INSTALLED, installed);
+		data.addProperty(SYSTEM, isSystemApp(info));
 		data.add(INSTALLED_TIMESTAMP, getGson().toJsonTree(installedTimestamp));
 		sendData(data);
 	}
-	
+
+	private boolean isSystemApp(ApplicationInfo info) {
+		return (info.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+	}
+
 	private static Set<String> getInstalledAppPackageNames(List<ApplicationInfo> installedApps) {
 		HashSet<String> installedAppPackageNames = new HashSet<String>();
 		for (ApplicationInfo info : installedApps) {
