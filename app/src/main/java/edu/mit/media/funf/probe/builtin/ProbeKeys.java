@@ -102,7 +102,7 @@ public class ProbeKeys {
 		INSTALLED_APPLICATIONS = "installedApplications",
 		UNINSTALLED_APPLICATIONS = "uninstalledApplications",
 		INSTALLED = "installed",
-		SYSTEM = "system",
+		IS_BUILT_IN = "is_built_in",
 		INSTALLED_TIMESTAMP = "installedTimestamp";
 	}
 	
