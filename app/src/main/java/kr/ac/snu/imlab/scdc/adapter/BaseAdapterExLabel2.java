@@ -142,8 +142,11 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
       @Override
       public void onClick(View v) {
         boolean wasChecked = spHandler.isSensorOn();
+        // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
+
+        spHandler.setSensorOn(!wasChecked);
         if (!wasChecked) {
-          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": start logging "+mData.get(position).getName());
+            Log.d(SCDCKeys.LogKeys.DEBB, TAG+": start logging "+mData.get(position).getName());
 //          Intent intent = new Intent(mContext, SCDCService.class);
 //
 //          // Increment sensorId by 1
@@ -166,8 +169,11 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
           if (pastIsActiveLabelOn != currIsActiveLabelOn &&
-                  mContext instanceof LaunchActivity)
-            ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
+                  mContext instanceof LaunchActivity) {
+            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
+            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
+            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
+          }
         }
         else{
           long elapsedTime = TimeUtil.getElapsedTimeUntilNow(mData.get(position).getStartLoggingTime(), "second");
@@ -187,8 +193,11 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
           if (pastIsActiveLabelOn != currIsActiveLabelOn &&
-                  mContext instanceof LaunchActivity)
-            ((LaunchActivity)mContext).changeConfig(currIsActiveLabelOn);
+                  mContext instanceof LaunchActivity) {
+            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
+            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
+            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
+          }
 
           // When labelLogButton goes off, turn off the alone or together too
           spHandler.setAloneOn(false);
@@ -197,8 +206,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           togetherToggleButton.setChecked(false);
         }
 
-        // sensorOn should be changed after binding/unbinding SCDCService and SCDCManager
-        spHandler.setSensorOn(!wasChecked);
+//        spHandler.setSensorOn(!wasChecked);
 
         // when too much data
         if(spHandler.isTooMuchData()){

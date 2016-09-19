@@ -15,6 +15,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -73,7 +75,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Configurable
   // FIXME: Change below to false when publishing
-  public static boolean DEBUGGING = true;
+  public static boolean DEBUGGING = false;
 
   @Configurable
   protected int version = 5;
@@ -1019,6 +1021,35 @@ public class LaunchActivity extends ActionBarActivity
       }
     }.execute(dbFile);
   }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+
+    Toast.makeText(getBaseContext(), "option menu!", Toast.LENGTH_LONG).show();
+
+    spHandler.setSensorOn(false);
+    spHandler.setAloneOn(false);
+    spHandler.setTogetherOn(false);
+
+    unbindService(scdcServiceConn);
+    stopService(new Intent(LaunchActivity.this, SCDCService.class));
+    bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+            scdcManagerConn, BIND_AUTO_CREATE);
+    Log.d(LogKeys.DEBB, "forcibly unbind scdcService and bind scdcManager");
+
+    return super.onOptionsItemSelected(item);
+  }
+
 
 
   // methods for Setting Activity
