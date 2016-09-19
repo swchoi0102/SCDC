@@ -1022,6 +1022,8 @@ public class LaunchActivity extends ActionBarActivity
     }.execute(dbFile);
   }
 
+
+  // to reset shared pref values when app freezes
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
@@ -1035,17 +1037,28 @@ public class LaunchActivity extends ActionBarActivity
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
 
-    Toast.makeText(getBaseContext(), "option menu!", Toast.LENGTH_LONG).show();
+//    Toast.makeText(getBaseContext(), "option menu!", Toast.LENGTH_LONG).show();
 
+
+    Log.d(LogKeys.DEBB, "1. end all labels");
+    for (LabelEntry label : normalLabelEntries) label.endLog();
+    for (LabelEntry label : specialLabelEntries) label.endLog();
+
+    Log.d(LogKeys.DEBB, "2. set sp false");
     spHandler.setSensorOn(false);
     spHandler.setAloneOn(false);
     spHandler.setTogetherOn(false);
 
-    unbindService(scdcServiceConn);
-    stopService(new Intent(LaunchActivity.this, SCDCService.class));
-    bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-            scdcManagerConn, BIND_AUTO_CREATE);
-    Log.d(LogKeys.DEBB, "forcibly unbind scdcService and bind scdcManager");
+    Log.d(LogKeys.DEBB, "3. uncheck buttons");
+    aloneToggleButton.setChecked(false);
+    togetherToggleButton.setChecked(false);
+
+//    Log.d(LogKeys.DEBB, "4. unbind scdcService and bind scdcManager");
+//    unbindService(scdcServiceConn);
+//    stopService(new Intent(LaunchActivity.this, SCDCService.class));
+//    bindService(new Intent(LaunchActivity.this, SCDCManager.class),
+//            scdcManagerConn, BIND_AUTO_CREATE);
+
 
     return super.onOptionsItemSelected(item);
   }
