@@ -168,12 +168,12 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
-          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
-                  mContext instanceof LaunchActivity) {
-            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
-            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
-            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
-          }
+//          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
+//                  mContext instanceof LaunchActivity) {
+//            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
+//            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
+//            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
+//          }
         }
         else{
           long elapsedTime = TimeUtil.getElapsedTimeUntilNow(mData.get(position).getStartLoggingTime(), "second");
@@ -192,12 +192,12 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
           boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
           // Update config again only when isActiveLabelOn status gets changed
-          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
-                  mContext instanceof LaunchActivity) {
-            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
-            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
-            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
-          }
+//          if (pastIsActiveLabelOn != currIsActiveLabelOn &&
+//                  mContext instanceof LaunchActivity) {
+//            Log.d(SCDCKeys.LogKeys.DEBB, "curr: " + currIsActiveLabelOn);
+//            Log.d(SCDCKeys.LogKeys.DEBB, "mCont:" + (LaunchActivity) mContext);
+//            ((LaunchActivity) mContext).changeConfig(currIsActiveLabelOn);
+//          }
 
           // When labelLogButton goes off, turn off the alone or together too
           spHandler.setAloneOn(false);
