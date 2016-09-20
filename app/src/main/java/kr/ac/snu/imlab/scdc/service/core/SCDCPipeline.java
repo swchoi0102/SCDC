@@ -153,6 +153,9 @@ public class SCDCPipeline implements Pipeline, DataListener {
     try {
       SQLiteDatabase db = databaseHelper.getWritableDatabase();
       final double timestamp = data.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsDouble();
+//      final int expId = data.get(SharedPrefs.KEY_EXP_ID).getAsInt();
+      final int sensorId = data.get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
+
       final String value = data.toString();
       // if (name == null || value == null) {
       /*
@@ -165,6 +168,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
       cv.put(SCDCDatabaseHelper.COLUMN_NAME, name);
       cv.put(SCDCDatabaseHelper.COLUMN_VALUE, value);
       cv.put(SCDCDatabaseHelper.COLUMN_TIMESTAMP, timestamp);
+      cv.put(SharedPrefs.KEY_SENSOR_ID, sensorId);
       // Added by Kilho Kim: When the data table is suddenly truncated:
       db.insertOrThrow(SCDCDatabaseHelper.DATA_TABLE.name, "", cv);
     } catch (Exception e) {
@@ -172,7 +176,6 @@ public class SCDCPipeline implements Pipeline, DataListener {
       Log.e(LogKeys.DEBUG, TAG+".writeData(): " + e.toString());
     }
   }
-
 
   @Override
   public void onCreate(FunfManager manager) {
@@ -420,6 +423,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
 //            ", data=" + dataWithExpId.toString());// + ", schedule=" + manager.getPipelineConfig(name));
     JsonObject record = new JsonObject();
     record.add("name", probeConfig.get(RuntimeTypeAdapterFactory.TYPE));
+
     // add dataWithExpId instead of the original data
     record.add("value", dataWithExpId);
     Message message = Message.obtain(handler, DATA, record);
