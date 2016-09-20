@@ -75,7 +75,7 @@ public class LaunchActivity extends ActionBarActivity
 
   @Configurable
   // FIXME: Change below to false when publishing
-  public static boolean DEBUGGING = false;
+  public static boolean DEBUGGING = true;
 
   @Configurable
   protected int version = 5;
@@ -622,7 +622,6 @@ public class LaunchActivity extends ActionBarActivity
 
         updateLaunchActivityUi();   // FIXME
 
-
         if(spHandler.isSensorOn()){
           if(mAdapter.getLoggedItem()!=null){
             String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
@@ -1041,8 +1040,18 @@ public class LaunchActivity extends ActionBarActivity
 
 
     Log.d(LogKeys.DEBB, "1. end all labels");
-    for (LabelEntry label : normalLabelEntries) label.endLog();
-    for (LabelEntry label : specialLabelEntries) label.endLog();
+    for (LabelEntry label : normalLabelEntries) {
+      if(label.isLogged()) {
+        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(label.getStartLoggingTime(), "second");
+        label.endLog(elapsedTime);
+      }
+    }
+    for (LabelEntry label : specialLabelEntries) {
+      if(label.isLogged()) {
+        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(label.getStartLoggingTime(), "second");
+        label.endLog(elapsedTime);
+      }
+    }
 
     Log.d(LogKeys.DEBB, "2. set sp false");
     spHandler.setSensorOn(false);

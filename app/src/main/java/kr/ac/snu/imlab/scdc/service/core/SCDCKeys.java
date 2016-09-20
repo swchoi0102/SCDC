@@ -6,7 +6,7 @@ package kr.ac.snu.imlab.scdc.service.core;
 public class SCDCKeys {
 
   public static interface Data {
-    public static final double MAX_DATA = 1;
+    public static final double MAX_DATA = 10;
 
   }
 
