@@ -1,12 +1,13 @@
 package kr.ac.snu.imlab.scdc.service.storage;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 
-import java.io.File;
-import java.sql.SQLException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import edu.mit.media.funf.time.TimeUtil;
 import edu.mit.media.funf.util.StringUtil;
 import edu.mit.media.funf.util.UuidUtil;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 /**
  * Created by kilho on 15. 7. 28.
@@ -25,10 +27,14 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
     public static final int CURRENT_VERSION = 1;
 
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_SENSOR_ID = SCDCKeys.SharedPrefs.KEY_SENSOR_ID;
+    public static final String COLUMN_EXP_ID = SCDCKeys.SharedPrefs.KEY_EXP_ID;
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_VALUE = "value";
     public static final Table DATA_TABLE = new Table("data",
             Arrays.asList(new Column(COLUMN_NAME, "TEXT"), // ACTION from data broadcast
+                    new Column(COLUMN_SENSOR_ID, "INT"), // ACTION from data broadcast
+                    new Column(COLUMN_EXP_ID, "INT"), // ACTION from data broadcast
                     new Column(COLUMN_TIMESTAMP, "FLOAT"), // TIMESTAMP in data broadcast
                     new Column(COLUMN_VALUE, "TEXT"))); // JSON representing
     public static final String COLUMN_DATABASE_NAME = "dbname";
@@ -67,6 +73,50 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Nothing yet
+    }
+
+    public ArrayList<SensorIdInfo> getSensorIdInfo(SQLiteDatabase db) {
+        ArrayList<SensorIdInfo> sensorIdInfoList = new ArrayList<>();
+        try {
+            Cursor sensorIdCursor = db.rawQuery("SELECT DISTINCT " + COLUMN_SENSOR_ID + " FROM " + DATA_TABLE.name, null);
+            JsonParser parser = new JsonParser();
+            String[] labelArr = new String[]{
+                    SCDCKeys.LabelKeys.SLEEP_LABEL,
+                    SCDCKeys.LabelKeys.EATING_LABEL,
+                    SCDCKeys.LabelKeys.IN_CLASS_LABEL,
+                    SCDCKeys.LabelKeys.STUDYING_LABEL,
+                    SCDCKeys.LabelKeys.DRINKING_LABEL,
+                    SCDCKeys.LabelKeys.MOVING_LABEL,
+                    SCDCKeys.LabelKeys.NONE_OF_ABOVE_LABEL,
+                    SCDCKeys.LabelKeys.TOGETHER_STATUS,
+            };
+            while (sensorIdCursor.moveToNext()){
+                int sensorId = sensorIdCursor.getInt(0);
+                SensorIdInfo sensorIdInfo = new SensorIdInfo(sensorId, db, parser, labelArr);
+                sensorIdInfoList.add(sensorIdInfo);
+            }
+        } catch (Exception e) {
+            return sensorIdInfoList;
+        }
+
+        return sensorIdInfoList;
+    }
+
+    public boolean updateTable(SQLiteDatabase db, int sensorId, boolean deleteAction, double startTS, double endTS){
+        try {
+            String sql = "DELETE FROM " + DATA_TABLE.name
+                    + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId;
+            if(deleteAction) {
+                sql += ";";
+            } else{
+                sql += " AND " + COLUMN_TIMESTAMP + " < " + startTS + " AND " + COLUMN_TIMESTAMP + " > " + endTS + ";";
+            }
+            db.execSQL(sql);
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -127,5 +177,64 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public class SensorIdInfo{
+        public final int sensorId;
+        public final double firstTS;
+        public final String firstLabel, firstTogether;
+        public final double lastTS;
+        public final String lastLabel, lastTogether;
 
+        public SensorIdInfo(int sensorId, SQLiteDatabase db, JsonParser parser, String[] labelArr){
+            Cursor firstCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
+                    + " FROM " + DATA_TABLE.name + "LIMIT 1", null);
+            firstCursor.moveToNext();
+            double firstTS = firstCursor.getDouble(0);
+            String firstLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
+            String firstTogether = "혼자";
+            JsonObject firstValue = parser.parse(firstCursor.getString(1)).getAsJsonObject();
+            for (String label : labelArr){
+                boolean thisLabel = firstValue.get(label).getAsBoolean();
+                if (thisLabel){
+                    firstLabel = label;
+                }
+            }
+            boolean together = firstValue.get(SCDCKeys.LabelKeys.TOGETHER_STATUS).getAsBoolean();
+            if (together){
+                firstTogether = "함께";
+            }
+            firstCursor.close();
+
+            Cursor countingCursor = db.rawQuery("SELECT COUNT(*) FROM " + DATA_TABLE.name, null);
+            countingCursor.moveToNext();
+            int recordNum = countingCursor.getInt(0);
+            countingCursor.close();
+
+            Cursor lastCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE +
+                    " FROM " + DATA_TABLE.name + "LIMIT ?, 1", new String[]{"" + recordNum});
+            lastCursor.moveToNext();
+            double lastTS = lastCursor.getDouble(0);
+            String lastLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
+            String lastTogether = "혼자";
+            JsonObject lastValue = parser.parse(lastCursor.getString(1)).getAsJsonObject();
+            for (String label : labelArr){
+                boolean thisLabel = lastValue.get(label).getAsBoolean();
+                if (thisLabel){
+                    lastLabel = label;
+                }
+            }
+            together = lastValue.get(SCDCKeys.LabelKeys.TOGETHER_STATUS).getAsBoolean();
+            if (together){
+                lastTogether = "함께";
+            }
+            lastCursor.close();
+
+            this.sensorId = sensorId;
+            this.firstTS = firstTS;
+            this.lastTS = lastTS;
+            this.firstLabel = firstLabel;
+            this.firstTogether = firstTogether;
+            this.lastLabel = lastLabel;
+            this.lastTogether = lastTogether;
+        }   
+    }
 }

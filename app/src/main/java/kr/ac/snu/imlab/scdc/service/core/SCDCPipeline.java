@@ -115,8 +115,10 @@ public class SCDCPipeline implements Pipeline, DataListener {
           break;
         case DATA:
           String name = ((JsonObject)msg.obj).get("name").getAsString();
+          int sensorId = ((JsonObject)msg.obj).get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
+          int expId = ((JsonObject)msg.obj).get(SharedPrefs.KEY_EXP_ID).getAsInt();
           IJsonObject data = (IJsonObject)((JsonObject)msg.obj).get("value");
-          writeData(name, data);
+          writeData(name, sensorId, expId, data);
           break;
         default:
           break;
@@ -147,14 +149,14 @@ public class SCDCPipeline implements Pipeline, DataListener {
     databaseHelper.getWritableDatabase(); // Build new database
   }
 
-  protected void writeData(String name, IJsonObject data) {
+  protected void writeData(String name, int sensorId, int expId, IJsonObject data) {
     // In case: 1) When the data table is suddenly truncated
     //          2) When it tries to re-open an already-closed SQLiteDatabase
     try {
       SQLiteDatabase db = databaseHelper.getWritableDatabase();
       final double timestamp = data.get(ProbeKeys.BaseProbeKeys.TIMESTAMP).getAsDouble();
 //      final int expId = data.get(SharedPrefs.KEY_EXP_ID).getAsInt();
-      final int sensorId = data.get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
+//      final int sensorId = data.get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
 
       final String value = data.toString();
       // if (name == null || value == null) {
@@ -166,9 +168,11 @@ public class SCDCPipeline implements Pipeline, DataListener {
       */
       ContentValues cv = new ContentValues();
       cv.put(SCDCDatabaseHelper.COLUMN_NAME, name);
+      cv.put(SCDCDatabaseHelper.COLUMN_SENSOR_ID, sensorId);
+      cv.put(SCDCDatabaseHelper.COLUMN_EXP_ID, expId);
       cv.put(SCDCDatabaseHelper.COLUMN_VALUE, value);
       cv.put(SCDCDatabaseHelper.COLUMN_TIMESTAMP, timestamp);
-      cv.put(SharedPrefs.KEY_SENSOR_ID, sensorId);
+//      cv.put(SharedPrefs.KEY_SENSOR_ID, sensorId);
       // Added by Kilho Kim: When the data table is suddenly truncated:
       db.insertOrThrow(SCDCDatabaseHelper.DATA_TABLE.name, "", cv);
     } catch (Exception e) {
@@ -382,11 +386,10 @@ public class SCDCPipeline implements Pipeline, DataListener {
   public void onDataReceived(IJsonObject probeConfig, IJsonObject data) {
     // Add expId and sensorId as new key-values to the original data
     JsonObject dataClone = data.getAsJsonObject();
-    dataClone.addProperty(SharedPrefs.KEY_EXP_ID,
-                          spHandler.getExpId(probeConfig.toString()));
-    dataClone.addProperty(SharedPrefs.KEY_SENSOR_ID,
-                          spHandler.getSensorId());
-
+//    dataClone.addProperty(SharedPrefs.KEY_EXP_ID,
+//                          spHandler.getExpId(probeConfig.toString()));
+//    dataClone.addProperty(SharedPrefs.KEY_SENSOR_ID,
+//                          spHandler.getSensorId());
 
 
     // Add labeling info to data
@@ -417,15 +420,25 @@ public class SCDCPipeline implements Pipeline, DataListener {
 //                          spHandler.getConversingStatus(
 //                            LabelKeys.CONVERSING_STATUS_LABEL_ID));
 
-    IJsonObject dataWithExpId = new IJsonObject(dataClone);
+    IJsonObject dataWithLables = new IJsonObject(dataClone);
     // FIXME: Uncomment below to enhance CPU performance
 //    Log.d(LogKeys.DEBUG, "SCDCPipeline.onDataReceived(): probeConfig=" + probeConfig.toString() +
 //            ", data=" + dataWithExpId.toString());// + ", schedule=" + manager.getPipelineConfig(name));
+
+    JsonObject sensorExpObj = new JsonObject();
+    sensorExpObj.addProperty(SharedPrefs.KEY_SENSOR_ID, spHandler.getSensorId());
+    sensorExpObj.addProperty(SharedPrefs.KEY_EXP_ID, spHandler.getExpId(probeConfig.toString()));
+
     JsonObject record = new JsonObject();
     record.add("name", probeConfig.get(RuntimeTypeAdapterFactory.TYPE));
+//    record.add(SharedPrefs.KEY_SENSOR_ID, sensorIdObj);
+//    record.add(SharedPrefs.KEY_EXP_ID, sensorIdObj);
+
+    record.add(SharedPrefs.KEY_SENSOR_ID, sensorExpObj.get(SharedPrefs.KEY_SENSOR_ID));
+    record.add(SharedPrefs.KEY_EXP_ID, sensorExpObj.get(SharedPrefs.KEY_EXP_ID));
 
     // add dataWithExpId instead of the original data
-    record.add("value", dataWithExpId);
+    record.add("value", dataWithLables);
     Message message = Message.obtain(handler, DATA, record);
 
 //    double allocated = Debug.getNativeHeapAllocatedSize() / 1048576.0;
