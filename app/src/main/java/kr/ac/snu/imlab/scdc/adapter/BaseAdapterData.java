@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -25,6 +26,7 @@ import java.util.Locale;
 import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper.SensorIdInfo;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
@@ -107,13 +109,20 @@ public class BaseAdapterData extends BaseAdapter {
       }
     });
 
-    String startTimeStr = dataFormat.format(mData.get(position).firstTS);
-    String endTimeStr = dataFormat.format(mData.get(position).lastTS);
+    SensorIdInfo info = mData.get(position);
+
+    String sensorIdStr = String.valueOf(info.sensorId);
+    String startTimeStr = dataFormat.format(info.firstTS);
+    String endTimeStr = dataFormat.format(info.lastTS);
+    String togetherStr =info.firstTogether;
+    String labelStr = info.firstLabel;
+
+    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
 
 //  FIXME:  android.content.res.Resources$NotFoundException: String resource ID #0x1b
-    viewHolder.sensorIdTextView.setText(mData.get(position).sensorId);
-    viewHolder.aloneOrTogetherTextView.setText(mData.get(position).firstTogether);
-    viewHolder.labelTextView.setText(mData.get(position).firstLabel);
+    viewHolder.sensorIdTextView.setText(sensorIdStr);
+    viewHolder.aloneOrTogetherTextView.setText(togetherStr);
+    viewHolder.labelTextView.setText(labelStr);
     viewHolder.startTimeTextView.setText(startTimeStr+R.string.data_start);
     viewHolder.endTimeTextView.setText(endTimeStr+R.string.data_end);
 
