@@ -186,7 +186,7 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
 
         public SensorIdInfo(int sensorId, SQLiteDatabase db, JsonParser parser, String[] labelArr){
             Cursor firstCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
-                    + " FROM " + DATA_TABLE.name + "LIMIT 1", null);
+                    + " FROM " + DATA_TABLE.name + " LIMIT 1", null);
             firstCursor.moveToNext();
             double firstTS = firstCursor.getDouble(0);
             String firstLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
@@ -204,13 +204,8 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
             }
             firstCursor.close();
 
-            Cursor countingCursor = db.rawQuery("SELECT COUNT(*) FROM " + DATA_TABLE.name, null);
-            countingCursor.moveToNext();
-            int recordNum = countingCursor.getInt(0);
-            countingCursor.close();
-
             Cursor lastCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE +
-                    " FROM " + DATA_TABLE.name + "LIMIT ?, 1", new String[]{"" + recordNum});
+                    " FROM " + DATA_TABLE.name + " ORDER BY _id DESC LIMIT 1", null);
             lastCursor.moveToNext();
             double lastTS = lastCursor.getDouble(0);
             String lastLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
