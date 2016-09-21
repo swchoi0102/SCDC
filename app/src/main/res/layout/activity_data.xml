@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="kr.ac.snu.imlab.scdc.activity.DataActivity">
+
+    // 1) app title
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left|center">
+
+        <TextView android:id="@+id/app_title"
+            android:text="@string/app_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:textColor="#595959"
+            android:layout_marginLeft="10dp" />
+
+        <Button android:id="@+id/finish_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="@string/finish"
+            android:textSize="12sp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@id/app_title"/>
+    </RelativeLayout>
+
+    //2) description
+    <TextView android:id="@+id/data_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_title"
+        android:textSize="20sp"
+        android:textColor="#595959"
+        android:gravity="center"
+        android:paddingTop="22dp"
+        />
+    <TextView android:id="@+id/data_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/data_description"
+        android:textSize="13sp"
+        android:textColor="#595959"
+        android:padding="20dp"
+        />
+
+    //3) data table
+    <ListView android:id="@+id/data_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+    />
+
+</LinearLayout>

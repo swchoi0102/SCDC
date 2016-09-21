@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:gravity="" >
+
+    <LinearLayout android:id="@+id/data_first_row"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10">
+
+        <TextView android:id="@+id/sensor_id_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="10"
+            android:gravity="center"/>
+        <TextView android:id="@+id/alone_or_together_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="혼자"
+            android:gravity="center"/>
+        <TextView android:id="@+id/label_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="식사"
+            android:gravity="center"/>
+        <TextView android:id="@+id/start_time_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3.5"
+            android:text="시작시간"
+            android:gravity="center"/>
+        <TextView android:id="@+id/end_time_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3.5"
+            android:text="끝시간"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/data_second_row"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10">
+
+        <TextView android:id="@+id/sensor_id_blank_tv"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"/>
+        <LinearLayout android:id="@+id/seekbar_layout"
+            android:orientation="horizontal"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:gravity="center">
+           <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="seekbar will be added"/>
+            </LinearLayout>
+        <Button android:id="@+id/data_save_button"
+            android:layout_width="0sp"
+            android:layout_height="40sp"
+            android:layout_weight="1.5"
+            android:textSize="12sp"
+            android:text="@string/data_save_button"/>
+        <Button android:id="@+id/data_delete_button"
+            android:layout_width="0sp"
+            android:layout_height="40sp"
+            android:layout_weight="1.5"
+            android:textSize="12sp"
+            android:text="@string/data_delete_button"/>
+    </LinearLayout>
+</LinearLayout>
+

@@ -71,7 +71,7 @@
               <View android:id="@+id/dataCountMargin"
                   android:layout_weight="1.5"
                   android:layout_width="0dp"
-                  android:layout_height="50dp" />
+                  android:layout_height="match_parent" />
 
               <TextView android:id="@+id/dataCountText"
                   android:text="@string/data_count_none_tv"
@@ -79,15 +79,27 @@
                   android:textColor="@color/data_size"
                   android:layout_weight="10.5"
                   android:layout_width="0dp"
-                  android:layout_height="50dp"
+                  android:layout_height="match_parent"
                   android:gravity="center_vertical"/>
 
-              <Button android:id="@+id/truncateDataButton"
-                  android:text="@string/truncate_bt"
-                  android:textSize="15sp"
+              <LinearLayout
+                  android:orientation="vertical"
                   android:layout_weight="8"
                   android:layout_width="0dp"
-                  android:layout_height="50dp" />
+                  android:layout_height="wrap_content">
+
+                  <Button android:id="@+id/editDataButton"
+                      android:text="@string/edit_bt"
+                      android:textSize="13sp"
+                      android:layout_width="match_parent"
+                      android:layout_height="36dp" />
+
+                  <Button android:id="@+id/truncateDataButton"
+                      android:text="@string/truncate_bt"
+                      android:textSize="13sp"
+                      android:layout_width="match_parent"
+                      android:layout_height="36dp" />
+              </LinearLayout>
           </LinearLayout>
 
           // second row

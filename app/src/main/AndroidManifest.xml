@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kr.ac.snu.imlab.scdc" >
+    package="kr.ac.snu.imlab.scdc">
 
     <!-- All probes -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -40,16 +40,14 @@
     <!-- Accounts probe -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- ImageCapture probe -->
-    <!--
-    <uses-permission android:name="android.permission.CAMERA" />
-    -->
+    <!--     <uses-permission android:name="android.permission.CAMERA" /> -->
+
 
     <!-- Device category -->
     <!-- HardwareInfo probe -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Battery probe and Launching -->
     <uses-permission android:name="android.permission.BATTERY_STATS" />
-
 
     <!-- Uploader Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -66,14 +64,16 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
+
         <!-- android:largeHeap="true" -->
+
 
         <!-- Activity -->
         <activity
-            android:name="kr.ac.snu.imlab.scdc.activity.LaunchActivity"
+            android:name=".activity.LaunchActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -81,30 +81,27 @@
             </intent-filter>
         </activity>
         // this one is for Setting Activity
-        <!--<activity-->
-            <!--android:name="kr.ac.snu.imlab.scdc.activity.SettingsActivity"-->
-            <!--android:label="@string/title_activity_settings"-->
-            <!--android:configChanges="orientation|screenSize"-->
-            <!--android:windowSoftInputMode="adjustPan">-->
-        <!--</activity>-->
+        <!-- <activity -->
+        <!-- android:name="kr.ac.snu.imlab.scdc.activity.SettingsActivity" -->
+        <!-- android:label="@string/title_activity_settings" -->
+        <!-- android:configChanges="orientation|screenSize" -->
+        <!-- android:windowSoftInputMode="adjustPan"> -->
+        <!-- </activity> -->
 
 
         <!-- Funf Probe Services -->
-        <!--
-        <service android:name="edu.mit.media.funf.FunfManager" >
-        -->
-        <service android:name="kr.ac.snu.imlab.scdc.service.core.SCDCManager" >
+        <!--         <service android:name="edu.mit.media.funf.FunfManager" > -->
+        <service android:name=".service.core.SCDCManager">
             <meta-data
                 android:name="scdc"
                 android:value="@string/scdc_pipeline" />
         </service>
-
-        <service android:name="kr.ac.snu.imlab.scdc.service.core.SCDCService" />
+        <service android:name=".service.core.SCDCService" />
 
         <!-- Funf receiver -->
         <receiver
             android:name="edu.mit.media.funf.Launcher"
-            android:enabled="true" >
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -113,24 +110,24 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name="kr.ac.snu.imlab.scdc.service.alarm.OnBootReceiver" >
-          <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-          </intent-filter>
+        <receiver android:name=".service.alarm.OnBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
         </receiver>
-
-        <receiver
-          android:name="kr.ac.snu.imlab.scdc.service.alarm.OnAlarmReceiver" />
+        <receiver android:name=".service.alarm.OnAlarmReceiver" />
 
         <service android:name=".service.alarm.AlarmButlerService" />
-        <!-- Service that provides activity recognition data. Setting the android:exported attribute
+        <!--
+        Service that provides activity recognition data. Setting the android:exported attribute
         to "false" stops other apps from starting this service, even when using an explicit
-        intent. -->
-        <service android:name=".service.ar.DetectedActivitiesIntentService"
-                 android:exported="false" />
+        intent.
+        -->
+        <service
+            android:name=".service.ar.DetectedActivitiesIntentService"
+            android:exported="false" />
 
+        <activity android:name=".activity.DataActivity"></activity>
     </application>
 
 </manifest>

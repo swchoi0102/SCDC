@@ -4,10 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Parcelable;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -177,7 +179,7 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public class SensorIdInfo{
+    public class SensorIdInfo {
         public final int sensorId;
         public final double firstTS;
         public final String firstLabel, firstTogether;

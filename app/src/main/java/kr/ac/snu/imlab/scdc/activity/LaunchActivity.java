@@ -60,6 +60,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.AlertKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCService;
 import kr.ac.snu.imlab.scdc.service.storage.MultipartEntityArchive;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
+import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper.SensorIdInfo;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCUploadService;
 import kr.ac.snu.imlab.scdc.service.storage.ZipArchive;
 import kr.ac.snu.imlab.scdc.entry.LabelEntry;
@@ -138,8 +139,7 @@ public class LaunchActivity extends ActionBarActivity
   // Run Push notification button
 //  private ToggleButton reminderToggleButton;
 
-  private Button archiveButton, truncateDataButton;
-//  private Button editDataButton;
+  private Button archiveButton, truncateDataButton, editDataButton;
   private TextView dataCountView;
   private ImageView receivingDataImageView;
   private TextView timeCountView;
@@ -178,6 +178,8 @@ public class LaunchActivity extends ActionBarActivity
   public ServiceConnection scdcServiceConn = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+
+
       scdcService = ((SCDCService.LocalBinder) service).getService();
       Log.d(LogKeys.DEBB, TAG+".scdcServiceConn.onServiceConnected()");
     }
@@ -273,7 +275,7 @@ public class LaunchActivity extends ActionBarActivity
     receivingDataImageView = (ImageView)findViewById(R.id.receiving_data_iv);
     archiveButton = (Button) findViewById(R.id.archiveButton);
     truncateDataButton = (Button) findViewById(R.id.truncateDataButton);
-//    editDataButton = (Button) findViewById(R.id.editDataButton);
+    editDataButton = (Button) findViewById(R.id.editDataButton);
 
     aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
     togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
@@ -337,6 +339,7 @@ public class LaunchActivity extends ActionBarActivity
 
     archiveButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+    editDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
 
     // FIXME
@@ -431,7 +434,7 @@ public class LaunchActivity extends ActionBarActivity
 
         archiveButton.setEnabled(!isChecked);
         truncateDataButton.setEnabled(!isChecked);
-//        editDataButton.setEnabled(!isChecked);
+        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
 //        togetherToggleButton.setEnabled(!isChecked);
 //        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
@@ -499,7 +502,7 @@ public class LaunchActivity extends ActionBarActivity
 
         archiveButton.setEnabled(!isChecked);
         truncateDataButton.setEnabled(!isChecked);
-//        editDataButton.setEnabled(!isChecked);
+        editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
 //        aloneToggleButton.setEnabled(!isChecked);
 
@@ -570,6 +573,31 @@ public class LaunchActivity extends ActionBarActivity
               dropAndCreateTable(db, true);
               spHandler.rollbackTempLastIndex();
             }
+      }
+    });
+
+    // go to data activity
+    editDataButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Log.d(LogKeys.DEBB, "edit button clicked");
+
+        Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
+        intent.putExtra("text", "this is an intent");
+
+//        if (pipeline != null) {
+//
+//          SCDCDatabaseHelper databaseHelper;
+//          databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+//
+//          SQLiteDatabase db = pipeline.getWritableDb();
+//          ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(db);
+//          intent.putExtra("data", data);
+//          intent.putExtra("text", "pipeline available");
+//        }
+
+        startActivity(intent);
+
       }
     });
 
@@ -736,6 +764,8 @@ public class LaunchActivity extends ActionBarActivity
       }
     });
   }
+
+
 
   /**
    * @author Kilho Kim
