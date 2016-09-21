@@ -11,7 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import kr.ac.snu.imlab.scdc.R;
@@ -34,29 +38,36 @@ public class DataActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(SCDCKeys.LogKeys.DEBB, TAG+".onCreate()");
+        Gson gson = new Gson();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
         Intent intent = this.getIntent();
-        String str = intent.getStringExtra("text");
-        Log.d(SCDCKeys.LogKeys.DEBB, " "+str);
+        String dataStr = intent.getStringExtra("data");
+        Log.d(SCDCKeys.LogKeys.DEBB, " "+dataStr);
 
-
+        Type arrListType = new TypeToken<ArrayList<SensorIdInfo>>(){}.getType();
+        ArrayList<SensorIdInfo> data = gson.fromJson(dataStr, arrListType);
+//        for (int i=0; i<data.size(); i++){
+//            Log.d(SCDCKeys.LogKeys.DEBB, i + "th data' class: "+ data.get(i).getClass());
+//            Log.d(SCDCKeys.LogKeys.DEBB, i + "th data' sensorId: "+ data.get(i).sensorId);
+//            Log.d(SCDCKeys.LogKeys.DEBB, i + "th data' firstTS: "+ data.get(i).firstTS);
+//            Log.d(SCDCKeys.LogKeys.DEBB, i + "th data' firstLabel: "+ data.get(i).firstLabel);
+//        }
 
 //        databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
 //        ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(pipeline.getDb());
 //        ArrayList<SensorIdInfo> data = null;
 //
-          finishButton = (Button) findViewById(R.id.finish_button);
-//        dataListView = (ListView)findViewById(R.id.data_list_view);
-//        final View header = getLayoutInflater().inflate(R.layout.data_list_view_header_layout, null, false);
-//        dataListView.addHeaderView(header);
+        finishButton = (Button) findViewById(R.id.finish_button);
+        dataListView = (ListView)findViewById(R.id.data_list_view);
+        final View header = getLayoutInflater().inflate(R.layout.data_list_view_header_layout, null, false);
+        dataListView.addHeaderView(header);
 //
 //
-//
-//        dataAdapter = new BaseAdapterData(this.getBaseContext(), data);
-//        dataListView.setAdapter(dataAdapter);
+        dataAdapter = new BaseAdapterData(this.getBaseContext(), data);
+        dataListView.setAdapter(dataAdapter);
 
         finishButton.setOnClickListener(new View.OnClickListener(){
             @Override

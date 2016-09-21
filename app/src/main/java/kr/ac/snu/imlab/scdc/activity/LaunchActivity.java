@@ -47,6 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -581,23 +582,34 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       public void onClick(View v) {
         Log.d(LogKeys.DEBB, "edit button clicked");
-
         Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
-        intent.putExtra("text", "this is an intent");
 
-//        if (pipeline != null) {
-//
-//          SCDCDatabaseHelper databaseHelper;
-//          databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
-//
-//          SQLiteDatabase db = pipeline.getWritableDb();
-//          ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(db);
-//          intent.putExtra("data", data);
-//          intent.putExtra("text", "pipeline available");
-//        }
+        if (pipeline != null) {
+          SCDCDatabaseHelper databaseHelper;
+          databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
 
-        startActivity(intent);
+          if (databaseHelper != null) {
+            SQLiteDatabase db = pipeline.getWritableDb();
+            ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(db);
+            if (data.size() > 0) {
+              Gson gson = new Gson();
+              String jsonData = gson.toJson(data);
+              Log.d(LogKeys.DEBB, "data is made : " + jsonData);
+              intent.putExtra("data", jsonData);
+              startActivity(intent);
+            } else {
+              Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
+                      Toast.LENGTH_LONG).show();
+            }
 
+          } else {
+            Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
+                    Toast.LENGTH_LONG).show();
+          }
+        } else {
+          Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
+                  Toast.LENGTH_LONG).show();
+        }
       }
     });
 

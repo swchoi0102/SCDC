@@ -110,6 +110,7 @@ public class BaseAdapterData extends BaseAdapter {
     String startTimeStr = dataFormat.format(mData.get(position).firstTS);
     String endTimeStr = dataFormat.format(mData.get(position).lastTS);
 
+//  FIXME:  android.content.res.Resources$NotFoundException: String resource ID #0x1b
     viewHolder.sensorIdTextView.setText(mData.get(position).sensorId);
     viewHolder.aloneOrTogetherTextView.setText(mData.get(position).firstTogether);
     viewHolder.labelTextView.setText(mData.get(position).firstLabel);
