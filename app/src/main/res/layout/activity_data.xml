@@ -12,24 +12,34 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left|center">
+        android:gravity="left|center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <TextView android:id="@+id/app_title"
             android:text="@string/app_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
-            android:textColor="#595959"
-            android:layout_marginLeft="10dp" />
+            android:textColor="#595959"/>
 
-        <Button android:id="@+id/finish_button"
-            android:layout_width="140dp"
+        <Button android:id="@+id/data_apply_button"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@string/finish"
+            android:text="@string/apply"
             android:textSize="12sp"
-            android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
             android:layout_alignBottom="@id/app_title"/>
+
+        <Button android:id="@+id/data_back_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:textSize="12sp"
+            android:layout_toLeftOf="@+id/data_apply_button"
+            android:layout_alignBottom="@id/app_title"/>
+
+
     </RelativeLayout>
 
     //2) description
