@@ -92,11 +92,25 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
                     SCDCKeys.LabelKeys.NONE_OF_ABOVE_LABEL,
                     SCDCKeys.LabelKeys.TOGETHER_STATUS,
             };
-            while (sensorIdCursor.moveToNext()){
+
+
+
+            if(sensorIdCursor!=null && sensorIdCursor.getCount()>0){
+
+                sensorIdCursor.moveToFirst();
                 int sensorId = sensorIdCursor.getInt(0);
                 SensorIdInfo sensorIdInfo = new SensorIdInfo(sensorId, db, parser, labelArr);
                 sensorIdInfoList.add(sensorIdInfo);
+                while (sensorIdCursor.moveToNext()){
+                    sensorId = sensorIdCursor.getInt(0);
+                    sensorIdInfo = new SensorIdInfo(sensorId, db, parser, labelArr);
+                    sensorIdInfoList.add(sensorIdInfo);
+                }
             }
+
+
+
+
         } catch (Exception e) {
             return sensorIdInfoList;
         }

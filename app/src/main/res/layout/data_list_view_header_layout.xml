@@ -5,6 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
     android:background="#c2c2c2">
 
     <LinearLayout android:id="@+id/header_first_row"
@@ -34,6 +36,7 @@
             android:gravity="center"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/header_second_row"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

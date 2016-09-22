@@ -43,7 +43,7 @@ public class BaseAdapterData extends BaseAdapter {
 
   Handler handler;
 
-  private SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+  private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
   public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
     this.mContext = context;
@@ -75,7 +75,7 @@ public class BaseAdapterData extends BaseAdapter {
     TextView startTimeTextView;
     TextView endTimeTextView;
     LinearLayout seekBarLayout;
-    Button dataSaveButton;
+//    Button dataSaveButton;
     Button dataDeleteButton;
   }
 
@@ -95,7 +95,7 @@ public class BaseAdapterData extends BaseAdapter {
       viewHolder.endTimeTextView = (TextView)itemLayout.findViewById(R.id.end_time_tv);
 
       viewHolder.seekBarLayout = (LinearLayout) itemLayout.findViewById(R.id.seekbar_layout);
-      viewHolder.dataSaveButton = (Button) itemLayout.findViewById(R.id.data_save_button);
+//      viewHolder.dataSaveButton = (Button) itemLayout.findViewById(R.id.data_save_button);
       viewHolder.dataDeleteButton = (Button) itemLayout.findViewById(R.id.data_delete_button);
       itemLayout.setTag(viewHolder);
     } else {
@@ -112,8 +112,8 @@ public class BaseAdapterData extends BaseAdapter {
     SensorIdInfo info = mData.get(position);
 
     String sensorIdStr = String.valueOf(info.sensorId);
-    String startTimeStr = dataFormat.format(info.firstTS);
-    String endTimeStr = dataFormat.format(info.lastTS);
+    String startTimeStr = dataFormat.format(info.firstTS*1000);
+    String endTimeStr = dataFormat.format(info.lastTS*1000);
     String togetherStr =info.firstTogether;
     String labelStr = info.firstLabel;
 
@@ -123,19 +123,19 @@ public class BaseAdapterData extends BaseAdapter {
     viewHolder.sensorIdTextView.setText(sensorIdStr);
     viewHolder.aloneOrTogetherTextView.setText(togetherStr);
     viewHolder.labelTextView.setText(labelStr);
-    viewHolder.startTimeTextView.setText(startTimeStr+R.string.data_start);
-    viewHolder.endTimeTextView.setText(endTimeStr+R.string.data_end);
+    viewHolder.startTimeTextView.setText(startTimeStr+mContext.getString(R.string.data_start));
+    viewHolder.endTimeTextView.setText(endTimeStr+mContext.getString(R.string.data_end));
 
     handler = new Handler();
 
-    viewHolder.dataSaveButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-
-        // when clicked, save the change and refresh
-
-      }
-    });
+//    viewHolder.dataSaveButton.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View v) {
+//
+//        // when clicked, save the change and refresh
+//
+//      }
+//    });
 
     viewHolder.dataDeleteButton.setOnClickListener(new View.OnClickListener(){
       @Override
