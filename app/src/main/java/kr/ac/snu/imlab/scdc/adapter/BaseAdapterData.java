@@ -14,8 +14,12 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import org.w3c.dom.Text;
 
@@ -44,6 +48,7 @@ public class BaseAdapterData extends BaseAdapter {
   Handler handler;
 
   private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
+  private RangeSeekBar<Integer> rangeSeekBar = null;
 
   public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
     this.mContext = context;
@@ -75,8 +80,8 @@ public class BaseAdapterData extends BaseAdapter {
     TextView startTimeTextView;
     TextView endTimeTextView;
     LinearLayout seekBarLayout;
-//    Button dataSaveButton;
-    Button dataDeleteButton;
+    CheckBox deleteCheckBox;
+//    Button dataDeleteButton, dataSaveButton;
   }
 
   @Override
@@ -93,10 +98,10 @@ public class BaseAdapterData extends BaseAdapter {
       viewHolder.labelTextView = (TextView)itemLayout.findViewById(R.id.label_tv);
       viewHolder.startTimeTextView = (TextView)itemLayout.findViewById(R.id.start_time_tv);
       viewHolder.endTimeTextView = (TextView)itemLayout.findViewById(R.id.end_time_tv);
-
       viewHolder.seekBarLayout = (LinearLayout) itemLayout.findViewById(R.id.seekbar_layout);
 //      viewHolder.dataSaveButton = (Button) itemLayout.findViewById(R.id.data_save_button);
-      viewHolder.dataDeleteButton = (Button) itemLayout.findViewById(R.id.data_delete_button);
+//      viewHolder.dataDeleteButton = (Button) itemLayout.findViewById(R.id.data_delete_button);
+      viewHolder.deleteCheckBox = (CheckBox) itemLayout.findViewById(R.id.data_delete_checkbox);
       itemLayout.setTag(viewHolder);
     } else {
       viewHolder = (ViewHolder)itemLayout.getTag();
@@ -119,7 +124,6 @@ public class BaseAdapterData extends BaseAdapter {
 
     Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
 
-//  FIXME:  android.content.res.Resources$NotFoundException: String resource ID #0x1b
     viewHolder.sensorIdTextView.setText(sensorIdStr);
     viewHolder.aloneOrTogetherTextView.setText(togetherStr);
     viewHolder.labelTextView.setText(labelStr);
@@ -127,6 +131,42 @@ public class BaseAdapterData extends BaseAdapter {
     viewHolder.endTimeTextView.setText(endTimeStr+mContext.getString(R.string.data_end));
 
     handler = new Handler();
+
+    rangeSeekBar = new RangeSeekBar<>(mContext);
+
+
+    double totalTimeInSecond = (int) info.lastTS-info.firstTS;
+    int maxValue = 0;
+    if(totalTimeInSecond>60){
+      maxValue = (int) totalTimeInSecond;
+    }
+    else{
+      int totalTimeInMinute = (int) totalTimeInSecond / 60;
+      maxValue = totalTimeInMinute;
+    }
+    rangeSeekBar.setRangeValues(0, maxValue);
+    rangeSeekBar.setSelectedMinValue(0);
+    rangeSeekBar.setSelectedMaxValue(maxValue);
+    viewHolder.seekBarLayout.addView(rangeSeekBar);
+
+
+
+
+
+    viewHolder.deleteCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+
+        if(isChecked){
+          //when checked, delete this data
+        }
+
+        else{
+          //when not checked, do nothing
+        }
+      }
+    });
+
 
 //    viewHolder.dataSaveButton.setOnClickListener(new View.OnClickListener() {
 //      @Override
@@ -137,14 +177,14 @@ public class BaseAdapterData extends BaseAdapter {
 //      }
 //    });
 
-    viewHolder.dataDeleteButton.setOnClickListener(new View.OnClickListener(){
-      @Override
-      public void onClick(View v) {
-
-        // when clicked, delete this data and refresh
-
-      }
-    });
+//    viewHolder.dataDeleteButton.setOnClickListener(new View.OnClickListener(){
+//      @Override
+//      public void onClick(View v) {
+//
+//        // when clicked, delete this data and refresh
+//
+//      }
+//    });
 
     itemLayout.setClickable(true);
     return itemLayout;
@@ -152,7 +192,7 @@ public class BaseAdapterData extends BaseAdapter {
 
 
 
-  // below are copied from old version
+  // below are copied from original adapter
 
   protected void notify(int mId, String title, String message,
                            String alert) {

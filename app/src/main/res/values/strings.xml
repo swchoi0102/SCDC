@@ -144,7 +144,8 @@
     </string>
     <string name="user_name_tv">ID: </string>
     <string name="edit">수정</string>
-    <string name="finish">완료</string>
+    <string name="back">뒤로가기</string>
+    <string name="apply">반영하기</string>
     <string name="save">저장</string>
     <string name="data_count_none_tv">Data size: </string>
     <string name="truncate_bt">데이터 삭제</string>
@@ -159,7 +160,7 @@
     <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>
     <string name="change_config_complete_message">환경설정 변경에 성공하였습니다</string>
     <string name="change_config_failed_message">환경설정 변경에 실패하였습니다</string>
-    <string name="no_data_message">수정 할 데이터가 존재하지 않습니다</string>
+    <string name="no_data_message">수정할 데이터가 존재하지 않습니다</string>
     <string name="alone_bt">혼자입니다</string>
     <string name="together_bt">함께입니다</string>
     <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>
@@ -167,7 +168,7 @@
     <string name="time_count">" 동안 수집 중입니다"</string>
     <string name="too_much_data"> "데이터 업로드 후에 실험을 수행해주세요"</string>
     <string name="data_save_button">수정</string>
-    <string name="data_delete_button">삭제</string>
+    <string name="data_delete_button">전체 삭제</string>
     <string name="data_start">" 부터"</string>
     <string name="data_end">" 까지"</string>
 
