@@ -583,11 +583,12 @@ public class LaunchActivity extends ActionBarActivity
       public void onClick(View v) {
         Log.d(LogKeys.DEBB, "edit button clicked");
         Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
+        boolean goToDataActivity = false;
 
         if (pipeline != null) {
-          SCDCDatabaseHelper databaseHelper;
-          databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+          SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
 
+          if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
           if (databaseHelper != null) {
             SQLiteDatabase db = pipeline.getWritableDb();
             ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(db);
@@ -596,19 +597,27 @@ public class LaunchActivity extends ActionBarActivity
               String jsonData = gson.toJson(data);
               Log.d(LogKeys.DEBB, "data is made : " + jsonData);
               intent.putExtra("data", jsonData);
+              goToDataActivity = true;
               startActivity(intent);
-            } else {
-              Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
-                      Toast.LENGTH_LONG).show();
             }
+          } else if (scdcService != null) {
+            ArrayList<SensorIdInfo> data = scdcService.getSensorInfo();
+            if (data != null) {
+              if (data.size() > 0) {
+                Gson gson = new Gson();
+                String jsonData = gson.toJson(data);
+                Log.d(LogKeys.DEBB, "data is made : " + jsonData);
+                intent.putExtra("data", jsonData);
+                goToDataActivity = true;
+                startActivity(intent);
+              }
+            }
+          }
 
-          } else {
+          if (!goToDataActivity) {
             Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
                     Toast.LENGTH_LONG).show();
           }
-        } else {
-          Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
-                  Toast.LENGTH_LONG).show();
         }
       }
     });

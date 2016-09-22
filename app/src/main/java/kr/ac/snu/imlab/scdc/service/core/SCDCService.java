@@ -16,6 +16,7 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import edu.mit.media.funf.pipeline.Pipeline;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
@@ -23,6 +24,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.SCDCServiceKeys;
 import kr.ac.snu.imlab.scdc.service.probe.InsensitiveProbe;
+import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.R;
 
@@ -137,6 +139,23 @@ public class SCDCService extends Service {
       return dbSize;
     } else {
       return 0L;    // FIXME
+    }
+  }
+
+  public ArrayList<SCDCDatabaseHelper.SensorIdInfo> getSensorInfo() {
+    if (pipeline != null) {
+      SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+
+      if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
+      if (databaseHelper != null) {
+        SQLiteDatabase db = pipeline.getWritableDb();
+        return databaseHelper.getSensorIdInfo(db);
+      } else {
+        return null;
+      }
+    }
+    else {
+      return null;
     }
   }
 

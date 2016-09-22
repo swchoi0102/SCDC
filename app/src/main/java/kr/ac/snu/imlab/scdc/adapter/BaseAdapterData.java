@@ -43,7 +43,7 @@ public class BaseAdapterData extends BaseAdapter {
 
   Handler handler;
 
-  private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+  private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
 
   public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
     this.mContext = context;
