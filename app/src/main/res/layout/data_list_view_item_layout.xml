@@ -6,96 +6,102 @@
     android:layout_height="match_parent"
     android:padding="7dp" >
 
-    <LinearLayout android:id="@+id/data_first_row"
+    <!--<LinearLayout android:id="@+id/data_first_row"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:weightSum="10">-->
+    <ToggleButton android:id="@+id/sensorIdToggleButton"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:checked="false">
 
-        <TextView android:id="@+id/sensor_id_tv"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="10"
-            android:gravity="center"/>
-        <TextView android:id="@+id/alone_or_together_tv"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="혼자"
-            android:gravity="center"/>
-        <TextView android:id="@+id/label_tv"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="식사"
-            android:gravity="center"/>
-        <TextView android:id="@+id/start_time_tv"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3.5"
-            android:text="시작시간"
-            android:gravity="center"/>
-        <TextView android:id="@+id/end_time_tv"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3.5"
-            android:text="끝시간"
-            android:gravity="center"/>
-    </LinearLayout>
-
-    <LinearLayout android:id="@+id/data_second_row"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="10">
-
-        <!--<TextView android:id="@+id/sensor_id_blank_tv"-->
+        <!--<TextView android:id="@+id/sensor_id_tv"-->
             <!--android:layout_width="0sp"-->
             <!--android:layout_height="wrap_content"-->
             <!--android:layout_weight="1"-->
+            <!--android:text="10"-->
             <!--android:gravity="center"/>-->
-        <LinearLayout android:id="@+id/seekbar_layout"
-            android:orientation="horizontal"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="7"
-            android:layout_gravity="center"
-            android:gravity="center">
-           <TextView
-               android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(---seekbar---)"/>
-            </LinearLayout>
-        <!--<Button android:id="@+id/data_save_button"-->
+        <!--<TextView android:id="@+id/alone_or_together_tv"-->
             <!--android:layout_width="0sp"-->
-            <!--android:layout_height="40sp"-->
-            <!--android:layout_weight="1.5"-->
-            <!--android:textSize="12sp"-->
-            <!--android:text="@string/data_save_button"/>-->
-        <!--<Button android:id="@+id/data_delete_button"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="혼자"-->
+            <!--android:gravity="center"/>-->
+        <!--<TextView android:id="@+id/label_tv"-->
             <!--android:layout_width="0sp"-->
-            <!--android:layout_height="40sp"-->
-            <!--android:layout_weight="1.5"-->
-            <!--android:textSize="12sp"-->
-            <!--android:text="@string/data_delete_button"/>-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="식사"-->
+            <!--android:gravity="center"/>-->
+        <!--<TextView android:id="@+id/start_time_tv"-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="3.5"-->
+            <!--android:text="시작시간"-->
+            <!--android:gravity="center"/>-->
+        <!--<TextView android:id="@+id/end_time_tv"-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="3.5"-->
+            <!--android:text="끝시간"-->
+            <!--android:gravity="center"/>-->
+    </ToggleButton>
 
-        <TextView android:id="@+id/data_delete_tv"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:textSize="13sp"
-            android:text="@string/data_delete_button"
-            android:gravity="right|center"
-            />
+    <!--<LinearLayout android:id="@+id/data_second_row"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:weightSum="10">-->
 
-        <CheckBox android:id="@+id/data_delete_checkbox"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="left|center"
-            />
-    </LinearLayout>
+        <!--&lt;!&ndash;<TextView android:id="@+id/sensor_id_blank_tv"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="0sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_weight="1"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:gravity="center"/>&ndash;&gt;-->
+        <!--<LinearLayout android:id="@+id/seekbar_layout"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="7"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center">-->
+           <!--<TextView-->
+               <!--android:visibility="gone"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="(-&#45;&#45;seekbar-&#45;&#45;)"/>-->
+            <!--</LinearLayout>-->
+        <!--&lt;!&ndash;<Button android:id="@+id/data_save_button"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="0sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="40sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_weight="1.5"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:textSize="12sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/data_save_button"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<Button android:id="@+id/data_delete_button"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="0sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="40sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_weight="1.5"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:textSize="12sp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/data_delete_button"/>&ndash;&gt;-->
+
+        <!--<TextView android:id="@+id/data_delete_tv"-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="2"-->
+            <!--android:textSize="13sp"-->
+            <!--android:text="@string/data_delete_button"-->
+            <!--android:gravity="right|center"-->
+            <!--/>-->
+
+        <!--<CheckBox android:id="@+id/data_delete_checkbox"-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="left|center"-->
+            <!--/>-->
+    <!--</LinearLayout>-->
 </LinearLayout>
 

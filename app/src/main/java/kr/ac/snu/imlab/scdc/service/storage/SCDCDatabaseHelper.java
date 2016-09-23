@@ -80,7 +80,8 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<SensorIdInfo> getSensorIdInfo(SQLiteDatabase db) {
         ArrayList<SensorIdInfo> sensorIdInfoList = new ArrayList<>();
         try {
-            Cursor sensorIdCursor = db.rawQuery("SELECT DISTINCT " + COLUMN_SENSOR_ID + " FROM " + DATA_TABLE.name, null);
+            Cursor sensorIdCursor = db.rawQuery("SELECT DISTINCT " + COLUMN_SENSOR_ID +
+                    " FROM " + DATA_TABLE.name + " ORDER BY " + COLUMN_SENSOR_ID + " DESC", null);
             JsonParser parser = new JsonParser();
             String[] labelArr = new String[]{
                     SCDCKeys.LabelKeys.SLEEP_LABEL,

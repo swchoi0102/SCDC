@@ -8,13 +8,13 @@
     <string name="all_probes_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [ {@type: edu.mit.media.funf.probe.builtin.AccelerometerFeaturesProbe}, {@type: edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.AccountsProbe}, {@type: edu.mit.media.funf.probe.builtin.ActivityProbe}, {@type: edu.mit.media.funf.probe.builtin.AndroidInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.AudioFeaturesProbe}, {@type: edu.mit.media.funf.probe.builtin.AudioMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.BatteryProbe}, {@type: edu.mit.media.funf.probe.builtin.BluetoothProbe}, {@type: edu.mit.media.funf.probe.builtin.BrowserBookmarksProbe}, {@type: edu.mit.media.funf.probe.builtin.BrowserSearchesProbe}, {@type: edu.mit.media.funf.probe.builtin.CallLogProbe}, {@type: edu.mit.media.funf.probe.builtin.CellTowerProbe}, {@type: edu.mit.media.funf.probe.builtin.ContactProbe}, {@type: edu.mit.media.funf.probe.builtin.GravitySensorProbe}, {@type: edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.HardwareInfoProbe}, {@type: edu.mit.media.funf.probe.builtin.ImageMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.LightSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.LinearAccelerationSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.LocationProbe}, {@type: edu.mit.media.funf.probe.builtin.MagneticFieldSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.OrientationSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.PressureSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.ProcessStatisticsProbe}, {@type: edu.mit.media.funf.probe.builtin.ProximitySensorProbe}, {@type: edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.RunningApplicationsProbe}, {@type: edu.mit.media.funf.probe.builtin.ScreenProbe}, {@type: edu.mit.media.funf.probe.builtin.ServicesProbe}, {@type: edu.mit.media.funf.probe.builtin.SimpleLocationProbe}, {@type: edu.mit.media.funf.probe.builtin.SmsProbe}, {@type: edu.mit.media.funf.probe.builtin.TelephonyProbe}, {@type: edu.mit.media.funf.probe.builtin.TemperatureSensorProbe}, {@type: edu.mit.media.funf.probe.builtin.TimeOffsetProbe}, {@type: edu.mit.media.funf.probe.builtin.VideoMediaProbe}, {@type: edu.mit.media.funf.probe.builtin.WifiProbe} ] }</string>
     <string name="no_probes_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [] }</string>
     <string name="app_title">SCDC</string>
-    <string name="data_title">데이터 수정하기</string>
-    <string name="data_description">데이터를 일부 구간만 사용하도록 수정하거나, 전체를 삭제할 수 있습니다.</string>
+    <!--<string name="data_title">데이터 수정하기</string>-->
+    <string name="data_description">목록에서 선택한 데이터를 삭제할 수 있습니다.</string>
     <string name="probe_disabled">Disabled</string>
     <string name="default_pipeline">
         {
             "@type":"edu.mit.media.funf.pipeline.BasicPipeline",
-            "name":"default",
+            "name":"default",만
             "version":1,
             "upload": {
                 "url": \"http://imlab-ws4.snu.ac.kr:7000/data\",
@@ -144,7 +144,7 @@
     </string>
     <string name="user_name_tv">ID: </string>
     <string name="back">뒤로가기</string>
-    <string name="apply">반영하기</string>
+    <string name="apply">삭제하기</string>
     <string name="edit">수정</string>
     <string name="save">저장</string>
     <string name="data_count_none_tv">Data size: </string>

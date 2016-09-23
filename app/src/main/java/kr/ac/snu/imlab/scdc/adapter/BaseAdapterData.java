@@ -18,6 +18,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
@@ -74,13 +76,14 @@ public class BaseAdapterData extends BaseAdapter {
   }
 
   class ViewHolder {
-    TextView sensorIdTextView;
-    TextView aloneOrTogetherTextView;
-    TextView labelTextView;
-    TextView startTimeTextView;
-    TextView endTimeTextView;
-    LinearLayout seekBarLayout;
-    CheckBox deleteCheckBox;
+    ToggleButton sensorIdToggleButton;
+//    TextView sensorIdTextView;
+//    TextView aloneOrTogetherTextView;
+//    TextView labelTextView;
+//    TextView startTimeTextView;
+//    TextView endTimeTextView;
+//    LinearLayout seekBarLayout;
+//    CheckBox deleteCheckBox;
 //    Button dataDeleteButton, dataSaveButton;
   }
 
@@ -93,15 +96,16 @@ public class BaseAdapterData extends BaseAdapter {
     if (itemLayout == null) {
       itemLayout = mLayoutInflater.inflate(R.layout.data_list_view_item_layout, null);
       viewHolder = new ViewHolder();
-      viewHolder.sensorIdTextView = (TextView)itemLayout.findViewById(R.id.sensor_id_tv);
-      viewHolder.aloneOrTogetherTextView = (TextView)itemLayout.findViewById(R.id.alone_or_together_tv);
-      viewHolder.labelTextView = (TextView)itemLayout.findViewById(R.id.label_tv);
-      viewHolder.startTimeTextView = (TextView)itemLayout.findViewById(R.id.start_time_tv);
-      viewHolder.endTimeTextView = (TextView)itemLayout.findViewById(R.id.end_time_tv);
-      viewHolder.seekBarLayout = (LinearLayout) itemLayout.findViewById(R.id.seekbar_layout);
-//      viewHolder.dataSaveButton = (Button) itemLayout.findViewById(R.id.data_save_button);
-//      viewHolder.dataDeleteButton = (Button) itemLayout.findViewById(R.id.data_delete_button);
-      viewHolder.deleteCheckBox = (CheckBox) itemLayout.findViewById(R.id.data_delete_checkbox);
+      viewHolder.sensorIdToggleButton = (ToggleButton) itemLayout.findViewById(R.id.sensorIdToggleButton);
+//      viewHolder.sensorIdTextView = (TextView)itemLayout.findViewById(R.id.sensor_id_tv);
+//      viewHolder.aloneOrTogetherTextView = (TextView)itemLayout.findViewById(R.id.alone_or_together_tv);
+//      viewHolder.labelTextView = (TextView)itemLayout.findViewById(R.id.label_tv);
+//      viewHolder.startTimeTextView = (TextView)itemLayout.findViewById(R.id.start_time_tv);
+//      viewHolder.endTimeTextView = (TextView)itemLayout.findViewById(R.id.end_time_tv);
+//      viewHolder.seekBarLayout = (LinearLayout) itemLayout.findViewById(R.id.seekbar_layout);
+////      viewHolder.dataSaveButton = (Button) itemLayout.findViewById(R.id.data_save_button);
+////      viewHolder.dataDeleteButton = (Button) itemLayout.findViewById(R.id.data_delete_button);
+//      viewHolder.deleteCheckBox = (CheckBox) itemLayout.findViewById(R.id.data_delete_checkbox);
       itemLayout.setTag(viewHolder);
     } else {
       viewHolder = (ViewHolder)itemLayout.getTag();
@@ -121,51 +125,52 @@ public class BaseAdapterData extends BaseAdapter {
     String endTimeStr = dataFormat.format(info.lastTS*1000);
     String togetherStr =info.firstTogether;
     String labelStr = info.firstLabel;
+    String totalStr = sensorIdStr + "\t\t\t\t\t\t\t\t" + labelStr + "\t\t\t" + togetherStr + "\t\t\t\t\t\t\t\t\t\t" + startTimeStr +" ~ " + endTimeStr;
+    Log.d(SCDCKeys.LogKeys.DEBB, "is that right??: " + totalStr);
+//    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
 
-    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
+    viewHolder.sensorIdToggleButton.setText(totalStr);
+    viewHolder.sensorIdToggleButton.setTextOn(totalStr);
+    viewHolder.sensorIdToggleButton.setTextOff(totalStr);
 
-    viewHolder.sensorIdTextView.setText(sensorIdStr);
-    viewHolder.aloneOrTogetherTextView.setText(togetherStr);
-    viewHolder.labelTextView.setText(labelStr);
-    viewHolder.startTimeTextView.setText(startTimeStr+mContext.getString(R.string.data_start));
-    viewHolder.endTimeTextView.setText(endTimeStr+mContext.getString(R.string.data_end));
+//    viewHolder.sensorIdTextView.setText(sensorIdStr);
+//    viewHolder.aloneOrTogetherTextView.setText(togetherStr);
+//    viewHolder.labelTextView.setText(labelStr);
+//    viewHolder.startTimeTextView.setText(startTimeStr+mContext.getString(R.string.data_start));
+//    viewHolder.endTimeTextView.setText(endTimeStr+mContext.getString(R.string.data_end));
 
     handler = new Handler();
 
-    rangeSeekBar = new RangeSeekBar<>(mContext);
+//    rangeSeekBar = new RangeSeekBar<>(mContext);
 
 
-    double totalTimeInSecond = (int) info.lastTS-info.firstTS;
-    int maxValue = 0;
-    if(totalTimeInSecond>60){
-      maxValue = (int) totalTimeInSecond;
-    }
-    else{
-      int totalTimeInMinute = (int) totalTimeInSecond / 60;
-      maxValue = totalTimeInMinute;
-    }
-    rangeSeekBar.setRangeValues(0, maxValue);
-    rangeSeekBar.setSelectedMinValue(0);
-    rangeSeekBar.setSelectedMaxValue(maxValue);
-    viewHolder.seekBarLayout.addView(rangeSeekBar);
+//    double totalTimeInSecond = (int) info.lastTS-info.firstTS;
+//    int maxValue = 0;
+//    if(totalTimeInSecond>60){
+//      maxValue = (int) totalTimeInSecond;
+//    }
+//    else{
+//      int totalTimeInMinute = (int) totalTimeInSecond / 60;
+//      maxValue = totalTimeInMinute;
+//    }
+//    rangeSeekBar.setRangeValues(0, maxValue);
+//    rangeSeekBar.setSelectedMinValue(0);
+//    rangeSeekBar.setSelectedMaxValue(maxValue);
+//    viewHolder.seekBarLayout.addView(rangeSeekBar);
 
-
-
-
-
-    viewHolder.deleteCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
-        if(isChecked){
-          //when checked, delete this data
-        }
-
-        else{
-          //when not checked, do nothing
-        }
-      }
-    });
+//    viewHolder.deleteCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//      @Override
+//      public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//
+//        if(isChecked){
+//          //when checked, delete this data
+//        }
+//
+//        else{
+//          //when not checked, do nothing
+//        }
+//      }
+//    });
 
 
 //    viewHolder.dataSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -185,6 +190,20 @@ public class BaseAdapterData extends BaseAdapter {
 //
 //      }
 //    });
+
+
+    viewHolder.sensorIdToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        if (isChecked) {
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton checked!");
+        } else {
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton unchecked!");
+        }
+      }
+    });
+
 
     itemLayout.setClickable(true);
     return itemLayout;

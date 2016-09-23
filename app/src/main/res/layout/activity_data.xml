@@ -43,15 +43,15 @@
     </RelativeLayout>
 
     //2) description
-    <TextView android:id="@+id/data_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/data_title"
-        android:textSize="20sp"
-        android:textColor="#595959"
-        android:gravity="center"
-        android:paddingTop="22dp"
-        />
+    <!--<TextView android:id="@+id/data_title"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/data_title"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="#595959"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingTop="22dp"-->
+        <!--/>-->
     <TextView android:id="@+id/data_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
