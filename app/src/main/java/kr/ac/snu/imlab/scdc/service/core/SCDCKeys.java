@@ -74,6 +74,7 @@ public class SCDCKeys {
       LABEL_EXP_ID_PREFIX = "label_expId_",
       KEY_EXP_ID = "exp_id",
       KEY_SENSOR_ID = "sensor_id",
+      SENSOR_ID_TO_REMOVE = "sensor_id_to_remove",
       ACTIVE_CONFIG = "activeConfig",
       IDLE_CONFIG = "idleConfig",
       LAST_CONFIG_UPDATE = "last_config_update",

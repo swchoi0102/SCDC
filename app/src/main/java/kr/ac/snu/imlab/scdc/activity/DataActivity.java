@@ -1,5 +1,6 @@
 package kr.ac.snu.imlab.scdc.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCPipeline;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper.SensorIdInfo;
+import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 
 public class DataActivity extends ActionBarActivity {
 
@@ -31,9 +33,14 @@ public class DataActivity extends ActionBarActivity {
     private Button backButton, applyButton;
     private ListView dataListView;
     public BaseAdapterData dataAdapter;
+    private SharedPrefsHandler spHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        spHandler = SharedPrefsHandler.getInstance(this,
+                SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE);
+        spHandler.initializeSensorIdToRemove();
+
         Log.d(SCDCKeys.LogKeys.DEBB, TAG+".onCreate()");
         Gson gson = new Gson();
 

@@ -45,7 +45,7 @@ public class BaseAdapterData extends BaseAdapter {
   Context mContext = null;
   ArrayList<SensorIdInfo> mData = null;
   LayoutInflater mLayoutInflater = null;
-//  SharedPrefsHandler spHandler = null;
+  SharedPrefsHandler spHandler = null;
 
   Handler handler;
 
@@ -56,8 +56,8 @@ public class BaseAdapterData extends BaseAdapter {
     this.mContext = context;
     this.mData = data;
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
-//    this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
-//                        Config.SCDC_PREFS, Context.MODE_PRIVATE);
+    this.spHandler = SharedPrefsHandler.getInstance(this.mContext,
+                        Config.SCDC_PREFS, Context.MODE_PRIVATE);
   }
 
   @Override
@@ -198,12 +198,13 @@ public class BaseAdapterData extends BaseAdapter {
 
         if (isChecked) {
           Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton checked!");
+          spHandler.insertSensorIdToRemove(info.sensorId);
         } else {
           Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton unchecked!");
+          spHandler.popSensorIdToRemove(info.sensorId);
         }
       }
     });
-
 
     itemLayout.setClickable(true);
     return itemLayout;

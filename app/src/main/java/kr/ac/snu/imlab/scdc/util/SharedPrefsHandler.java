@@ -144,6 +144,42 @@ public class SharedPrefsHandler {
     prefs.edit().putInt(SharedPrefs.KEY_SENSOR_ID, sensorId).apply();
   }
 
+  // Methods to track sensorId's to remove
+  public String getSensorIdsToRemove() {
+    return prefs.getString(SharedPrefs.SENSOR_ID_TO_REMOVE, "");
+  }
+
+  public void insertSensorIdToRemove(int sensorId) {
+    String tempIdsToRemove = getSensorIdsToRemove();
+    if (tempIdsToRemove.equals("")) {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_TO_REMOVE, "" + sensorId).apply();
+    } else {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_TO_REMOVE, tempIdsToRemove + "," + sensorId).apply();
+    }
+  }
+
+  public void popSensorIdToRemove(int sensorId) {
+    String sidToRemove = "" + sensorId;
+    String tempIdsToRemove = getSensorIdsToRemove();
+    String updateStr = "";
+    if (tempIdsToRemove.contains(",")) {
+      String[] tempIdsToRemoveArr = tempIdsToRemove.split(",");
+      for (int i=0; i<tempIdsToRemoveArr.length; i++) {
+        String sid = tempIdsToRemoveArr[i];
+        if (sid.equals(sidToRemove)) continue;
+        if (i > 0) updateStr += ",";
+        updateStr += sid;
+      }
+    } else {
+      if (tempIdsToRemove.equals(sidToRemove)) updateStr = "";
+    }
+    prefs.edit().putString(SharedPrefs.SENSOR_ID_TO_REMOVE, updateStr).apply();
+  }
+
+  public void initializeSensorIdToRemove() {
+    prefs.edit().putString(SharedPrefs.SENSOR_ID_TO_REMOVE, "").apply();
+  }
+
   // Synchronize preferences with server
   // IMPORTANT: This method is only executed while uploading
   public boolean setPrefsToServer()
