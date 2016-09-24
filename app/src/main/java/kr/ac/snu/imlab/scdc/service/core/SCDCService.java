@@ -159,6 +159,30 @@ public class SCDCService extends Service {
     }
   }
 
+  public boolean updateDB(String[] idsToRemoveArr) {
+    if (pipeline != null) {
+      SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+
+      if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
+      if (databaseHelper != null) {
+        SQLiteDatabase db = pipeline.getWritableDb();
+        try {
+          for (String sidStr : idsToRemoveArr) {
+            databaseHelper.updateTable(db, Integer.parseInt(sidStr));
+          }
+          return true;
+        } catch(Exception e) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
+
   public boolean saveAndReload(String pipelineName, JsonObject newConfig) {
     if (scdcManager != null) {
       Log.d(LogKeys.DEBUG, TAG+".saveAndReload(" + pipelineName + ", newConfig): call scdcManager.saveAndReload()");

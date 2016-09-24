@@ -584,40 +584,36 @@ public class LaunchActivity extends ActionBarActivity
         Log.d(LogKeys.DEBB, "edit button clicked");
         Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
         boolean goToDataActivity = false;
+        ArrayList<SensorIdInfo> data = null;
 
         if (pipeline != null) {
           SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
-
           if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
           if (databaseHelper != null) {
             SQLiteDatabase db = pipeline.getWritableDb();
-            ArrayList<SensorIdInfo> data = databaseHelper.getSensorIdInfo(db);
-            if (data.size() > 0) {
-              Gson gson = new Gson();
-              String jsonData = gson.toJson(data);
-              Log.d(LogKeys.DEBB, "data is made : " + jsonData);
-              intent.putExtra("data", jsonData);
-              goToDataActivity = true;
-              startActivity(intent);
-            }
-          } else if (scdcService != null) {
-            ArrayList<SensorIdInfo> data = scdcService.getSensorInfo();
+            data = databaseHelper.getSensorIdInfo(db);
             if (data != null) {
-              if (data.size() > 0) {
-                Gson gson = new Gson();
-                String jsonData = gson.toJson(data);
-                Log.d(LogKeys.DEBB, "data is made : " + jsonData);
-                intent.putExtra("data", jsonData);
-                goToDataActivity = true;
-                startActivity(intent);
-              }
+              if (data.size() > 0) goToDataActivity = true;
             }
           }
+        }
 
-          if (!goToDataActivity) {
-            Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
-                    Toast.LENGTH_LONG).show();
+        else if (scdcService != null) {
+          data = scdcService.getSensorInfo();
+          if (data != null) {
+            if (data.size() > 0) goToDataActivity = true;
           }
+        }
+
+        if (goToDataActivity) {
+          Gson gson = new Gson();
+          String jsonData = gson.toJson(data);
+          Log.d(LogKeys.DEBB, "data is made : " + jsonData);
+          intent.putExtra("data", jsonData);
+          startActivity(intent);
+        } else {
+          Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
+                  Toast.LENGTH_LONG).show();
         }
       }
     });
@@ -646,6 +642,46 @@ public class LaunchActivity extends ActionBarActivity
   public void onResume() {
     Log.d(LogKeys.DEBB, TAG+".onResume()");
     super.onResume();
+
+    if (spHandler != null) {
+      if (spHandler.getSensorIdsRemoveOrNot()) {
+        String idsToRemove = spHandler.getSensorIdsToRemove();
+        if (idsToRemove.length() > 0) {
+          boolean updateSuccess = false;
+          String[] idsToRemoveArr = idsToRemove.split(",");
+
+          if (pipeline != null) {
+            SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+
+            if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
+            if (databaseHelper != null) {
+              SQLiteDatabase db = pipeline.getWritableDb();
+              try {
+                for (String sidStr : idsToRemoveArr) {
+                  databaseHelper.updateTable(db, Integer.parseInt(sidStr));
+                }
+                updateSuccess = true;
+              } catch(Exception e) {
+                updateSuccess = false;
+              }
+            }
+          }
+
+          else if (scdcService != null) {
+            updateSuccess = scdcService.updateDB(idsToRemoveArr);
+          }
+
+          if (updateSuccess) {
+            Toast.makeText(getBaseContext(), getString(R.string.db_table_update_success),
+                    Toast.LENGTH_LONG).show();
+          } else {
+            Toast.makeText(getBaseContext(), getString(R.string.db_table_update_fail),
+                    Toast.LENGTH_LONG).show();
+          }
+        }
+        spHandler.initializeDataFixing();
+      }
+    }
 
     if (pipeline != null) {
       updateLaunchActivityUi();
@@ -1179,9 +1215,11 @@ public class LaunchActivity extends ActionBarActivity
           result = scdcManager.saveAndReload(Config.PIPELINE_NAME, newConfig);
         }
         if (result) {
-          Toast.makeText(getBaseContext(),
-                  getString(R.string.change_config_complete_message),
-                  Toast.LENGTH_SHORT).show();
+          if (DEBUGGING){
+            Toast.makeText(getBaseContext(),
+                    getString(R.string.change_config_complete_message),
+                    Toast.LENGTH_SHORT).show();
+          }
         }
       }
       return result;
@@ -1241,10 +1279,12 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       protected void onPostExecute(Boolean isSuccess) {
         if (isSuccess) {
-          Toast.makeText(getBaseContext(),
-                  getString(R.string.update_config_complete_message),
-                  Toast.LENGTH_LONG).show();
-          spHandler.setLastConfigUpdate(System.currentTimeMillis());
+          if (DEBUGGING){
+            Toast.makeText(getBaseContext(),
+                    getString(R.string.update_config_complete_message),
+                    Toast.LENGTH_LONG).show();
+            spHandler.setLastConfigUpdate(System.currentTimeMillis());
+          }
         } else {
           Toast.makeText(getBaseContext(),
                   getString(R.string.update_config_failed_message),

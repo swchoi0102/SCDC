@@ -145,6 +145,23 @@ public class SharedPrefsHandler {
   }
 
   // Methods to track sensorId's to remove
+  public String getSensorIdsInData() {
+    return prefs.getString(SharedPrefs.SENSOR_ID_IN_DATA, "");
+  }
+
+  public void setSensorIdsInData(int sensorId) {
+    String sIdsInData = getSensorIdsInData();
+    if (sIdsInData.equals("")) {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "" + sensorId).apply();
+    } else {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, sIdsInData + "," + sensorId).apply();
+    }
+  }
+
+  public void initializeSensorIdsInData() {
+    prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "").apply();
+  }
+
   public String getSensorIdsToRemove() {
     return prefs.getString(SharedPrefs.SENSOR_ID_TO_REMOVE, "");
   }
@@ -180,13 +197,26 @@ public class SharedPrefsHandler {
     prefs.edit().putString(SharedPrefs.SENSOR_ID_TO_REMOVE, "").apply();
   }
 
+  public boolean getSensorIdsRemoveOrNot() {
+    return prefs.getBoolean(SharedPrefs.SENSOR_ID_REMOVE_OR_NOT, false);
+  }
+
+  public void setSensorIdsRemoveOrNot(boolean removeOrNot) {
+    prefs.edit().putBoolean(SharedPrefs.SENSOR_ID_REMOVE_OR_NOT, removeOrNot).apply();
+  }
+
+  public void initializeDataFixing() {
+    initializeSensorIdsInData();
+    initializeSensorIdToRemove();
+    prefs.edit().putBoolean(SharedPrefs.SENSOR_ID_REMOVE_OR_NOT, false).apply();
+  }
+
   // Synchronize preferences with server
   // IMPORTANT: This method is only executed while uploading
   public boolean setPrefsToServer()
           throws ExecutionException, InterruptedException {
     return new SetPrefsToServerTask().execute(userinfoUrl + deviceId + "/").get();
   }
-
 
   // Labels
   public int getNumLabels() {

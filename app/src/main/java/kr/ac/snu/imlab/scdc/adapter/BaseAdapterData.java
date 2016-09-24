@@ -13,30 +13,20 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ToggleButton;
 
-import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.activity.LaunchActivity;
-import kr.ac.snu.imlab.scdc.entry.LabelEntry;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper.SensorIdInfo;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
-import kr.ac.snu.imlab.scdc.util.TimeUtil;
 
 public class BaseAdapterData extends BaseAdapter {
 
@@ -50,7 +40,6 @@ public class BaseAdapterData extends BaseAdapter {
   Handler handler;
 
   private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
-  private RangeSeekBar<Integer> rangeSeekBar = null;
 
   public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
     this.mContext = context;
@@ -125,7 +114,7 @@ public class BaseAdapterData extends BaseAdapter {
     String endTimeStr = dataFormat.format(info.lastTS*1000);
     String togetherStr =info.firstTogether;
     String labelStr = info.firstLabel;
-    String totalStr = sensorIdStr + "\t\t\t\t\t\t\t\t" + labelStr + "\t\t\t" + togetherStr + "\t\t\t\t\t\t\t\t\t\t" + startTimeStr +" ~ " + endTimeStr;
+    String totalStr = sensorIdStr + "\t\t\t\t" + labelStr + "\t\t" + togetherStr + "\t\t\t\t" + startTimeStr +" ~ " + endTimeStr;
     Log.d(SCDCKeys.LogKeys.DEBB, "is that right??: " + totalStr);
 //    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
 
@@ -195,13 +184,14 @@ public class BaseAdapterData extends BaseAdapter {
     viewHolder.sensorIdToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+        String[] sIdArr = spHandler.getSensorIdsInData().split(",");
+        int sIdAtPosition = Integer.parseInt(sIdArr[position]);
         if (isChecked) {
           Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton checked!");
-          spHandler.insertSensorIdToRemove(info.sensorId);
+          spHandler.insertSensorIdToRemove(sIdAtPosition);
         } else {
           Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton unchecked!");
-          spHandler.popSensorIdToRemove(info.sensorId);
+          spHandler.popSensorIdToRemove(sIdAtPosition);
         }
       }
     });

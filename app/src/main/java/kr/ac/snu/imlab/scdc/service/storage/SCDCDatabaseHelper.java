@@ -4,12 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Parcelable;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -114,13 +112,26 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updateTable(SQLiteDatabase db, int sensorId, boolean deleteAction, double startTS, double endTS){
         try {
+            if (deleteAction) {
+                updateTable(db, sensorId);
+            } else {
+                String sql = "DELETE FROM " + DATA_TABLE.name
+                        + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId;
+                sql += " AND " + COLUMN_TIMESTAMP + " < " + startTS + " AND " + COLUMN_TIMESTAMP + " > " + endTS + ";";
+                db.execSQL(sql);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean updateTable(SQLiteDatabase db, int sensorId){
+        try {
             String sql = "DELETE FROM " + DATA_TABLE.name
                     + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId;
-            if(deleteAction) {
-                sql += ";";
-            } else{
-                sql += " AND " + COLUMN_TIMESTAMP + " < " + startTS + " AND " + COLUMN_TIMESTAMP + " > " + endTS + ";";
-            }
+            sql += ";";
             db.execSQL(sql);
         } catch (Exception e) {
             return false;
