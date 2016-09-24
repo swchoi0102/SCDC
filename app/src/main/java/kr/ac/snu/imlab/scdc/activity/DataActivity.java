@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ public class DataActivity extends ActionBarActivity {
     protected static final String TAG = "DataActivity";
 
     private Button backButton, applyButton;
+    private TextView dataHeaderTextView;
     private ListView dataListView;
     public BaseAdapterData dataAdapter;
     private SharedPrefsHandler spHandler;
@@ -57,10 +61,14 @@ public class DataActivity extends ActionBarActivity {
 
         backButton = (Button) findViewById(R.id.data_back_button);
         applyButton = (Button) findViewById(R.id.data_apply_button);
+        dataHeaderTextView = (TextView) findViewById(R.id.data_header_tv);
         dataListView = (ListView) findViewById(R.id.data_list_view);
-        final View header = getLayoutInflater().inflate(R.layout.data_list_view_header_layout, null, false);
-        dataListView.addHeaderView(header);
+//        final View header = getLayoutInflater().inflate(R.layout.data_list_view_header_layout, null, false);
+//        dataListView.addHeaderView(header);
 
+
+        String headerString = "ID" + "\t\t\t\t\t\t" + "레이블" + "\t\t\t\t\t\t\t" + "시작 시각" + "\t\t\t"+"수집 시간";
+        dataHeaderTextView.setText(headerString);
         dataAdapter = new BaseAdapterData(this.getBaseContext(), data);
         dataListView.setAdapter(dataAdapter);
 

@@ -32,6 +32,7 @@ public class BaseAdapterData extends BaseAdapter {
 
   protected static final String TAG = "BaseAdapterData";
 
+
   Context mContext = null;
   ArrayList<SensorIdInfo> mData = null;
   LayoutInflater mLayoutInflater = null;
@@ -39,7 +40,8 @@ public class BaseAdapterData extends BaseAdapter {
 
   Handler handler;
 
-  private SimpleDateFormat dataFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
+  private SimpleDateFormat dataFormat_withDate = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+  private SimpleDateFormat dataFormat_withoutDate = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
   public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
     this.mContext = context;
@@ -110,11 +112,13 @@ public class BaseAdapterData extends BaseAdapter {
     SensorIdInfo info = mData.get(position);
 
     String sensorIdStr = String.valueOf(info.sensorId);
-    String startTimeStr = dataFormat.format(info.firstTS*1000);
-    String endTimeStr = dataFormat.format(info.lastTS*1000);
+    String startTimeStr = dataFormat_withDate.format(info.firstTS*1000);
+    String endTimeStr = dataFormat_withoutDate.format(info.lastTS*1000);
+    String durTimeStr = String.format("%.1f",(info.lastTS-info.firstTS)/60)+"분";
     String togetherStr =info.firstTogether;
     String labelStr = info.firstLabel;
-    String totalStr = sensorIdStr + "\t\t\t\t" + labelStr + "\t\t" + togetherStr + "\t\t\t\t" + startTimeStr +" ~ " + endTimeStr;
+    if(labelStr.equals(SCDCKeys.LabelKeys.NONE_OF_ABOVE_LABEL)) labelStr = "기타";
+    String totalStr = sensorIdStr + "\t\t\t\t" + labelStr + "\t\t\t" + togetherStr + "\t\t\t\t" + startTimeStr + "\t\t\t"+durTimeStr;
     Log.d(SCDCKeys.LogKeys.DEBB, "is that right??: " + totalStr);
 //    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
 

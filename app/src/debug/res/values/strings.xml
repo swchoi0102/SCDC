@@ -9,7 +9,6 @@
     <string name="no_probes_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [] }</string>
     <string name="app_title">SCDC</string>
     <!--<string name="data_title">데이터 수정하기</string>-->
-    <string name="data_description">목록에서 선택한 데이터를 삭제할 수 있습니다.</string>
     <string name="probe_disabled">Disabled</string>
     <string name="default_pipeline">
         {
@@ -160,9 +159,10 @@
     <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>
     <string name="change_config_complete_message">환경설정 변경에 성공하였습니다</string>
     <string name="change_config_failed_message">환경설정 변경에 실패하였습니다</string>
+    <string name="data_description">목록에서 선택한 데이터를 삭제할 수 있습니다.</string>
     <string name="no_data_message">수정할 데이터가 존재하지 않습니다</string>
     <string name="db_table_update_success">데이터가 정상적으로 수정되었습니다</string>
-    <string name="db_table_update_fail">데이터 수정이 실패했습니다</string>
+    <string name="db_table_update_fail">데이터 수정에 실패했습니다</string>
     <string name="alone_bt">혼자입니다</string>
     <string name="together_bt">함께입니다</string>
     <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>

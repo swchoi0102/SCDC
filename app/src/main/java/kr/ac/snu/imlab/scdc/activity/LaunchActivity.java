@@ -74,6 +74,7 @@ public class LaunchActivity extends ActionBarActivity
                             implements OnDataReceivedListener {
 
   protected static final String TAG = "LaunchActivity";
+  protected static final String TAGG = "editButton";
 
   @Configurable
   // FIXME: Change below to false when publishing
@@ -581,28 +582,40 @@ public class LaunchActivity extends ActionBarActivity
     editDataButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Log.d(LogKeys.DEBB, "edit button clicked");
+        Log.d(LogKeys.DEBB, TAGG+"edit button clicked");
         Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
         boolean goToDataActivity = false;
         ArrayList<SensorIdInfo> data = null;
 
         if (pipeline != null) {
           SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
-          if (databaseHelper == null) pipeline.reloadDbHelper(scdcManager);
+          if (databaseHelper == null) {
+            pipeline.reloadDbHelper(scdcManager);
+            Log.d(LogKeys.DEBB, TAGG+"reload");
+          }
           if (databaseHelper != null) {
             SQLiteDatabase db = pipeline.getWritableDb();
             data = databaseHelper.getSensorIdInfo(db);
             if (data != null) {
               if (data.size() > 0) goToDataActivity = true;
+              else Log.d(LogKeys.DEBB, TAGG+"pipeline, datasize 0");
             }
+            else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
           }
         }
 
         else if (scdcService != null) {
+          Log.d(LogKeys.DEBB, "pipeline null");
           data = scdcService.getSensorInfo();
           if (data != null) {
             if (data.size() > 0) goToDataActivity = true;
+            else Log.d(LogKeys.DEBB, "scdcService, datasize 0");
           }
+          else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
+        }
+
+        else {
+          Log.d(LogKeys.DEBB, "pipeline null and scdcService null");
         }
 
         if (goToDataActivity) {

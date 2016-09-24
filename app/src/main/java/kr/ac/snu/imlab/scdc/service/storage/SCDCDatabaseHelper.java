@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,6 +26,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 public class SCDCDatabaseHelper extends SQLiteOpenHelper {
 
     public static final int CURRENT_VERSION = 1;
+    protected static final String TAGG = "DatabaseHelper, editButton: ";
 
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_SENSOR_ID = SCDCKeys.SharedPrefs.KEY_SENSOR_ID;
@@ -91,14 +93,24 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
                     SCDCKeys.LabelKeys.NONE_OF_ABOVE_LABEL,
 //                    SCDCKeys.LabelKeys.TOGETHER_STATUS,
             };
-
+            Log.d(SCDCKeys.LogKeys.DEBB, TAGG+"count is "+sensorIdCursor.getCount());
             if(sensorIdCursor!=null && sensorIdCursor.getCount()>0){
                 sensorIdCursor.moveToFirst();
                 for (int i=0; i<sensorIdCursor.getCount(); i++){
-                    int sensorId = sensorIdCursor.getInt(0);
-                    SensorIdInfo sensorIdInfo = new SensorIdInfo(sensorId, db, parser, labelArr);
-                    sensorIdInfoList.add(sensorIdInfo);
-                    sensorIdCursor.moveToNext();
+                    try{
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+i);
+                        int sensorId = sensorIdCursor.getInt(0);
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+sensorId);
+                        SensorIdInfo sensorIdInfo = new SensorIdInfo(sensorId, db, parser, labelArr);
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+"sensorIdInfo made OK");
+                        sensorIdInfoList.add(sensorIdInfo);
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+"sensorIdInfo insert OK");
+                        sensorIdCursor.moveToNext();
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+"moveToNext OK");
+                    } catch (Exception e) {
+                        sensorIdCursor.moveToNext();
+                        Log.d(SCDCKeys.LogKeys.DEBB, TAGG+ "exception occur");
+                    }
                 }
                 sensorIdCursor.close();
             }
@@ -203,58 +215,73 @@ public class SCDCDatabaseHelper extends SQLiteOpenHelper {
         public final double firstTS;
         public final String firstLabel, firstTogether;
         public final double lastTS;
-        public final String lastLabel, lastTogether;
+//        public final String lastLabel, lastTogether;
 
         public SensorIdInfo(int sensorId, SQLiteDatabase db, JsonParser parser, String[] labelArr){
-            Cursor firstCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
-                    + " FROM " + DATA_TABLE.name
-                    + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId
-                    + " LIMIT 1", null);
-            firstCursor.moveToNext();
-            double firstTS = firstCursor.getDouble(0);
+            Cursor firstCursor = null;
+            double firstTS = 0;
             String firstLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
             String firstTogether = "혼자";
-            JsonObject firstValue = parser.parse(firstCursor.getString(1)).getAsJsonObject();
-            for (String label : labelArr){
-                boolean thisLabel = firstValue.get(label).getAsBoolean();
-                if (thisLabel){
-                    firstLabel = label;
-                }
-            }
-            boolean together = firstValue.get(SCDCKeys.LabelKeys.TOGETHER_STATUS).getAsBoolean();
-            if (together){
-                firstTogether = "함께";
-            }
-            firstCursor.close();
+            JsonObject firstValue = null;
+            Cursor lastCursor = null;
+            double lastTS = 0;
 
-            Cursor lastCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
-                    + " FROM " + DATA_TABLE.name
-                    + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId
-                    + " ORDER BY _id DESC LIMIT 1", null);
-            lastCursor.moveToNext();
-            double lastTS = lastCursor.getDouble(0);
-            String lastLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
-            String lastTogether = "혼자";
-            JsonObject lastValue = parser.parse(lastCursor.getString(1)).getAsJsonObject();
-            for (String label : labelArr){
-                boolean thisLabel = lastValue.get(label).getAsBoolean();
-                if (thisLabel){
-                    lastLabel = label;
+            boolean together = false;
+            Log.d(SCDCKeys.LogKeys.DEBB, TAGG+ "sensorIdInfo start");
+
+            try {
+                firstCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
+                        + " FROM " + DATA_TABLE.name
+                        + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId
+                        + " LIMIT 1", null);
+                firstCursor.moveToFirst();
+                firstTS = firstCursor.getDouble(0);
+                firstLabel = SCDCKeys.LabelKeys.SLEEP_LABEL;
+                firstTogether = "혼자";
+                firstValue = parser.parse(firstCursor.getString(1)).getAsJsonObject();
+                for (String label : labelArr){
+                    boolean thisLabel = firstValue.get(label).getAsBoolean();
+                    if (thisLabel){
+                        firstLabel = label;
+                    }
                 }
+                together = firstValue.get(SCDCKeys.LabelKeys.TOGETHER_STATUS).getAsBoolean();
+                if (together){
+                    firstTogether = "함께";
+                }
+                firstCursor.close();
+
+
+            } catch (Exception e) {
+                Log.d(SCDCKeys.LogKeys.DEBB, TAGG+ "first cursor exception occur");
             }
-            together = lastValue.get(SCDCKeys.LabelKeys.TOGETHER_STATUS).getAsBoolean();
-            if (together){
-                lastTogether = "함께";
+
+            try{
+                lastCursor = db.rawQuery("SELECT " + COLUMN_TIMESTAMP + ", " + COLUMN_VALUE
+                        + " FROM " + DATA_TABLE.name
+                        + " WHERE " + COLUMN_SENSOR_ID + " = " + sensorId
+                        + " ORDER BY _id DESC LIMIT 1", null);
+
+            } catch (Exception e) {
+                Log.d(SCDCKeys.LogKeys.DEBB, TAGG+ "last cursor part1 exception occur");
+            }
+
+            try {
+                lastCursor.moveToFirst();
+                lastTS = lastCursor.getDouble(0);
+            } catch (Exception e) {
+                Log.d(SCDCKeys.LogKeys.DEBB, TAGG+ "last cursor part2 exception occur");
             }
             lastCursor.close();
 
+
             this.sensorId = sensorId;
             this.firstTS = firstTS;
-            this.lastTS = lastTS;
             this.firstLabel = firstLabel;
             this.firstTogether = firstTogether;
-            this.lastLabel = lastLabel;
-            this.lastTogether = lastTogether;
-        }   
+            this.lastTS = lastTS;
+//            this.lastLabel = lastLabel;
+//            this.lastTogether = lastTogether;
+        }
     }
 }
