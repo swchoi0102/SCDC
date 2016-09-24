@@ -67,7 +67,7 @@ public class DataActivity extends ActionBarActivity {
 //        dataListView.addHeaderView(header);
 
 
-        String headerString = "ID" + "\t\t\t\t\t\t" + "레이블" + "\t\t\t\t\t\t\t" + "시작 시각" + "\t\t\t"+"수집 시간";
+        String headerString = "\tID" + "\t\t\t\t\t" + "컨텍스트" + "\t\t\t\t\t\t\t" + "시작 시각" + "\t\t\t"+"수집 시간";
         dataHeaderTextView.setText(headerString);
         dataAdapter = new BaseAdapterData(this.getBaseContext(), data);
         dataListView.setAdapter(dataAdapter);
