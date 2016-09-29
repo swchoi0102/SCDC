@@ -74,6 +74,13 @@ public class LabelEntry {
     spHandler.setStartLoggingTime(getId(), -1L);
   }
 
+  public void endLog(int sensorId, boolean isTogegher, long startTime, long elapsedTime) {
+    if (!isLogged()) return;
+//    Log.d(SCDCKeys.LogKeys.DEBB+"."+TAG,getId()+"\t"+getName()+"\t"+ String.valueOf(elapsedTime));
+    spHandler.insertSensingTimeInfo(sensorId, isTogegher, getId(), startTime, elapsedTime);
+    spHandler.setStartLoggingTime(getId(), -1L);
+  }
+
   public long getTime() { return spHandler.getAccumulatedTime(getId()); }
 
   public long getStartLoggingTime() {

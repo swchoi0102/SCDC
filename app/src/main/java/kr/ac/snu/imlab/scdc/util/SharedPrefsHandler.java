@@ -149,18 +149,18 @@ public class SharedPrefsHandler {
     return prefs.getString(SharedPrefs.SENSOR_ID_IN_DATA, "");
   }
 
-  public void setSensorIdsInData(int sensorId) {
-    String sIdsInData = getSensorIdsInData();
-    if (sIdsInData.equals("")) {
-      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "" + sensorId).apply();
-    } else {
-      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, sIdsInData + "," + sensorId).apply();
-    }
-  }
-
-  public void initializeSensorIdsInData() {
-    prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "").apply();
-  }
+//  public void setSensorIdsInData(int sensorId) {
+//    String sIdsInData = getSensorIdsInData();
+//    if (sIdsInData.equals("")) {
+//      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "" + sensorId).apply();
+//    } else {
+//      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, sIdsInData + "," + sensorId).apply();
+//    }
+//  }
+//
+//  public void initializeSensorIdsInData() {
+//    prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "").apply();
+//  }
 
   public String getSensorIdsToRemove() {
     return prefs.getString(SharedPrefs.SENSOR_ID_TO_REMOVE, "");
@@ -206,9 +206,9 @@ public class SharedPrefsHandler {
   }
 
   public void initializeDataFixing() {
-    initializeSensorIdsInData();
+//    initializeSensorIdsInData();
     initializeSensorIdToRemove();
-    prefs.edit().putBoolean(SharedPrefs.SENSOR_ID_REMOVE_OR_NOT, false).apply();
+    setSensorIdsRemoveOrNot(false);
   }
 
   // Synchronize preferences with server
@@ -258,10 +258,106 @@ public class SharedPrefsHandler {
     prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), accum).apply();
   }
 
-  public void resetAccumulatedTime(int labelId){
-//    Log.d(LogKeys.DEBB, TAG+": accumlated time reset");
-    prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0).apply();
+  public String getLabelSensingTimeInfo(){
+    long sleepingTime = 0L;
+    long eatingTime = 0L;
+    long inClassTime = 0L;
+    long studyingTime = 0L;
+    long drinkingTime = 0L;
+    long movingTime = 0L;
+    long etcTime = 0L;
+
+    String totalString = getTotalSensingTimeInfo();
+    if (!totalString.equals("")) {
+      String[] sensingTimeArr = totalString.split("/");
+      for (String tempSensingInfo : sensingTimeArr) {
+        String[] tempInfoArr = tempSensingInfo.split(",");
+        if (tempInfoArr[2].equals("0")) sleepingTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("1")) eatingTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("2")) drinkingTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("3")) inClassTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("4")) studyingTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("5")) movingTime += Long.parseLong(tempInfoArr[4]);
+        if (tempInfoArr[2].equals("6")) etcTime += Long.parseLong(tempInfoArr[4]);
+      }
+    }
+    return "SL"+sleepingTime
+            +"-EA"+ eatingTime
+            +"-DR"+ drinkingTime
+            +"-IC"+ inClassTime
+            +"-ST"+ studyingTime
+            +"-MV"+ movingTime
+            +"-NO"+ etcTime;
   }
+
+//  public String getSensingTimeInfo(int sensorId){
+////    sensorid, togetherStatus, label, startTime, loggingTime
+//    String sid = "" + sensorId;
+//    String timeStr = getTotalSensingTimeInfo();
+//    if (timeStr.equals("")) {
+//      return "null";
+//    } else {
+//      String[] timeArr = timeStr.split("/");
+//      for (String tempStr : timeArr) {
+//        String[] tempInfo = tempStr.split(",");
+//        if (sid.equals(tempInfo[0])) {
+//          Log.d(LogKeys.DEBB, TAG + ": getSensingTimeInfo(): sensorId labeling time info : " + tempStr);
+//          return tempStr;
+//        }
+//      }
+//      return "null";
+//    }
+//  }
+
+  public String getTotalSensingTimeInfo(){
+    return prefs.getString(SharedPrefs.SENSOR_ID_LABELING_TIME, "");
+  }
+
+  public void insertSensingTimeInfo(int sensorId, boolean isTogether, int labelId, long startTime, long elapsedTime){
+    String togetherStatus = "";
+    if (isTogether) {
+      togetherStatus += 1;
+    } else {
+      togetherStatus += 0;
+    }
+    String sensingTimeInfo = "" + sensorId + "," + togetherStatus + "," + labelId + "," + startTime + "," + elapsedTime;
+    Log.d(LogKeys.DEBB, TAG+": insertSensingTimeInfo(): sensorId labeling time is "+ sensingTimeInfo);
+
+    String totalSensingTimeInfo = getTotalSensingTimeInfo();
+    if (totalSensingTimeInfo.equals("")) {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_LABELING_TIME, sensingTimeInfo).apply();
+    } else {
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_LABELING_TIME, totalSensingTimeInfo + "/" + sensingTimeInfo).apply();
+    }
+  }
+
+  public void popSensingTimeInfo(int sensorId){
+    String sid = "" + sensorId;
+    String timeStr = getTotalSensingTimeInfo();
+    if (!timeStr.equals("")) {
+      String[] timeArr = timeStr.split("/");
+      String returnString = "";
+      for (String tempSensingTimeInfo : timeArr) {
+        String[] tempInfo = tempSensingTimeInfo.split(",");
+        if (sid.equals(tempInfo[0])) {
+          Log.d(LogKeys.DEBB, TAG + ": popSensingTimeInfo(): sensorId labeling time info : " + tempSensingTimeInfo);
+        } else {
+          if (!returnString.equals("")) returnString += "/";
+          returnString += tempSensingTimeInfo;
+        }
+      }
+      prefs.edit().putString(SharedPrefs.SENSOR_ID_LABELING_TIME, returnString).apply();
+    }
+  }
+
+  public void resetSensingTimeInfo(){
+    prefs.edit().putString(SharedPrefs.SENSOR_ID_LABELING_TIME, "").apply();
+  }
+
+//  public void resetAccumulatedTime(int labelId){
+////    Log.d(LogKeys.DEBB, TAG+": accumlated time reset");
+//    prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0).apply();
+//  }
 
   // Alone/Together status (trinary value)
   public int getTogetherStatus_Tri() {

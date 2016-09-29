@@ -176,10 +176,12 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
           }
         }
         else{
-          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(mData.get(position).getStartLoggingTime(), "second");
+          long startTime = mData.get(position).getStartLoggingTime();
+          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
           Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName()+" ("+String.valueOf(elapsedTime)+" seconds)");
           boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
-          mData.get(position).endLog(elapsedTime);
+//          mData.get(position).endLog(elapsedTime);
+          mData.get(position).endLog(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(), startTime, elapsedTime);
 //          labelingOffWaiting();
 
 //          // Unbind/Stop SCDCService and bind SCDCManager instead

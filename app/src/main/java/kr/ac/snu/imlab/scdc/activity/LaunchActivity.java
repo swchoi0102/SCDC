@@ -5,15 +5,16 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,20 +24,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import edu.mit.media.funf.config.ConfigUpdater.ConfigUpdateException;
-import edu.mit.media.funf.config.Configurable;
-import edu.mit.media.funf.config.HttpConfigUpdater;
-import edu.mit.media.funf.util.EqualsUtil;
-import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel2;
-import kr.ac.snu.imlab.scdc.entry.AccompanyingStatusLabelEntry;
-import kr.ac.snu.imlab.scdc.entry.ConversingStatusLabelEntry;
-import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
-import kr.ac.snu.imlab.scdc.service.core.SCDCPipeline;
-import edu.mit.media.funf.storage.FileArchive;
-
-import android.os.IBinder;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -47,25 +34,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import edu.mit.media.funf.config.ConfigUpdater.ConfigUpdateException;
+import edu.mit.media.funf.config.Configurable;
+import edu.mit.media.funf.config.HttpConfigUpdater;
+import edu.mit.media.funf.storage.FileArchive;
+import edu.mit.media.funf.util.EqualsUtil;
+import kr.ac.snu.imlab.scdc.R;
+import kr.ac.snu.imlab.scdc.adapter.BaseAdapterExLabel2;
+import kr.ac.snu.imlab.scdc.entry.AccompanyingStatusLabelEntry;
+import kr.ac.snu.imlab.scdc.entry.ConversingStatusLabelEntry;
+import kr.ac.snu.imlab.scdc.entry.LabelEntry;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.AlertKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.Config;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LabelKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.LogKeys;
-import kr.ac.snu.imlab.scdc.service.core.SCDCKeys.AlertKeys;
+import kr.ac.snu.imlab.scdc.service.core.SCDCManager;
+import kr.ac.snu.imlab.scdc.service.core.SCDCPipeline;
 import kr.ac.snu.imlab.scdc.service.core.SCDCService;
 import kr.ac.snu.imlab.scdc.service.storage.MultipartEntityArchive;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper;
-import kr.ac.snu.imlab.scdc.service.storage.SCDCDatabaseHelper.SensorIdInfo;
 import kr.ac.snu.imlab.scdc.service.storage.SCDCUploadService;
 import kr.ac.snu.imlab.scdc.service.storage.ZipArchive;
-import kr.ac.snu.imlab.scdc.entry.LabelEntry;
-import kr.ac.snu.imlab.scdc.R;
 import kr.ac.snu.imlab.scdc.util.SharedPrefsHandler;
 import kr.ac.snu.imlab.scdc.util.TimeUtil;
 
@@ -584,50 +580,60 @@ public class LaunchActivity extends ActionBarActivity
       public void onClick(View v) {
         Log.d(LogKeys.DEBB, TAGG+"edit button clicked");
         Intent intent = new Intent(LaunchActivity.this, DataActivity.class);
-        boolean goToDataActivity = false;
-        ArrayList<SensorIdInfo> data = null;
 
-        if (pipeline != null) {
-          SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
-          if (databaseHelper == null) {
-            pipeline.reloadDbHelper(scdcManager);
-            Log.d(LogKeys.DEBB, TAGG+"reload");
-          }
-          if (databaseHelper != null) {
-            SQLiteDatabase db = pipeline.getWritableDb();
-            data = databaseHelper.getSensorIdInfo(db);
-            if (data != null) {
-              if (data.size() > 0) goToDataActivity = true;
-              else Log.d(LogKeys.DEBB, TAGG+"pipeline, datasize 0");
-            }
-            else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
-          }
-        }
-
-        else if (scdcService != null) {
-          Log.d(LogKeys.DEBB, "pipeline null");
-          data = scdcService.getSensorInfo();
-          if (data != null) {
-            if (data.size() > 0) goToDataActivity = true;
-            else Log.d(LogKeys.DEBB, "scdcService, datasize 0");
-          }
-          else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
-        }
-
-        else {
-          Log.d(LogKeys.DEBB, "pipeline null and scdcService null");
-        }
-
-        if (goToDataActivity) {
-          Gson gson = new Gson();
-          String jsonData = gson.toJson(data);
-          Log.d(LogKeys.DEBB, "data is made : " + jsonData);
-          intent.putExtra("data", jsonData);
-          startActivity(intent);
-        } else {
+        String totalSensingInfo = spHandler.getTotalSensingTimeInfo();
+        if (totalSensingInfo.equals("")) {
           Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
                   Toast.LENGTH_LONG).show();
+        } else {
+          intent.putExtra("data", totalSensingInfo);
+          startActivity(intent);
         }
+
+//        boolean goToDataActivity = false;
+//        ArrayList<SensorIdInfo> data = null;
+//
+//        if (pipeline != null) {
+//          SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
+//          if (databaseHelper == null) {
+//            pipeline.reloadDbHelper(scdcManager);
+//            Log.d(LogKeys.DEBB, TAGG+"reload");
+//          }
+//          if (databaseHelper != null) {
+//            SQLiteDatabase db = pipeline.getWritableDb();
+//            data = databaseHelper.getSensorIdInfo(db);
+//            if (data != null) {
+//              if (data.size() > 0) goToDataActivity = true;
+//              else Log.d(LogKeys.DEBB, TAGG+"pipeline, datasize 0");
+//            }
+//            else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
+//          }
+//        }
+//
+//        else if (scdcService != null) {
+//          Log.d(LogKeys.DEBB, "pipeline null");
+//          data = scdcService.getSensorInfo();
+//          if (data != null) {
+//            if (data.size() > 0) goToDataActivity = true;
+//            else Log.d(LogKeys.DEBB, "scdcService, datasize 0");
+//          }
+//          else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
+//        }
+//
+//        else {
+//          Log.d(LogKeys.DEBB, "pipeline null and scdcService null");
+//        }
+//
+//        if (goToDataActivity) {
+//          Gson gson = new Gson();
+//          String jsonData = gson.toJson(data);
+//          Log.d(LogKeys.DEBB, "data is made : " + jsonData);
+//          intent.putExtra("data", jsonData);
+//          startActivity(intent);
+//        } else {
+//          Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
+//                  Toast.LENGTH_LONG).show();
+//        }
       }
     });
 
@@ -672,6 +678,7 @@ public class LaunchActivity extends ActionBarActivity
               try {
                 for (String sidStr : idsToRemoveArr) {
                   databaseHelper.updateTable(db, Integer.parseInt(sidStr));
+                  spHandler.popSensingTimeInfo(Integer.parseInt(sidStr));
                 }
                 updateSuccess = true;
               } catch(Exception e) {
@@ -1056,12 +1063,13 @@ public class LaunchActivity extends ActionBarActivity
         }
 
         // reset all accumulated times !
-        for (LabelEntry entry : normalLabelEntries){
-          spHandler.resetAccumulatedTime(entry.getId());
-        }
-        for (LabelEntry entry : specialLabelEntries){
-          spHandler.resetAccumulatedTime(entry.getId());
-        }
+        spHandler.resetSensingTimeInfo();
+//        for (LabelEntry entry : normalLabelEntries){
+//          spHandler.resetAccumulatedTime(entry.getId());
+//        }
+//        for (LabelEntry entry : specialLabelEntries){
+//          spHandler.resetAccumulatedTime(entry.getId());
+//        }
 
         dataCountView.setText("Data size: 0.0 MB");
         spHandler.setTooMuchData(false);
@@ -1142,14 +1150,18 @@ public class LaunchActivity extends ActionBarActivity
     Log.d(LogKeys.DEBB, "1. end all labels");
     for (LabelEntry label : normalLabelEntries) {
       if(label.isLogged()) {
-        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(label.getStartLoggingTime(), "second");
-        label.endLog(elapsedTime);
+        long startTime = label.getStartLoggingTime();
+        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
+//        label.endLog(elapsedTime);
+        label.endLog(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(), startTime, elapsedTime);
       }
     }
     for (LabelEntry label : specialLabelEntries) {
       if(label.isLogged()) {
-        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(label.getStartLoggingTime(), "second");
-        label.endLog(elapsedTime);
+        long startTime = label.getStartLoggingTime();
+        long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
+//        label.endLog(elapsedTime);
+        label.endLog(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(), startTime, elapsedTime);
       }
     }
 
@@ -1208,7 +1220,11 @@ public class LaunchActivity extends ActionBarActivity
       if (spHandler.isSensorOn()) {  // when sensor is on
         oldConfig = scdcService.getPipelineConfig(Config.PIPELINE_NAME);
       } else {  // when sensor is off
-        oldConfig = scdcManager.getPipelineConfig(Config.PIPELINE_NAME);
+        try {
+          oldConfig = scdcManager.getPipelineConfig(Config.PIPELINE_NAME);
+        } catch (Exception e) {
+          oldConfig = scdcService.getPipelineConfig(Config.PIPELINE_NAME);
+        }
       }
 
       String newConfigString;
@@ -1225,7 +1241,11 @@ public class LaunchActivity extends ActionBarActivity
         if (spHandler.isSensorOn()) {
           result = scdcService.saveAndReload(Config.PIPELINE_NAME, newConfig);
         } else {
-          result = scdcManager.saveAndReload(Config.PIPELINE_NAME, newConfig);
+          try {
+            result = scdcManager.saveAndReload(Config.PIPELINE_NAME, newConfig);
+          } catch (Exception e) {
+            result = scdcService.saveAndReload(Config.PIPELINE_NAME, newConfig);
+          }
         }
         if (result) {
           if (DEBUGGING){

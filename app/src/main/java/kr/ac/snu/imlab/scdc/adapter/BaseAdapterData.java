@@ -34,7 +34,7 @@ public class BaseAdapterData extends BaseAdapter {
 
 
   Context mContext = null;
-  ArrayList<SensorIdInfo> mData = null;
+  ArrayList<String[]> mData = null;
   LayoutInflater mLayoutInflater = null;
   SharedPrefsHandler spHandler = null;
 
@@ -43,7 +43,7 @@ public class BaseAdapterData extends BaseAdapter {
   private SimpleDateFormat dataFormat_withDate = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
   private SimpleDateFormat dataFormat_withoutDate = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-  public BaseAdapterData(Context context, ArrayList<SensorIdInfo> data) {
+  public BaseAdapterData(Context context, ArrayList<String[]> data) {
     this.mContext = context;
     this.mData = data;
     this.mLayoutInflater = LayoutInflater.from(this.mContext);
@@ -62,7 +62,7 @@ public class BaseAdapterData extends BaseAdapter {
   }
 
   @Override
-  public SensorIdInfo getItem(int position) {
+  public String[] getItem(int position) {
     return this.mData.get(position);
   }
 
@@ -109,15 +109,24 @@ public class BaseAdapterData extends BaseAdapter {
       }
     });
 
-    SensorIdInfo info = mData.get(position);
+    String[] info = mData.get(position);
 
-    String sensorIdStr = String.valueOf(info.sensorId);
-    String startTimeStr = dataFormat_withDate.format(info.firstTS*1000);
-    String endTimeStr = dataFormat_withoutDate.format(info.lastTS*1000);
-    String durTimeStr = String.format("%.1f",(info.lastTS-info.firstTS)/60)+"분";
-    String togetherStr =info.firstTogether;
-    String labelStr = info.firstLabel;
-    if(labelStr.equals(SCDCKeys.LabelKeys.NONE_OF_ABOVE_LABEL)) labelStr = "기타";
+    String sensorIdStr = String.valueOf(info[0]);
+    String startTimeStr = dataFormat_withDate.format(Long.parseLong(info[3]));
+//    String endTimeStr = dataFormat_withoutDate.format(info.lastTS*1000);
+    Float duration = Float.parseFloat(info[4]);
+    String durTimeStr = String.format("%.1f", duration/60)+"분";
+    String togetherStr ="함께";
+    if (info[1].equals("0")) {
+      togetherStr ="혼자";
+    }
+    String labelStr = "수면";
+    if (info[2].equals("1")) labelStr = "식사";
+    if (info[2].equals("2")) labelStr = "음주";
+    if (info[2].equals("3")) labelStr = "수업";
+    if (info[2].equals("4")) labelStr = "공부";
+    if (info[2].equals("5")) labelStr = "이동";
+    if (info[2].equals("6")) labelStr = "기타";
     String totalStr = sensorIdStr + "\t\t\t\t" + labelStr + "\t\t\t" + togetherStr + "\t\t\t\t" + startTimeStr + "\t\t\t"+durTimeStr;
     Log.d(SCDCKeys.LogKeys.DEBB, "is that right??: " + totalStr);
 //    Log.d(SCDCKeys.LogKeys.DEBB, sensorIdStr+" "+startTimeStr+" "+endTimeStr+" "+togetherStr+" "+labelStr);
@@ -188,13 +197,13 @@ public class BaseAdapterData extends BaseAdapter {
     viewHolder.sensorIdToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        String[] sIdArr = spHandler.getSensorIdsInData().split(",");
-        int sIdAtPosition = Integer.parseInt(sIdArr[position]);
+        String[] sensingTimeInfoArr = spHandler.getTotalSensingTimeInfo().split("/");
+        int sIdAtPosition = Integer.parseInt(sensingTimeInfoArr[sensingTimeInfoArr.length-1-position].split(",")[0]);
         if (isChecked) {
-          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton checked!");
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton checked! sensorId: " + sIdAtPosition);
           spHandler.insertSensorIdToRemove(sIdAtPosition);
         } else {
-          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton unchecked!");
+          Log.d(SCDCKeys.LogKeys.DEB, TAG+".sensorIdToggleButton unchecked! sensorId: " + sIdAtPosition);
           spHandler.popSensorIdToRemove(sIdAtPosition);
         }
       }

@@ -40,7 +40,6 @@ public class DataActivity extends ActionBarActivity {
                 SCDCKeys.Config.SCDC_PREFS, Context.MODE_PRIVATE);
 
         Log.d(SCDCKeys.LogKeys.DEBB, TAG + ".onCreate()");
-        Gson gson = new Gson();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
@@ -48,16 +47,22 @@ public class DataActivity extends ActionBarActivity {
         Intent intent = this.getIntent();
         String dataStr = intent.getStringExtra("data");
         Log.d(SCDCKeys.LogKeys.DEBB, " " + dataStr);
+        String[] dataArr = dataStr.split("/");
+        ArrayList<String[]> dataList = new ArrayList<>();
+        for (int i=dataArr.length-1; i>=0; i--){
+            String tempData = dataArr[i];
+            dataList.add(tempData.split(","));
+        }
 
-        Type arrListType = new TypeToken<ArrayList<SensorIdInfo>>() {
-        }.getType();
-        ArrayList<SensorIdInfo> data = gson.fromJson(dataStr, arrListType);
+//        Type arrListType = new TypeToken<ArrayList<SensorIdInfo>>() {
+//        }.getType();
+//        ArrayList<SensorIdInfo> data = gson.fromJson(dataStr, arrListType);
 
         spHandler.initializeSensorIdToRemove();
-        spHandler.initializeSensorIdsInData();
-        for (SensorIdInfo sii : data) {
-            spHandler.setSensorIdsInData(sii.sensorId);
-        }
+//        spHandler.initializeSensorIdsInData();
+//        for (SensorIdInfo sii : data) {
+//            spHandler.setSensorIdsInData(sii.sensorId);
+//        }
 
         backButton = (Button) findViewById(R.id.data_back_button);
         applyButton = (Button) findViewById(R.id.data_apply_button);
@@ -69,7 +74,7 @@ public class DataActivity extends ActionBarActivity {
 
         String headerString = "\tID" + "\t\t\t\t\t" + "컨텍스트" + "\t\t\t\t\t\t\t" + "시작 시각" + "\t\t\t"+"수집 시간";
         dataHeaderTextView.setText(headerString);
-        dataAdapter = new BaseAdapterData(this.getBaseContext(), data);
+        dataAdapter = new BaseAdapterData(this.getBaseContext(), dataList);
         dataListView.setAdapter(dataAdapter);
 
         backButton.setOnClickListener(new View.OnClickListener() {

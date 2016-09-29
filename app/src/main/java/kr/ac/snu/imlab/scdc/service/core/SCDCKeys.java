@@ -82,6 +82,7 @@ public class SCDCKeys {
       LAST_CONFIG_UPDATE = "last_config_update",
       FIRST_RUN = "firstrun",
       LABEL_ACCUMULATED_TIME_PREFIX = "accumulated_time_",
+      SENSOR_ID_LABELING_TIME = "sensor_id_labeling_time",
       
       ACCOUNTS_COLLECT_LAST_TIME = "ACCOUNTS_COL_LT",
       ANDROID_INFO_COLLECT_LAST_TIME = "ANDROID_COL_LT",

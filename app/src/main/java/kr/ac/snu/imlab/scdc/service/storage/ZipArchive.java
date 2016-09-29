@@ -177,14 +177,7 @@ public class ZipArchive extends DefaultArchive {
     @Override
     public String generateName(final String name) {
       return name == null ?
-              null : "SL"+spHandler.getAccumulatedTime(0)
-                +"-EA"+ spHandler.getAccumulatedTime(1)
-                +"-DR"+ spHandler.getAccumulatedTime(2)
-                +"-IC"+ spHandler.getAccumulatedTime(3)
-                +"-ST"+ spHandler.getAccumulatedTime(4)
-                +"-MV"+ spHandler.getAccumulatedTime(5)
-                +"-NO"+ spHandler.getAccumulatedTime(6)
-                +"_"+ name;
+              null : spHandler.getLabelSensingTimeInfo() +"_"+ name;
     }
   }
   /**
