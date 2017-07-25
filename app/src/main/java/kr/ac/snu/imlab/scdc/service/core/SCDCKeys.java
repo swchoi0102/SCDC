@@ -183,7 +183,7 @@ public class SCDCKeys {
       STUDYING_LABEL = "공부",
       DRINKING_LABEL = "음주",
       MOVING_LABEL = "이동",
-      NONE_OF_ABOVE_LABEL = "위의 상황에 해당되지 않음",
+      NONE_OF_ABOVE_LABEL = "수집 시작/중지",
 
       TOGETHER_STATUS= "동행여부",
 

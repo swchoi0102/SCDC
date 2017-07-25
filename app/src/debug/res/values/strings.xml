@@ -147,10 +147,10 @@
     <string name="no_data_message">수정할 데이터가 존재하지 않습니다</string>
     <string name="db_table_update_success">데이터가 정상적으로 수정되었습니다</string>
     <string name="db_table_update_fail">데이터 수정에 실패했습니다</string>
-    <string name="alone_bt">혼자입니다</string>
+    <string name="alone_bt">수집 준비</string>
     <string name="together_bt">함께입니다</string>
-    <string name="disabled">위 버튼을 눌러 데이터 수집을 시작해주세요</string>
-    <string name="select">현재 상황에 맞는 버튼을 눌러주세요</string>
+    <string name="disabled">데이터 수집을 중단할 땐 시작 버튼을 한번 더 눌러주세요</string>
+    <string name="select">수집 시작 버튼을 눌러주세요</string>
     <string name="time_count">" 동안 수집 중입니다"</string>
     <string name="too_much_data"> "데이터 업로드 후에 실험을 수행해주세요"</string>
     <string name="data_save_button">수정</string>
