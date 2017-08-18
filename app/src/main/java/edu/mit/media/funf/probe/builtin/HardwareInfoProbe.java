@@ -91,7 +91,6 @@ public class HardwareInfoProbe extends ImpulseProbe implements HardwareInfoKeys 
 	private Bundle getData() {
 		Context context = getContext();
 		Bundle data = new Bundle();
-		data.putString(WIFI_MAC, ((WifiManager) context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
 		String bluetoothMac = getBluetoothMac();
 		if (bluetoothMac != null) {
 			data.putString(BLUETOOTH_MAC, bluetoothMac);

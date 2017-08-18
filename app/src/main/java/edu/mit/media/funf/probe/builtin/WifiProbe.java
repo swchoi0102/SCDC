@@ -120,7 +120,6 @@ public class WifiProbe extends Base {
 	@Override
 	protected void onEnable() {
 		super.onEnable();
-		wifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
 		numberOfAttempts = 0;
 		getContext().registerReceiver(scanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	}
