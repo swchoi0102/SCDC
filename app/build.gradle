@@ -27,6 +27,7 @@ android {
       exclude 'META-INF/NOTICE'
       exclude 'META-INF/DEPENDENCIES'
     }
+
 }
 
 repositories {
@@ -39,8 +40,10 @@ dependencies {
     compile files('libs/actionbarsherlock-4.4.0.jar')
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'org.apache.james:apache-mime4j:0.7.2'
+//    compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version '4.3.5.1'
     compile 'org.apache.httpcomponents:httpmime:4.3.1'
     compile 'org.apache.httpcomponents:httpcore:4.3'
     compile 'com.google.android.gms:play-services-location:+'
+    compile 'commons-net:commons-net:3.6'
 //    compile 'com.yahoo.mobile.client.android.util.rangeseekbar:rangeseekbar-library:0.1.0'
 }

@@ -25,8 +25,14 @@ package edu.mit.media.funf.time;
 
 import android.util.Log;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.InetAddress;
+import java.net.SocketException;
+
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 
 public class TimeUtil {
 
