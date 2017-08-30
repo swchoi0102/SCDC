@@ -25,7 +25,6 @@ package edu.mit.media.funf.probe.builtin;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;

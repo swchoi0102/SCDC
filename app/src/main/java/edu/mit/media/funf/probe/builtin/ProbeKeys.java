@@ -300,7 +300,12 @@ public class ProbeKeys {
 	public static interface TimeOffsetKeys extends BaseProbeKeys {
 		public static final String 
 		LOCAL_TIME_OFFSET = "localTimeOffset",
-		ROUND_TRIP_DELAY = "roundTripDelay";
+		ROUND_TRIP_DELAY = "roundTripDelay",
+		DEST_TIMESTAMP = "dest_timestamp",
+		REC_TIMESTAMP = "received_timestamp",
+		ORIG_TIMESTAMP = "originate_timestamp",
+		TRANS_TIMESTAMP = "transmit_timestamp",
+		ORIGINAL_LOCAL_TIME_OFFSET = "original_local_time_offset";
 	}
 	
 	public static interface VideosKeys extends BaseProbeKeys, android.provider.MediaStore.Video.VideoColumns {
@@ -323,7 +328,7 @@ public class ProbeKeys {
 		NAME = "name",
 		TYPE = "type";
 	}
-	
+
 	public interface AndroidInternal {
 	
 		///////////////////////////////////////////

@@ -149,19 +149,6 @@ public class SharedPrefsHandler {
     return prefs.getString(SharedPrefs.SENSOR_ID_IN_DATA, "");
   }
 
-//  public void setSensorIdsInData(int sensorId) {
-//    String sIdsInData = getSensorIdsInData();
-//    if (sIdsInData.equals("")) {
-//      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "" + sensorId).apply();
-//    } else {
-//      prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, sIdsInData + "," + sensorId).apply();
-//    }
-//  }
-//
-//  public void initializeSensorIdsInData() {
-//    prefs.edit().putString(SharedPrefs.SENSOR_ID_IN_DATA, "").apply();
-//  }
-
   public String getSensorIdsToRemove() {
     return prefs.getString(SharedPrefs.SENSOR_ID_TO_REMOVE, "");
   }
@@ -290,25 +277,6 @@ public class SharedPrefsHandler {
             +"-NO"+ etcTime;
   }
 
-//  public String getSensingTimeInfo(int sensorId){
-////    sensorid, togetherStatus, label, startTime, loggingTime
-//    String sid = "" + sensorId;
-//    String timeStr = getTotalSensingTimeInfo();
-//    if (timeStr.equals("")) {
-//      return "null";
-//    } else {
-//      String[] timeArr = timeStr.split("/");
-//      for (String tempStr : timeArr) {
-//        String[] tempInfo = tempStr.split(",");
-//        if (sid.equals(tempInfo[0])) {
-//          Log.d(LogKeys.DEBB, TAG + ": getSensingTimeInfo(): sensorId labeling time info : " + tempStr);
-//          return tempStr;
-//        }
-//      }
-//      return "null";
-//    }
-//  }
-
   public String getTotalSensingTimeInfo(){
     return prefs.getString(SharedPrefs.SENSOR_ID_LABELING_TIME, "");
   }
@@ -353,11 +321,6 @@ public class SharedPrefsHandler {
   public void resetSensingTimeInfo(){
     prefs.edit().putString(SharedPrefs.SENSOR_ID_LABELING_TIME, "").apply();
   }
-
-//  public void resetAccumulatedTime(int labelId){
-////    Log.d(LogKeys.DEBB, TAG+": accumlated time reset");
-//    prefs.edit().putLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0).apply();
-//  }
 
   // Alone/Together status (trinary value)
   public int getTogetherStatus_Tri() {
@@ -722,20 +685,14 @@ public class SharedPrefsHandler {
                               ".doInBackground(): response=" + response);
         JsonObject userInfo = new JsonParser().parse(response).getAsJsonObject();
         String newUsername = userInfo.get(SharedPrefs.USERNAME).getAsString();
-//        int newIsFemale = userInfo.get(SharedPrefs.IS_FEMALE).getAsInt();
         int newSensorId = userInfo.get(SharedPrefs.KEY_SENSOR_ID).getAsInt();
 
         String currUsername = prefs.getString(SharedPrefs.USERNAME,
                                               Config.DEFAULT_USERNAME);
-//        boolean currIsFemale =
-//          prefs.getBoolean(SharedPrefs.IS_FEMALE, Config.DEFAULT_IS_FEMALE);
         int currSensorId = prefs.getInt(SharedPrefs.KEY_SENSOR_ID, 0);
 
         if (!currUsername.equals(newUsername))
           prefs.edit().putString(SharedPrefs.USERNAME, newUsername).apply();
-//        if ((currIsFemale ? 1 : 0) != newIsFemale)
-//          prefs.edit().putBoolean(SharedPrefs.IS_FEMALE,
-//                                  (newIsFemale == 1)).apply();
         if (currSensorId != newSensorId)
           prefs.edit().putInt(SharedPrefs.KEY_SENSOR_ID, newSensorId).apply();
 
@@ -790,10 +747,6 @@ public class SharedPrefsHandler {
         username = (EditText)((LaunchActivity)context)
                 .findViewById(R.id.user_name);
         username.setText(getUsername());
-//        isMaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_male);
-//        isFemaleRadioButton = (RadioButton)((LaunchActivity)context).findViewById(R.id.radio_female);
-//        isMaleRadioButton.setChecked(!getIsFemale());
-//        isFemaleRadioButton.setChecked(getIsFemale());
       }
 
       progressDialog.dismiss();

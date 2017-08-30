@@ -55,7 +55,7 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 	private static final BigDecimal SECONDS_1900_TO_1970 = new BigDecimal(2208988800L);
 	
 	@Configurable
-	private String host = "2.north-america.pool.ntp.org";
+	private String host = "ntp.ubuntu.com";
 	
 	@Configurable
 	private int port = 123;
@@ -67,6 +67,9 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 	protected void onStart() {
 		super.onStart();
 		try {
+
+			JsonObject data = new JsonObject();
+
 			DatagramSocket socket = new DatagramSocket();
 			socket.setSoTimeout((int)TimeUtil.secondsToMillis(timeout == null ? BigDecimal.TEN : timeout));
 			
@@ -86,7 +89,7 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 			
 			// Immediately record the incoming timestamp
 			double destinationTimestamp = SECONDS_1900_TO_1970.add(TimeUtil.getTimestamp()).doubleValue();
-			
+
 			NtpMessage msg = new NtpMessage(receivePacket.getData());
 			
 			// Corrected, according to RFC2030 errata
@@ -99,8 +102,12 @@ public class TimeOffsetProbe extends Base implements TimeOffsetKeys {
 			
 			socket.close();
 
-			JsonObject data = new JsonObject();
 			data.addProperty(TIMESTAMP, timestamp);
+			data.addProperty(REC_TIMESTAMP, msg.receiveTimestamp);
+			data.addProperty(ORIG_TIMESTAMP, msg.originateTimestamp);
+			data.addProperty(TRANS_TIMESTAMP, msg.transmitTimestamp);
+			data.addProperty(ORIGINAL_LOCAL_TIME_OFFSET, localClockOffset);
+			data.addProperty(DEST_TIMESTAMP, destinationTimestamp);
 			data.addProperty(ROUND_TRIP_DELAY, TimeUtil.roundToMilliPrecision(new BigDecimal(roundTripDelay)));
 			data.addProperty(LOCAL_TIME_OFFSET, TimeUtil.roundToMilliPrecision(new BigDecimal(localClockOffset)));
 			sendData(data);
