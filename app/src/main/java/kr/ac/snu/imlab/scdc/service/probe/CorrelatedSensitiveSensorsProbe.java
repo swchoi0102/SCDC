@@ -43,7 +43,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 @Schedule.DefaultSchedule(interval = CorrelatedSensitiveSensorsProbe.DEFAULT_PERIOD, duration = CorrelatedSensitiveSensorsProbe.DEFAULT_DURATION)
 public class CorrelatedSensitiveSensorsProbe extends Base implements ContinuousProbe, SensorKeys {
 
-    public static final double DEFAULT_PERIOD = 3600;
+    public static final double DEFAULT_PERIOD = 61;
     public static final double DEFAULT_DURATION = 60;
 
     @Configurable

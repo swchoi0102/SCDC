@@ -45,7 +45,7 @@ import edu.mit.media.funf.time.TimeUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @DisplayName("Nearby Bluetooth Devices Probe")
-@Schedule.DefaultSchedule(interval=300)
+@Schedule.DefaultSchedule(interval=61)
 @RequiredFeatures("android.hardware.bluetooth")
 @RequiredPermissions({android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_ADMIN})
 public class BluetoothProbe extends Base implements PassiveProbe {

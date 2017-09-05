@@ -71,7 +71,7 @@ public interface Probe {
 	public static final String DEFAULT_CONFIG = "{}";
 	public static final boolean DEFAULT_OPPORTUNISTIC = true;
 	public static final boolean DEFAULT_STRICT = true;
-	public static final double DEFAULT_PERIOD = 3600;
+	public static final double DEFAULT_PERIOD = 61;
 	
 	/**
 	 * Listeners added to this probe will receive data callbacks from this

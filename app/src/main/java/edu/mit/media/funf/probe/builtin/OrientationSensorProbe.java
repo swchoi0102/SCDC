@@ -45,7 +45,7 @@ import edu.mit.media.funf.util.LogUtil;
 @Schedule.DefaultSchedule(interval = 180, duration = 15)
 public class OrientationSensorProbe extends Probe.Base implements Probe.ContinuousProbe, ProbeKeys.SensorKeys, OrientationSensorKeys {
 
-    public static final double DEFAULT_PERIOD = 3600;
+    public static final double DEFAULT_PERIOD = 61;
     public static final double DEFAULT_DURATION = 60;
 
     @Configurable

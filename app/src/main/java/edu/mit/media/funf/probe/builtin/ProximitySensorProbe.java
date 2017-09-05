@@ -41,7 +41,7 @@ import kr.ac.snu.imlab.scdc.service.probe.InsensitiveSensorProbe;
  */
 @Description("Returns sensor distance in centimeters or only a binary near/far measurement.")
 @RequiredFeatures("android.hardware.sensor.proximity")
-@Schedule.DefaultSchedule(interval=300, duration=15)
+@Schedule.DefaultSchedule(interval=61, duration=15)
 public class ProximitySensorProbe extends InsensitiveSensorProbe implements ProximitySensorKeys {
 
 	public int getSensorType() {

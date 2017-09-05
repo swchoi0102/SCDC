@@ -49,7 +49,7 @@ import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import edu.mit.media.funf.util.LogUtil;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
-@Schedule.DefaultSchedule(interval=300)
+@Schedule.DefaultSchedule(interval=61)
 @RequiredPermissions({Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE})
 @RequiredFeatures("android.hardware.wifi")
 @DisplayName("Nearby Wifi Devices Probe")

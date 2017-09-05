@@ -47,7 +47,7 @@ import edu.mit.media.funf.util.LogUtil;
 @Schedule.DefaultSchedule(interval= InsensitiveSensorProbe.DEFAULT_PERIOD, duration= InsensitiveSensorProbe.DEFAULT_DURATION)
 public abstract class InsensitiveSensorProbe extends InsensitiveProbe implements ContinuousProbe, SensorKeys {
 
-	public static final double DEFAULT_PERIOD = 60;
+	public static final double DEFAULT_PERIOD = 61;
 	public static final double DEFAULT_DURATION = 60;
 
 	@Configurable

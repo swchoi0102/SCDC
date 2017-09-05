@@ -57,7 +57,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
  * @author Hossein Falaki
  * @author Alan Gardner
  */
-@Schedule.DefaultSchedule(interval=300)
+@Schedule.DefaultSchedule(interval=61)
 public class ProcessStatisticsProbe extends Base {
 
     /** Address of the network devices stat */

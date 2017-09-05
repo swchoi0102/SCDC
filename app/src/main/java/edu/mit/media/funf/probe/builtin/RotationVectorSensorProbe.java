@@ -33,7 +33,7 @@ import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
 @Description("Returns sensor distance in centimeters or only a binary near/far measurement.")
 @RequiredFeatures("android.hardware.sensor.gyroscope")
-@Schedule.DefaultSchedule(interval=300, duration=15)
+@Schedule.DefaultSchedule(interval=61, duration=15)
 public class RotationVectorSensorProbe extends SensorProbe implements RotationVectorSensorKeys {
 
 	public int getSensorType() {

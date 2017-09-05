@@ -32,7 +32,7 @@ import edu.mit.media.funf.probe.builtin.ProbeKeys.LightSensorKeys;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 import kr.ac.snu.imlab.scdc.service.probe.InsensitiveSensorProbe;
 
-@Schedule.DefaultSchedule(interval=300, duration=SensorProbe.DEFAULT_DURATION)
+@Schedule.DefaultSchedule(interval=61, duration=SensorProbe.DEFAULT_DURATION)
 @RequiredFeatures("android.hardware.sensor.light")
 public class LightSensorProbe extends InsensitiveSensorProbe implements LightSensorKeys {
 

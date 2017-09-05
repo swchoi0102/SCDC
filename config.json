@@ -8,7 +8,7 @@
     },
     "update": {
         "url": "http://imlab-ws4.snu.ac.kr:7000/conf/",
-        "@schedule": { "interval": 300 }
+        "@schedule": { "interval": 61 }
     },
     "data": [
         {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerSensorProbe",
