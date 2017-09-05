@@ -34,29 +34,23 @@
         "@schedule": { "interval": 300 }
       },
       "data": [
-        {"@type": "kr.ac.snu.imlab.scdc.service.probe.ActivityRecognitionProbe",
-         "@schedule": {"interval": 60, "duration": 60, "opportunistic": true, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.LightSensorProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
-        },
         {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+         "@schedule": {"interval": 60, "duration": 59, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+         "@schedule": {"interval": 60, "duration": 59, "strict": true}
         },
         {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+         "@schedule": {"interval": 60, "duration": 59, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+         "@schedule": {"interval": 60, "duration": 59, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+         "@schedule": {"interval": 60, "duration": 59, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.TimeOffsetProbe",
-         "@schedule": {"interval": 20, "strict": true}
+         "@schedule": {"interval": 10, "strict": true}
         }
       ]
     }
