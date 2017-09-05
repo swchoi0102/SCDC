@@ -103,7 +103,8 @@ public class LaunchActivity extends ActionBarActivity
           LabelKeys.DRINKING_LABEL,
           LabelKeys.IN_CLASS_LABEL,
           LabelKeys.STUDYING_LABEL,
-          LabelKeys.MOVING_LABEL
+          LabelKeys.MOVING_LABEL,
+          LabelKeys.NONE_OF_ABOVE_LABEL
   };
 
   private Handler handler;
@@ -710,7 +711,7 @@ public class LaunchActivity extends ActionBarActivity
       if (!spHandler.isSensorOn()){
         long lastTime = spHandler.getLastConfigUpdate();
         if ((lastTime == SCDCKeys.SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE)
-                || (System.currentTimeMillis() - lastTime > 3000000)){
+                || (System.currentTimeMillis() - lastTime > 650000)){
           updateConfig();
 //          changeConfig(spHandler.isActiveLabelOn());
         }

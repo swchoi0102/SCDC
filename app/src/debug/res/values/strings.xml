@@ -32,23 +32,23 @@
       },
       "update": {
         "url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",
-        "@schedule": { "interval": 61 }
+        "@schedule": { "interval": 65 }
       },
       "data": [
         {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
-         "@schedule": {"interval": 60, "duration": 59, "strict": true}
+         "@schedule": {"interval": 60, "duration": 55, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
-         "@schedule": {"interval": 60, "duration": 59, "strict": true}
+         "@schedule": {"interval": 60, "duration": 55, "strict": true}
         },
         {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
-         "@schedule": {"interval": 60, "duration": 59, "strict": true}
+         "@schedule": {"interval": 60, "duration": 55, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
-         "@schedule": {"interval": 60, "duration": 59, "strict": true}
+         "@schedule": {"interval": 60, "duration": 55, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-         "@schedule": {"interval": 60, "duration": 59, "strict": true}
+         "@schedule": {"interval": 60, "duration": 55, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.TimeOffsetProbe",
          "@schedule": {"interval": 10, "strict": true}
