@@ -35,7 +35,7 @@ import edu.mit.media.funf.probe.Probe.PassiveProbe;
 import edu.mit.media.funf.probe.Probe.RequiredPermissions;
 import kr.ac.snu.imlab.scdc.service.core.SCDCKeys;
 
-@Schedule.DefaultSchedule(interval=300)
+@Schedule.DefaultSchedule(interval=60)
 @RequiredPermissions(android.Manifest.permission.BATTERY_STATS)
 public class BatteryProbe extends Base implements PassiveProbe {
 

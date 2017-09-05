@@ -70,7 +70,7 @@ public interface Probe {
 
 	public static final String DEFAULT_CONFIG = "{}";
 	public static final boolean DEFAULT_OPPORTUNISTIC = true;
-	public static final boolean DEFAULT_STRICT = false;
+	public static final boolean DEFAULT_STRICT = true;
 	public static final double DEFAULT_PERIOD = 3600;
 	
 	/**
