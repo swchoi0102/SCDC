@@ -1409,7 +1409,13 @@ public class LaunchActivity extends ActionBarActivity
 
       float x = 1;
       if( items > columns ){
-        x = items/columns;
+        if(items%columns != 0){
+          x = items/columns + 1;
+        }
+        else{
+          x = items/columns;
+        }
+
         rows = (int) (x);
         totalHeight *= rows;
       }
