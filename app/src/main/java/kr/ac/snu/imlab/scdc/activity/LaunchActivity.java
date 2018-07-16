@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,12 +84,14 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of normal labels
   @Configurable
   public static final String[] normalLabelNames = {
-          LabelKeys.SLEEP_LABEL,
-          LabelKeys.EATING_LABEL,
-          LabelKeys.DRINKING_LABEL,
-          LabelKeys.IN_CLASS_LABEL,
-          LabelKeys.STUDYING_LABEL,
-          LabelKeys.MOVING_LABEL
+          LabelKeys.MOVING_HAND,
+          LabelKeys.STOP_HAND,
+          LabelKeys.MOVING_POCKET,
+          LabelKeys.STOP_POCKET,
+          LabelKeys.MOVING_TABLE,
+          LabelKeys.STOP_TABLE,
+          LabelKeys.MOVING_BAG,
+          LabelKeys.STOP_BAG,
   };
 
   // FIXME: The list of special labels
@@ -99,11 +103,14 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of 'active' labels
   @Configurable
   public static final String[] activeLabelNames = {
-          LabelKeys.EATING_LABEL,
-          LabelKeys.DRINKING_LABEL,
-          LabelKeys.IN_CLASS_LABEL,
-          LabelKeys.STUDYING_LABEL,
-          LabelKeys.MOVING_LABEL,
+          LabelKeys.MOVING_HAND,
+          LabelKeys.STOP_HAND,
+          LabelKeys.MOVING_POCKET,
+          LabelKeys.STOP_POCKET,
+          LabelKeys.MOVING_TABLE,
+          LabelKeys.STOP_TABLE,
+          LabelKeys.MOVING_BAG,
+          LabelKeys.STOP_BAG,
           LabelKeys.NONE_OF_ABOVE_LABEL
   };
 
@@ -282,7 +289,7 @@ public class LaunchActivity extends ActionBarActivity
     mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
-    setGridViewHeightBasedOnChildren(mGridView, 3);
+    setGridViewHeightBasedOnChildren(mGridView, 2);
 
     mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
@@ -380,10 +387,7 @@ public class LaunchActivity extends ActionBarActivity
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         if (isChecked) {
-          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
-
-//          mAdapter.notifyDataSetChanged();
-//          mAdapterNone.notifyDataSetChanged();
+//          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
 
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
@@ -454,7 +458,13 @@ public class LaunchActivity extends ActionBarActivity
 //          mAdapter.notifyDataSetChanged();
 //          mAdapterNone.notifyDataSetChanged();
 
-          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+
+            Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
           // Increment sensorId by 1
           spHandler.setSensorId(spHandler.getSensorId() + 1);
@@ -590,51 +600,6 @@ public class LaunchActivity extends ActionBarActivity
           intent.putExtra("data", totalSensingInfo);
           startActivity(intent);
         }
-
-//        boolean goToDataActivity = false;
-//        ArrayList<SensorIdInfo> data = null;
-//
-//        if (pipeline != null) {
-//          SCDCDatabaseHelper databaseHelper = (SCDCDatabaseHelper) pipeline.getDatabaseHelper();
-//          if (databaseHelper == null) {
-//            pipeline.reloadDbHelper(scdcManager);
-//            Log.d(LogKeys.DEBB, TAGG+"reload");
-//          }
-//          if (databaseHelper != null) {
-//            SQLiteDatabase db = pipeline.getWritableDb();
-//            data = databaseHelper.getSensorIdInfo(db);
-//            if (data != null) {
-//              if (data.size() > 0) goToDataActivity = true;
-//              else Log.d(LogKeys.DEBB, TAGG+"pipeline, datasize 0");
-//            }
-//            else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
-//          }
-//        }
-//
-//        else if (scdcService != null) {
-//          Log.d(LogKeys.DEBB, "pipeline null");
-//          data = scdcService.getSensorInfo();
-//          if (data != null) {
-//            if (data.size() > 0) goToDataActivity = true;
-//            else Log.d(LogKeys.DEBB, "scdcService, datasize 0");
-//          }
-//          else Log.d(LogKeys.DEBB, TAGG+"pipeline, data null");
-//        }
-//
-//        else {
-//          Log.d(LogKeys.DEBB, "pipeline null and scdcService null");
-//        }
-//
-//        if (goToDataActivity) {
-//          Gson gson = new Gson();
-//          String jsonData = gson.toJson(data);
-//          Log.d(LogKeys.DEBB, "data is made : " + jsonData);
-//          intent.putExtra("data", jsonData);
-//          startActivity(intent);
-//        } else {
-//          Toast.makeText(getBaseContext(), getString(R.string.no_data_message),
-//                  Toast.LENGTH_LONG).show();
-//        }
       }
     });
 
@@ -729,15 +694,25 @@ public class LaunchActivity extends ActionBarActivity
         updateLaunchActivityUi();   // FIXME
 
         if(spHandler.isSensorOn()){
-          if(mAdapter.getLoggedItem()!=null){
+
             String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
-//          timeCountView.setText(mAdapter.getLoggedItem().getName()+" for "+elapsedTime);
+
+          if(mAdapter.getLoggedItem()!=null){
+
+//              Log.d("alarm", elapsedTime);
+            if((Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1)) <= 5)
+                    && (Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1)) > 0)
+                    && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
+
+                ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100000);
+                toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 200);
+            }
+
             timeCountView.setText(elapsedTime+getString(R.string.time_count));
             timeCountView.setTextColor(getResources().getColor(R.color.logging));
           }
+
           else if(mAdapterNone.getLoggedItem()!=null){
-            String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapterNone.getLoggedItem().getStartLoggingTime());
-//          timeCountView.setText(mAdapterNone.getLoggedItem().getName()+" for "+elapsedTime);
             timeCountView.setText(elapsedTime+getString(R.string.time_count));
             timeCountView.setTextColor(getResources().getColor(R.color.logging));
           }

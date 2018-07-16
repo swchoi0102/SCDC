@@ -185,6 +185,15 @@ public class SCDCKeys {
       MOVING_LABEL = "이동",
       NONE_OF_ABOVE_LABEL = "수집 시작/중지",
 
+      MOVING_HAND = "이동 / 손",
+    STOP_HAND = "정지 / 손",
+    MOVING_POCKET = "이동 / 주머니",
+    STOP_POCKET = "정지 / 주머니",
+    MOVING_TABLE = "이동 / 테이블",
+    STOP_TABLE = "정지 / 테이블",
+    MOVING_BAG = "이동 / 가방",
+    STOP_BAG = "정지 / 가방",
+
       TOGETHER_STATUS= "동행여부",
 
       CONVERSING_LABEL = "conversing",
