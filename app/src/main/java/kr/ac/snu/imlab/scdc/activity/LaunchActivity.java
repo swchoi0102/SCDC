@@ -1325,7 +1325,9 @@ public class LaunchActivity extends ActionBarActivity
             double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
             dataCountView.setText("Data size: " +
                     dbSizeDouble + " MB");
-            spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
+//            spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
+            spHandler.setTooMuchData(dbSizeDouble>0.0);  // make user always upload or delete data
+
 
 //            dataCountView.setText("Data size: " +
 //                    Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
@@ -1335,7 +1337,8 @@ public class LaunchActivity extends ActionBarActivity
           double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
           dataCountView.setText("Data size: " +
                   dbSizeDouble + " MB");
-          spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
+//          spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
+          spHandler.setTooMuchData(dbSizeDouble>0);  // make user always upload or delete data
 
 //          dataCountView.setText("Data size: " +
 //                  Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
