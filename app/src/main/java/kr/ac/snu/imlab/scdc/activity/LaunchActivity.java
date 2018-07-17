@@ -439,9 +439,8 @@ public class LaunchActivity extends ActionBarActivity
         truncateDataButton.setEnabled(!isChecked);
         editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
-//        togetherToggleButton.setEnabled(!isChecked);
-//        Log.d(LogKeys.DEBB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
-//                + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+
+
         Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
@@ -455,16 +454,7 @@ public class LaunchActivity extends ActionBarActivity
         if (isChecked) {
           Log.d(LogKeys.DEB, TAG+".TogetherButton checked!");
 
-//          mAdapter.notifyDataSetChanged();
-//          mAdapterNone.notifyDataSetChanged();
-
-//            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
-            Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
+          Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
           // Increment sensorId by 1
           spHandler.setSensorId(spHandler.getSensorId() + 1);
@@ -697,19 +687,30 @@ public class LaunchActivity extends ActionBarActivity
 
             String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
 
-          if(mAdapter.getLoggedItem()!=null){
+            int num = Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1));
 
-//              Log.d("alarm", elapsedTime);
-            if((Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1)) <= 5)
-                    && (Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1)) > 0)
-                    && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
+            if(mAdapter.getLoggedItem()!=null){
 
-                ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100000);
-                toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 200);
-            }
+                if((num < 5) && (num >= 0) && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
+                    timeCountView.setText(String.valueOf(5-num) + "초 후에 데이터 수집이 시작됩니다.");
+                    timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                }
+                else if(num == 5){
+                    ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100000);
+                    toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 200);
+                    timeCountView.setText("이제 데이터 수집이 시작됩니다.");
+                    timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                }
+                else if(elapsedTime.substring(elapsedTime.length()-1).equals("초")){
+                    elapsedTime = String.valueOf(num-5) + elapsedTime.substring(elapsedTime.length()-1);
+                    timeCountView.setText(elapsedTime+getString(R.string.time_count));
+                    timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                }
+                else{
+                    timeCountView.setText(elapsedTime+getString(R.string.time_count));
+                    timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                }
 
-            timeCountView.setText(elapsedTime+getString(R.string.time_count));
-            timeCountView.setTextColor(getResources().getColor(R.color.logging));
           }
 
           else if(mAdapterNone.getLoggedItem()!=null){
@@ -1040,18 +1041,11 @@ public class LaunchActivity extends ActionBarActivity
 
         // reset all accumulated times !
         spHandler.resetSensingTimeInfo();
-//        for (LabelEntry entry : normalLabelEntries){
-//          spHandler.resetAccumulatedTime(entry.getId());
-//        }
-//        for (LabelEntry entry : specialLabelEntries){
-//          spHandler.resetAccumulatedTime(entry.getId());
-//        }
 
         dataCountView.setText("Data size: 0.0 MB");
         spHandler.setTooMuchData(false);
         updateLaunchActivityUi();
-        Toast.makeText(getBaseContext(), getString(R.string.truncate_complete_message),
-                Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), getString(R.string.truncate_complete_message), Toast.LENGTH_LONG).show();
       }
     }.execute(db);
   }
