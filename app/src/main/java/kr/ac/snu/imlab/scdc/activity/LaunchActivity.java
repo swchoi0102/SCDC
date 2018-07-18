@@ -1322,7 +1322,7 @@ public class LaunchActivity extends ActionBarActivity
             // Query the pipeline db for the count of rows in the data table
             SQLiteDatabase db = pipeline.getDb();
             final long dbSize = new File(db.getPath()).length();  // in bytes
-            double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
+            double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 20.0) / 20.0;
             dataCountView.setText("Data size: " +
                     dbSizeDouble + " MB");
 //            spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
@@ -1334,11 +1334,11 @@ public class LaunchActivity extends ActionBarActivity
           }
         } else if (scdcService != null) {
           long dbSize = scdcService.getDBSize();
-          double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 10.0) / 10.0;
+          double dbSizeDouble = Math.round((dbSize / (1048576.0)) * 20.0) / 20.0;
           dataCountView.setText("Data size: " +
                   dbSizeDouble + " MB");
 //          spHandler.setTooMuchData(dbSizeDouble>SCDCKeys.Data.MAX_DATA);
-          spHandler.setTooMuchData(dbSizeDouble>0);  // make user always upload or delete data
+          spHandler.setTooMuchData(dbSizeDouble>0.0);  // make user always upload or delete data
 
 //          dataCountView.setText("Data size: " +
 //                  Math.round((dbSize / (1048576.0)) * 10.0) / 10.0 + " MB");
