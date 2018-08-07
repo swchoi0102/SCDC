@@ -129,9 +129,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
   };
 
   public void reloadDbHelper(Context ctx) {
-    this.databaseHelper =
-      new SCDCDatabaseHelper(ctx,
-        StringUtil.simpleFilesafe(name), version);
+    this.databaseHelper = new SCDCDatabaseHelper(ctx, StringUtil.simpleFilesafe(name), version);
   }
 
   // Edited by Kilho Kim:
@@ -142,9 +140,6 @@ public class SCDCPipeline implements Pipeline, DataListener {
     File dbFile = new File(db.getPath());
     db.close();
     archive.add(dbFile);
-//    if (archive.add(dbFile)) {
-//      dbFile.delete();
-//    }
     reloadDbHelper(manager);
     databaseHelper.getWritableDatabase(); // Build new database
   }
@@ -202,6 +197,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
     enabled = true;
     this.spHandler = SharedPrefsHandler.getInstance(this.manager,
                      Config.SCDC_PREFS, Context.MODE_PRIVATE);
+
     for (JsonElement dataRequest : data) {
       manager.requestData(this, dataRequest);
     }

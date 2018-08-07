@@ -671,10 +671,10 @@ public class SharedPrefsHandler {
 
     @Override
     protected void onPreExecute() {
-      progressDialog = new ProgressDialog(context);
-      progressDialog.setMessage(context.getString(R.string.get_prefs_from_server_message));
-      progressDialog.setCancelable(false);
-      progressDialog.show();
+//      progressDialog = new ProgressDialog(context);
+//      progressDialog.setMessage(context.getString(R.string.get_prefs_from_server_message));
+//      progressDialog.setCancelable(false);
+//      progressDialog.show();
     }
 
     @Override
@@ -696,35 +696,35 @@ public class SharedPrefsHandler {
         if (currSensorId != newSensorId)
           prefs.edit().putInt(SharedPrefs.KEY_SENSOR_ID, newSensorId).apply();
 
-        // Get pipeline config from server for both active and idle state
-        HttpConfigUpdater hcu = new HttpConfigUpdater();
-        String updateActiveUrl, updateIdleUrl;
-        String newConfig;
-        if (LaunchActivity.DEBUGGING) {
-          updateActiveUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
-          updateIdleUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
-        } else {
-          updateActiveUrl = Config.DEFAULT_UPDATE_URL_ACTIVE;
-          updateIdleUrl = Config.DEFAULT_UPDATE_URL_IDLE;
-        }
-        if (getActiveConfig() == null) {
-          hcu.setUrl(updateActiveUrl);
-          Log.d(LogKeys.DEBUG,
-            TAG+".GetPrefsFromServerTask.doInBackground()/ updateActiveUrl=" + updateActiveUrl);
-          newConfig = hcu.getConfig().toString();
-          setActiveConfig(newConfig);
-          Log.d(LogKeys.DEBUG,
-                  TAG+".GetPrefsFromServerTask.doInBackground()/ newConfig=" + newConfig);
-        }
-        if (getIdleConfig() == null) {
-          hcu.setUrl(updateIdleUrl);
-          Log.d(LogKeys.DEBUG,
-                  TAG+".GetPrefsFromServerTask.doInBackground()/ updateIdleUrl=" + updateIdleUrl);
-          newConfig = hcu.getConfig().toString();
-          setIdleConfig(newConfig);
-          Log.d(LogKeys.DEBUG,
-                  TAG+".GetPrefsFromServerTask.doInBackground()/ newConfig=" + newConfig);
-        }
+//        // Get pipeline config from server for both active and idle state
+//        HttpConfigUpdater hcu = new HttpConfigUpdater();
+//        String updateActiveUrl, updateIdleUrl;
+//        String newConfig;
+//        if (LaunchActivity.DEBUGGING) {
+//          updateActiveUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
+//          updateIdleUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
+//        } else {
+//          updateActiveUrl = Config.DEFAULT_UPDATE_URL_ACTIVE;
+//          updateIdleUrl = Config.DEFAULT_UPDATE_URL_IDLE;
+//        }
+//        if (getActiveConfig() == null) {
+//          hcu.setUrl(updateActiveUrl);
+//          Log.d(LogKeys.DEBUG,
+//            TAG+".GetPrefsFromServerTask.doInBackground()/ updateActiveUrl=" + updateActiveUrl);
+//          newConfig = hcu.getConfig().toString();
+//          setActiveConfig(newConfig);
+//          Log.d(LogKeys.DEBUG,
+//                  TAG+".GetPrefsFromServerTask.doInBackground()/ newConfig=" + newConfig);
+//        }
+//        if (getIdleConfig() == null) {
+//          hcu.setUrl(updateIdleUrl);
+//          Log.d(LogKeys.DEBUG,
+//                  TAG+".GetPrefsFromServerTask.doInBackground()/ updateIdleUrl=" + updateIdleUrl);
+//          newConfig = hcu.getConfig().toString();
+//          setIdleConfig(newConfig);
+//          Log.d(LogKeys.DEBUG,
+//                  TAG+".GetPrefsFromServerTask.doInBackground()/ newConfig=" + newConfig);
+//        }
 
         return true;
 

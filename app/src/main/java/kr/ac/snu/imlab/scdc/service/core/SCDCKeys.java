@@ -219,7 +219,8 @@ public class SCDCKeys {
     public static final String
       DEBB = "DEBUG_KY",
       DEB = "DEBUG_MJ",
-      DEBUG = "DEBUG"              ;
+      DEBUG = "DEBUG",
+      DEBSW = "DEBUG_SW";
   }
 
   public interface InsensitiveKeys {

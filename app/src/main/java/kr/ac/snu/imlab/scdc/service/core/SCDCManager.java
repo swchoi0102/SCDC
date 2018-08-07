@@ -261,6 +261,7 @@ public class SCDCManager extends FunfManager {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
+//    Log.d(LogKeys.DEBSW, action);
     if (action == null || ACTION_KEEP_ALIVE.equals(action)) {
       // Does nothing, but wakes up SCDCManager
 //      Log.d(SCDCKeys.LogKeys.DEB, TAG+".onStartCommand() : Does nothing, but wakes up SCDCManager");
@@ -308,7 +309,6 @@ public class SCDCManager extends FunfManager {
                 }
               }
 
-
               final DataListener[] listenerArray = new DataListener[listenersThatNeedData.size()];
               listenersThatNeedData.toArray(listenerArray);
               if (listenerArray.length > 0) {
@@ -325,9 +325,9 @@ public class SCDCManager extends FunfManager {
               // TODO: do different durations for each schedule
               if (probe instanceof ContinuousProbe) {
                 Schedule mergedSchedule = getMergedSchedule(infoForListenersThatNeedData);
+//                Log.d(LogKeys.DEBSW, String.valueOf(mergedSchedule.getDuration()));
                 if (mergedSchedule != null) {
                   long duration = TimeUtil.secondsToMillis(mergedSchedule.getDuration());
-//                  Log.d(LogKeys.DEBUG, "DURATION: " + duration);
                   if (duration > 0) {
                     if (probe instanceof InsensitiveProbe) {
                       handler.postDelayed(new Runnable() {
@@ -357,7 +357,8 @@ public class SCDCManager extends FunfManager {
                 }
               }
             }
-          } else if (PROBE_ACTION_UNREGISTER.equals(probeAction) && probe instanceof ContinuousProbe) {
+          }
+          else if (PROBE_ACTION_UNREGISTER.equals(probeAction) && probe instanceof ContinuousProbe) {
             for (DataRequestInfo requestInfo : requests) {
               if (probe instanceof InsensitiveProbe) {
                 synchronized (requestInfo.listener) {
@@ -367,7 +368,8 @@ public class SCDCManager extends FunfManager {
               }
               ((ContinuousProbe)probe).unregisterListener(requestInfo.listener);
             }
-          } else if (PROBE_ACTION_REGISTER_PASSIVE.equals(probeAction) && probe instanceof PassiveProbe) {
+          }
+          else if (PROBE_ACTION_REGISTER_PASSIVE.equals(probeAction) && probe instanceof PassiveProbe) {
             if (requests != null) {
               for (DataRequestInfo requestInfo : requests) {
                 if (requestInfo.schedule.isOpportunistic()) {
@@ -694,7 +696,11 @@ public class SCDCManager extends FunfManager {
             }
           }
         }
-        scheduler.set(PROBE_TYPE, getComponenentUri(componentString, PROBE_ACTION_REGISTER), mergedSchedule);
+        Intent intent = getFunfIntent(SCDCManager.this, PROBE_TYPE, getComponenentUri(componentString, PROBE_ACTION_REGISTER));
+        startService(intent);
+//        bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
+//        unbindService(scdcManagerConn);
+//        scheduler.set(PROBE_TYPE, getComponenentUri(componentString, PROBE_ACTION_REGISTER), mergedSchedule);
       }
     }
   }

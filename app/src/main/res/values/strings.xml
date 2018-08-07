@@ -9,53 +9,53 @@
     <string name="no_probes_config">{ @type: edu.mit.media.funf.journal.JournalPipeline, name: default, version: 1, data: [] }</string>
     <string name="app_title">SCDC</string>
     <string name="probe_disabled">Disabled</string>
-    <string name="default_pipeline">
-        {
-            "@type":"edu.mit.media.funf.pipeline.BasicPipeline",
-            "name":"default",
-            "version":1,
-            "upload": {
-                "url": \"http://imlab-ws4.snu.ac.kr:7000/data\",
-                "@schedule": {"interval": 10800}
-            }
-        }
-    </string>
-    <string name="scdc_pipeline">
-    {
-      "@type": "kr.ac.snu.imlab.scdc.service.core.SCDCPipeline",
-      "name": "scdc",
-      "version": 1,
-      "upload": {
-        "url": \"http://imlab-ws4.snu.ac.kr:7777/data/\",
-        "@schedule": { "interval": 10800 }
-      },
-      "update": {
-        "url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",
-        "@schedule": { "interval": 65 }
-      },
-      "data": [
-        {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.TimeOffsetProbe",
-         "@schedule": {"interval": 10, "strict": true}
-        }
-      ]
-    }
+    <!--<string name="default_pipeline">-->
+        <!--{-->
+            <!--"@type":"edu.mit.media.funf.pipeline.BasicPipeline",-->
+            <!--"name":"default",-->
+            <!--"version":1,-->
+            <!--"upload": {-->
+                <!--"url": \"http://imlab-ws4.snu.ac.kr:7000/data\",-->
+                <!--"@schedule": {"interval": 10800}-->
+            <!--}-->
+        <!--}-->
+    <!--</string>-->
+    <!--<string name="scdc_pipeline">-->
+    <!--{-->
+      <!--"@type": "kr.ac.snu.imlab.scdc.service.core.SCDCPipeline",-->
+      <!--"name": "scdc",-->
+      <!--"version": 1,-->
+      <!--"upload": {-->
+        <!--"url": \"http://imlab-ws4.snu.ac.kr:7777/data/\",-->
+        <!--"@schedule": { "interval": 10800 }-->
+      <!--},-->
+      <!--"update": {-->
+        <!--"url": \"http://imlab-ws4.snu.ac.kr:7777/conf/\",-->
+        <!--"@schedule": { "interval": 65 }-->
+      <!--},-->
+      <!--"data": [-->
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 55, "strict": true}-->
+        <!--},-->
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 55, "strict": true}-->
+        <!--},-->
+        <!--{"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 55, "strict": true}-->
+        <!--},-->
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 55, "strict": true}-->
+        <!--},-->
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 55, "strict": true}-->
+        <!--},-->
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.TimeOffsetProbe",-->
+         <!--"@schedule": {"interval": 10, "strict": true}-->
+        <!--}-->
+      <!--]-->
+    <!--}-->
 
-    </string>
+    <!--</string>-->
     <string name="user_name_tv">ID: </string>
     <string name="edit">수정</string>
     <string name="back">뒤로가기</string>

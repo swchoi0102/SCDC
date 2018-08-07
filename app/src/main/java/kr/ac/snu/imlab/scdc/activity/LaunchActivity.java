@@ -139,11 +139,7 @@ public class LaunchActivity extends ActionBarActivity
   private ArrayList<LabelEntry> specialLabelEntries;
 
   // Run Data Collection button
-//  private ToggleButton enabledToggleButton;
   private ToggleButton aloneToggleButton, togetherToggleButton;
-
-  // Run Push notification button
-//  private ToggleButton reminderToggleButton;
 
   private Button archiveButton, truncateDataButton, editDataButton;
   private TextView dataCountView;
@@ -172,7 +168,6 @@ public class LaunchActivity extends ActionBarActivity
 
   private SCDCManager scdcManager;
   private SCDCPipeline pipeline;
-
   private SCDCService scdcService;
 
   /**
@@ -184,8 +179,6 @@ public class LaunchActivity extends ActionBarActivity
   public ServiceConnection scdcServiceConn = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-
-
       scdcService = ((SCDCService.LocalBinder) service).getService();
       Log.d(LogKeys.DEBB, TAG+".scdcServiceConn.onServiceConnected()");
     }
@@ -222,7 +215,6 @@ public class LaunchActivity extends ActionBarActivity
                             + "spHandler.isActiveLabelOn()=" +
                             spHandler.isActiveLabelOn());
 //      changeConfig(spHandler.isActiveLabelOn());
-
     }
 
     @Override
@@ -237,18 +229,14 @@ public class LaunchActivity extends ActionBarActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Log.d(LogKeys.DEBB, TAG+".onCreate()");
-    spHandler = SharedPrefsHandler.getInstance(this,
-            Config.SCDC_PREFS, Context.MODE_PRIVATE);
-
+    spHandler = SharedPrefsHandler.getInstance(this, Config.SCDC_PREFS, Context.MODE_PRIVATE);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_launch);
 
-    // Make sure the keyboard only pops up
-    // when a user clicks into an EditText
+    // Make sure the keyboard only pops up when a user clicks into an EditText
     this.getWindow().setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     setUserInfo();
-
 
     // Add a single AccompanyingStatusLabelEntry
     asLabelEntry =
@@ -265,14 +253,12 @@ public class LaunchActivity extends ActionBarActivity
     for (int i = 0; i < normalLabelNames.length; i++) {
       normalLabelEntries.add(new LabelEntry(i, normalLabelNames[i],
                           LaunchActivity.this, Config.SCDC_PREFS));
-//      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]);
     }
 
     specialLabelEntries = new ArrayList<LabelEntry>(specialLabelNames.length);
     for (int i=0; i < specialLabelNames.length; i++) {
       specialLabelEntries.add(new LabelEntry(normalLabelNames.length+i, specialLabelNames[i],
               LaunchActivity.this, Config.SCDC_PREFS));
-//      Log.d(LogKeys.DEBUG, String.valueOf(normalLabelNames.length+i)+specialLabelNames[i]);
     }
 
     // Put the total number of labels into SharedPreferences
@@ -303,7 +289,6 @@ public class LaunchActivity extends ActionBarActivity
     // ********* Need to get rid of these Listeners :(
     setAccompanyingStatusListener();
     setConversingStatusListener();
-
 
     // Used to make interface changes on main thread
     handler = new Handler();
@@ -348,39 +333,21 @@ public class LaunchActivity extends ActionBarActivity
     editDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
 
-    // FIXME
-//    if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()){
-//      spHandler.setSensorOn(false);
-//    }
-
-//    // Bind SCDCManager service if sensor is off
-//    if (!spHandler.isSensorOn()) {
-//      bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-//              scdcManagerConn, BIND_AUTO_CREATE);
-//      Log.d(LogKeys.DEBB, TAG+".bindService() : scdcManager");
-//    } else { // Bind SCDCService service if sensor is on
-//      bindService(new Intent(LaunchActivity.this, SCDCService.class),
-//              scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
-//      Log.d(LogKeys.DEBB, TAG+".bindService() : scdcService");
-//    }
-
     // Bind SCDCManager service if alone and together OFF
     if (!spHandler.isAloneOn() && !spHandler.isTogetherOn()) {
       bindService(new Intent(LaunchActivity.this, SCDCManager.class),
               scdcManagerConn, BIND_AUTO_CREATE);
       Log.d(LogKeys.DEBB, TAG+".bindService() : scdcManager");
-
-//      if(spHandler.isTooMuchData()) Toast.makeText(LaunchActivity.this, getString(R.string.too_much_data), Toast.LENGTH_LONG).show();
-
-    } else { // Bind SCDCService service if alone or together ON
+    } else {
+        // Bind SCDCService service if alone or together ON
       bindService(new Intent(LaunchActivity.this, SCDCService.class),
               scdcServiceConn, BIND_AUTO_CREATE);  // BIND_IMPORTANT?
       Log.d(LogKeys.DEBB, TAG+".bindService() : scdcService");
     }
+
     Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
             + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
             + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
-
 
     aloneToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       @Override
@@ -512,7 +479,6 @@ public class LaunchActivity extends ActionBarActivity
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
       }
     });
-
 
 
     // Runs an archive if pipeline is enabled
@@ -661,12 +627,11 @@ public class LaunchActivity extends ActionBarActivity
 
     if (pipeline != null) {
       updateLaunchActivityUi();
-
       // When the last update time from server passed more than 5 minutes, update config.
       if (!spHandler.isSensorOn()){
         long lastTime = spHandler.getLastConfigUpdate();
         if ((lastTime == SCDCKeys.SharedPrefs.DEFAULT_LAST_CONFIG_UPDATE)
-                || (System.currentTimeMillis() - lastTime > 650000)){
+                || (System.currentTimeMillis() - lastTime > 1000)){
           updateConfig();
 //          changeConfig(spHandler.isActiveLabelOn());
         }
@@ -841,18 +806,6 @@ public class LaunchActivity extends ActionBarActivity
 
     csViewHolder.csLogLabelTv.setText(LabelKeys.CONVERSING_LABEL);
     csViewHolder.endLogBt.setEnabled(csLabelEntry.isLogged());
-    for (int i = 0; i < csViewHolder.startLogBts.size(); i++) {
-      int conversingStatusId = i + 1;
-      Button currBt = csViewHolder.startLogBts.get(i);
-//      if (enabledToggleButton.isChecked()) {
-//        if (csLabelEntry.isLogged())
-//          currBt.setEnabled(csLabelEntry.getLoggedStatus() != conversingStatusId);
-//        else currBt.setEnabled(true);
-//      } else {
-//        currBt.setEnabled(false);
-//      }
-    }
-
 
     if (csLabelEntry.isLogged()) {
       String elapsedTime =
@@ -874,10 +827,10 @@ public class LaunchActivity extends ActionBarActivity
           csViewHolder.startLogBts.get(i).setEnabled(true);
         }
 
-        boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
-        // Update config again only when isActiveLabelOn status gets changed
-        if (pastIsActiveLabelOn != currIsActiveLabelOn)
-          changeConfig(currIsActiveLabelOn);
+//        boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+//        // Update config again only when isActiveLabelOn status gets changed
+//        if (pastIsActiveLabelOn != currIsActiveLabelOn)
+//          changeConfig(currIsActiveLabelOn);
       }
     });
 
@@ -902,10 +855,10 @@ public class LaunchActivity extends ActionBarActivity
               csViewHolder.startLogBts.get(i).setEnabled(true);
           }
 
-          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
-          // Update config again only when isActiveLabelOn status gets changed
-          if (pastIsActiveLabelOn != currIsActiveLabelOn)
-            changeConfig(currIsActiveLabelOn);
+//          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+//          // Update config again only when isActiveLabelOn status gets changed
+//          if (pastIsActiveLabelOn != currIsActiveLabelOn)
+//            changeConfig(currIsActiveLabelOn);
         }
       });
     }
@@ -968,10 +921,10 @@ public class LaunchActivity extends ActionBarActivity
           asViewHolder.startLogBts.get(i).setEnabled(true);
         }
 
-        boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
-        // Update config again only when isActiveLabelOn status gets changed
-        if (pastIsActiveLabelOn != currIsActiveLabelOn)
-          changeConfig(currIsActiveLabelOn);
+//        boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+//        // Update config again only when isActiveLabelOn status gets changed
+//        if (pastIsActiveLabelOn != currIsActiveLabelOn)
+//          changeConfig(currIsActiveLabelOn);
       }
     });
 
@@ -996,10 +949,10 @@ public class LaunchActivity extends ActionBarActivity
               asViewHolder.startLogBts.get(i).setEnabled(true);
           }
 
-          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
-          // Update config again only when isActiveLabelOn status gets changed
-          if (pastIsActiveLabelOn != currIsActiveLabelOn)
-            changeConfig(currIsActiveLabelOn);
+//          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
+//          // Update config again only when isActiveLabelOn status gets changed
+//          if (pastIsActiveLabelOn != currIsActiveLabelOn)
+//            changeConfig(currIsActiveLabelOn);
         }
       });
     }
@@ -1050,9 +1003,6 @@ public class LaunchActivity extends ActionBarActivity
     }.execute(db);
   }
 
-  public SCDCManager getActivitySCDCManager() {
-    return scdcManager;
-  }
 
   private void archiveAndUploadDatabase(final File dbFile) {
     new AsyncTask<File, Void, Boolean>() {
@@ -1114,9 +1064,6 @@ public class LaunchActivity extends ActionBarActivity
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
 
-//    Toast.makeText(getBaseContext(), "option menu!", Toast.LENGTH_LONG).show();
-
-
     Log.d(LogKeys.DEBB, "1. end all labels");
     for (LabelEntry label : normalLabelEntries) {
       if(label.isLogged()) {
@@ -1144,40 +1091,8 @@ public class LaunchActivity extends ActionBarActivity
     aloneToggleButton.setChecked(false);
     togetherToggleButton.setChecked(false);
 
-//    Log.d(LogKeys.DEBB, "4. unbind scdcService and bind scdcManager");
-//    unbindService(scdcServiceConn);
-//    stopService(new Intent(LaunchActivity.this, SCDCService.class));
-//    bindService(new Intent(LaunchActivity.this, SCDCManager.class),
-//            scdcManagerConn, BIND_AUTO_CREATE);
-
-
     return super.onOptionsItemSelected(item);
   }
-
-
-
-  // methods for Setting Activity
-//  @Override
-//  public boolean onCreateOptionsMenu(Menu menu) {
-//    // Inflate the menu; this adds items to the action bar if it is present.
-//    getMenuInflater().inflate(R.menu.menu_main, menu);
-//    return true;
-//  }
-//
-//  @Override
-//  public boolean onOptionsItemSelected(MenuItem item) {
-//    // Handle action bar item clicks here. The action bar will
-//    // automatically handle clicks on the Home/Up button, so long
-//    // as you specify a parent activity in AndroidManifest.xml.
-//    int id = item.getItemId();
-//
-//    //noinspection SimplifiableIfStatement
-//    if (id == R.id.action_settings) {
-//      startActivity(new Intent(this, SettingsActivity.class));
-//    }
-//
-//    return super.onOptionsItemSelected(item);
-//  }
 
   private boolean isNetworkConnected() {
     ConnectivityManager cm =
@@ -1202,8 +1117,6 @@ public class LaunchActivity extends ActionBarActivity
       if (isActiveLabelOn) newConfigString = spHandler.getActiveConfig();
       else newConfigString = spHandler.getIdleConfig();
 
-//        if (newConfigString == null) newConfigString = oldConfig.toString();
-
       JsonObject newConfig = new JsonParser().parse(newConfigString).getAsJsonObject();
       boolean result = false;
       if (!EqualsUtil.areEqual(oldConfig, newConfig)) {
@@ -1226,11 +1139,6 @@ public class LaunchActivity extends ActionBarActivity
         }
       }
       return result;
-//      Log.d(LogKeys.DEBUG, TAG + ".changeConfig/ failed to change config");
-//      Toast.makeText(getBaseContext(),
-//              getString(R.string.change_config_failed_message),
-//              Toast.LENGTH_SHORT).show();
-//      return false;
   }
 
   // Update config for both active and idle state
@@ -1246,10 +1154,13 @@ public class LaunchActivity extends ActionBarActivity
         hcu = new HttpConfigUpdater();
         if (DEBUGGING) {
           updateActiveUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
+//            Log.d(LogKeys.DEBSW, "is debugging mode");
           updateIdleUrl = Config.DEFAULT_UPDATE_URL_DEBUG;
         } else {
           updateActiveUrl = Config.DEFAULT_UPDATE_URL_ACTIVE;
+//            Log.d(LogKeys.DEBSW, updateActiveUrl);
           updateIdleUrl = Config.DEFAULT_UPDATE_URL_IDLE;
+
         }
         oldConfig = scdcManager.getPipelineConfig(pipeline.getName());
       }
@@ -1260,12 +1171,13 @@ public class LaunchActivity extends ActionBarActivity
         if (pipeline != null) {
           try {
             hcu.setUrl(updateActiveUrl);
-            Log.d(LogKeys.DEBUG, TAG + ".updateConfig()/ url=" + updateActiveUrl);
+//            Log.d(LogKeys.DEBUG, TAG + ".updateConfig()/ url=" + updateActiveUrl);
             newConfig = hcu.getConfig().toString();
             spHandler.setActiveConfig(newConfig);
             hcu.setUrl(updateIdleUrl);
-            Log.d(LogKeys.DEBUG, TAG + ".updateConfig()/ url=" + updateIdleUrl);
+//            Log.d(LogKeys.DEBUG, TAG + ".updateConfig()/ url=" + updateIdleUrl);
             newConfig = hcu.getConfig().toString();
+            Log.d(LogKeys.DEBSW, "New config=" + newConfig);
             spHandler.setIdleConfig(newConfig);
 
             return true;
