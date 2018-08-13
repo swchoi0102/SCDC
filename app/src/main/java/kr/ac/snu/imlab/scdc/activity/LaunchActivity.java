@@ -276,6 +276,9 @@ public class LaunchActivity extends ActionBarActivity
     mGridView = (GridView)findViewById(R.id.label_grid_view);
     mGridView.setAdapter(mAdapter);
     setGridViewHeightBasedOnChildren(mGridView, 2);
+//        Log.d(LogKeys.DEBSW, TAG+" make grid view");
+
+    mGridView.setEnabled(false);
 
     mAdapterNone = new BaseAdapterExLabel2(this, specialLabelEntries);
     mGridViewNone = (GridView)findViewById(R.id.label_grid_view_none);
@@ -295,21 +298,22 @@ public class LaunchActivity extends ActionBarActivity
 
     // Displays the count of rows in the data
     dataCountView = (TextView) findViewById(R.id.dataCountText);
+    dataCountView.setVisibility(TextView.INVISIBLE);  // hide dataCountView by default
 
     // Displays the count of time
     timeCountView = (TextView)findViewById(R.id.timeCountTextView);
 
     // time count and alone/together button status
     if (spHandler.isSensorOn()){
-      aloneToggleButton.setEnabled(false);
+      aloneToggleButton.setEnabled(true);
       togetherToggleButton.setEnabled(false);
     }
     else{
       if (spHandler.isAloneOn() || spHandler.isTogetherOn()) {
-        timeCountView.setText(getString(R.string.select));
-        timeCountView.setTextColor(getResources().getColor(R.color.select));
-        aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
-        togetherToggleButton.setEnabled(!spHandler.isAloneOn());
+//        timeCountView.setText(getString(R.string.disabled));
+//        timeCountView.setTextColor(getResources().getColor(R.color.disabled));
+        aloneToggleButton.setEnabled(false);
+//        togetherToggleButton.setEnabled(!spHandler.isAloneOn());
       }
       // when too much data
       else if (spHandler.isTooMuchData()) {
@@ -318,9 +322,9 @@ public class LaunchActivity extends ActionBarActivity
         aloneToggleButton.setEnabled(false);
         togetherToggleButton.setEnabled(false);
       } else {
-        timeCountView.setText(getString(R.string.disabled));
-        timeCountView.setTextColor(getResources().getColor(R.color.disabled));
-        aloneToggleButton.setEnabled(true);
+        timeCountView.setText(getString(R.string.select));
+        timeCountView.setTextColor(getResources().getColor(R.color.select));
+        aloneToggleButton.setEnabled(false);
         togetherToggleButton.setEnabled(true);
       }
     }
@@ -328,8 +332,10 @@ public class LaunchActivity extends ActionBarActivity
     aloneToggleButton.setChecked(spHandler.isAloneOn());
     togetherToggleButton.setChecked(spHandler.isTogetherOn());
 
-    archiveButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
-    truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+//    archiveButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+//    truncateDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
+    archiveButton.setEnabled(spHandler.isTooMuchData());
+    truncateDataButton.setEnabled(spHandler.isTooMuchData());
     editDataButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
     userNameButton.setEnabled(!spHandler.isAloneOn() && !spHandler.isTogetherOn());
 
@@ -353,8 +359,18 @@ public class LaunchActivity extends ActionBarActivity
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+        ArrayList<LabelEntry> mData = normalLabelEntries;
+
         if (isChecked) {
-//          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
+          Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
+
+//             getLoggedItem이 null이 되지 않도록
+//              Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
+//            if(mAdapter.getLoggedItem() != null && spHandler.getStartLoggingTime(mAdapter.getLoggedItem().getId()) == -1){
+//            spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), System.currentTimeMillis());
+//            }
+
+            spHandler.setStartLoggingTime(0, System.currentTimeMillis());
 
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
@@ -369,15 +385,30 @@ public class LaunchActivity extends ActionBarActivity
           bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
           unbindService(scdcManagerConn);
 
-          timeCountView.setText(getResources().getString(R.string.select));
-          timeCountView.setTextColor(getResources().getColor(R.color.select));
-          togetherToggleButton.setEnabled(false);
+//          timeCountView.setText(getResources().getString(R.string.select));
+//          timeCountView.setTextColor(getResources().getColor(R.color.select));
+//          togetherToggleButton.setEnabled(false);
 
-        } else {
+        }
+        else {
           Log.d(LogKeys.DEB, TAG+".AloneButton unchecked!");
+
+//          Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
+//          long startTime = mData.get(mAdapter.getLoggedItem().getId()).getStartLoggingTime();
+//          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
+//          spHandler.insertSensingTimeInfo(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(),
+//                      mAdapter.getLoggedItem().getId(), startTime, elapsedTime);
+//          spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), -1L);
+
+          Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
+          long startTime = mData.get(mAdapter.getLoggedItem().getId()).getStartLoggingTime();
+          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
+          spHandler.insertSensingTimeInfo(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(),
+                  mAdapter.getLoggedItem().getId(), startTime, elapsedTime);
+          spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), -1L);
+
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
-//          spHandler.setReminderRunning(isChecked);
 
           // when too much data
           if (spHandler.isTooMuchData()) {
@@ -385,11 +416,13 @@ public class LaunchActivity extends ActionBarActivity
             timeCountView.setTextColor(getResources().getColor(R.color.too_much_data));
             aloneToggleButton.setEnabled(false);
             togetherToggleButton.setEnabled(false);
-          } else {
-            timeCountView.setText(getString(R.string.disabled));
-            timeCountView.setTextColor(getResources().getColor(R.color.disabled));
-            aloneToggleButton.setEnabled(true);
-            togetherToggleButton.setEnabled(true);
+          }
+          else {
+            timeCountView.setText(getString(R.string.select));
+            timeCountView.setTextColor(getResources().getColor(R.color.select));
+            aloneToggleButton.setEnabled(false);
+            togetherToggleButton.setEnabled(false);
+
           }
 
           // Unbind/Stop SCDCService and bind SCDCManager instead
@@ -398,15 +431,17 @@ public class LaunchActivity extends ActionBarActivity
           bindService(new Intent(LaunchActivity.this, SCDCManager.class),
                   scdcManagerConn, BIND_AUTO_CREATE);
 
-//          spHandler.setSensorOn(false);
+          spHandler.setSensorOn(false);
         }
+
         spHandler.setAloneOn(isChecked);
 
-        archiveButton.setEnabled(!isChecked);
-        truncateDataButton.setEnabled(!isChecked);
+//        archiveButton.setEnabled(!isChecked);
+//        truncateDataButton.setEnabled(!isChecked);
+        archiveButton.setEnabled(spHandler.isTooMuchData());
+        truncateDataButton.setEnabled(spHandler.isTooMuchData());
         editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
-
 
         Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
@@ -462,12 +497,12 @@ public class LaunchActivity extends ActionBarActivity
           stopService(new Intent(LaunchActivity.this, SCDCService.class));
           bindService(new Intent(LaunchActivity.this, SCDCManager.class),
                   scdcManagerConn, BIND_AUTO_CREATE);
-//          spHandler.setSensorOn(false);
+          spHandler.setSensorOn(false);
         }
         spHandler.setTogetherOn(isChecked);
 
-        archiveButton.setEnabled(!isChecked);
-        truncateDataButton.setEnabled(!isChecked);
+//        archiveButton.setEnabled(!isChecked);
+//        truncateDataButton.setEnabled(!isChecked);
         editDataButton.setEnabled(!isChecked);
         userNameButton.setEnabled(!isChecked);
 //        aloneToggleButton.setEnabled(!isChecked);
@@ -511,9 +546,11 @@ public class LaunchActivity extends ActionBarActivity
                     // pipeline.onRun(BasicPipeline.ACTION_ARCHIVE, null);
                     // pipeline.onRun(BasicPipeline.ACTION_UPLOAD, null);
                     updateLaunchActivityUi();
-                    if (!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()) {
-                      v.setEnabled(true);
-                    }
+//                    if (!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()) {
+//                      v.setEnabled(true);
+//                    }
+                                    v.setEnabled(false);
+                                    truncateDataButton.setEnabled(false);
             }
           }, 5000L);
               }
@@ -537,6 +574,9 @@ public class LaunchActivity extends ActionBarActivity
               SQLiteDatabase db = pipeline.getWritableDb();
               dropAndCreateTable(db, true);
               spHandler.rollbackTempLastIndex();
+
+              v.setEnabled(false);
+              archiveButton.setEnabled(false);
             }
       }
     });
@@ -650,35 +690,39 @@ public class LaunchActivity extends ActionBarActivity
 
         if(spHandler.isSensorOn()){
 
-            String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
-
-            int num = Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1));
-
             if(mAdapter.getLoggedItem()!=null){
+
+                String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
+                int num = Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1));
 
                 if((num < 5) && (num >= 0) && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
                     timeCountView.setText(String.valueOf(5-num) + "초 후에 데이터 수집이 시작됩니다.");
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                    dataCountView.setVisibility(TextView.INVISIBLE);  // hide dataCountView
                 }
                 else if(num == 5){
                     ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100000);
                     toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 200);
                     timeCountView.setText("이제 데이터 수집이 시작됩니다.");
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                    dataCountView.setVisibility(TextView.INVISIBLE);  // hide dataCountView
                 }
                 else if(elapsedTime.substring(elapsedTime.length()-1).equals("초")){
                     elapsedTime = String.valueOf(num-5) + elapsedTime.substring(elapsedTime.length()-1);
                     timeCountView.setText(elapsedTime+getString(R.string.time_count));
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                    dataCountView.setVisibility(TextView.VISIBLE);  // show dataCountView
                 }
                 else{
                     timeCountView.setText(elapsedTime+getString(R.string.time_count));
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
+                    dataCountView.setVisibility(TextView.VISIBLE);  // show dataCountView
                 }
 
           }
 
           else if(mAdapterNone.getLoggedItem()!=null){
+                String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
             timeCountView.setText(elapsedTime+getString(R.string.time_count));
             timeCountView.setTextColor(getResources().getColor(R.color.logging));
           }
@@ -687,20 +731,20 @@ public class LaunchActivity extends ActionBarActivity
           if(spHandler.isAloneOn() || spHandler.isTogetherOn()){
             timeCountView.setText(getResources().getString(R.string.select));
             timeCountView.setTextColor(getResources().getColor(R.color.select));
-            aloneToggleButton.setEnabled(!spHandler.isTogetherOn());
-            togetherToggleButton.setEnabled(!spHandler.isAloneOn());
+            aloneToggleButton.setEnabled(true);
+//            togetherToggleButton.setEnabled(!spHandler.isAloneOn());
           }
           // when too much data
           else if (spHandler.isTooMuchData()) {
             timeCountView.setText(getString(R.string.too_much_data));
             timeCountView.setTextColor(getResources().getColor(R.color.too_much_data));
             aloneToggleButton.setEnabled(false);
-            togetherToggleButton.setEnabled(false);
+//            togetherToggleButton.setEnabled(false);
           } else {
-            timeCountView.setText(getString(R.string.disabled));
-            timeCountView.setTextColor(getResources().getColor(R.color.disabled));
-            aloneToggleButton.setEnabled(true);
-            togetherToggleButton.setEnabled(true);
+            timeCountView.setText(getString(R.string.select));
+            timeCountView.setTextColor(getResources().getColor(R.color.select));
+            aloneToggleButton.setEnabled(false);
+//            togetherToggleButton.setEnabled(true);
           }
         }
         handler.postDelayed(this, 1000L);
@@ -908,6 +952,7 @@ public class LaunchActivity extends ActionBarActivity
     } else {
       asViewHolder.asScheduleTv.setText(R.string.probe_disabled);
     }
+
 
     // OnClickListener for end log button
     asViewHolder.endLogBt.setOnClickListener(new View.OnClickListener() {
@@ -1289,7 +1334,6 @@ public class LaunchActivity extends ActionBarActivity
       View listItem = listAdapter.getView(i, null, gridView);
       listItem.measure(0, 0);
       totalHeight = listItem.getMeasuredHeight();
-//      Log.d(LogKeys.DEB, TAG+".totalHeight: " +totalHeight);
 
       float x = 1;
       if( items > columns ){

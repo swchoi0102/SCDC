@@ -14,8 +14,7 @@ public class LabelEntry {
   private int labelId;
   private SharedPrefsHandler spHandler;
 
-  public LabelEntry(int labelId, String name,
-                    Context context, String prefsName) {
+  public LabelEntry(int labelId, String name, Context context, String prefsName) {
     this.labelId = labelId;
     this.spHandler = SharedPrefsHandler.getInstance(context,
                         prefsName, Context.MODE_PRIVATE);
