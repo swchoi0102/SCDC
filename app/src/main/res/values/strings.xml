@@ -69,6 +69,7 @@
     <string name="archive_message">데이터 압축 중</string>
     <string name="truncate_message">데이터 삭제 중</string>
     <string name="labeling_off_message">수집 종료 중</string>
+    <string name="upload_complete_message">데이터 업로드가 완료되었습니다</string>
     <string name="truncate_complete_message">데이터 삭제가 완료되었습니다</string>
     <string name="update_config_complete_message">환경설정 업데이트에 성공하였습니다</string>
     <string name="update_config_failed_message">환경설정 업데이트에 실패하였습니다</string>

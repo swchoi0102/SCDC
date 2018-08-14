@@ -168,7 +168,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 //          Log.d(SCDCKeys.LogKeys.DEB, TAG+": unbind scdcManager");
 
 //          boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
-//          mData.get(position).startLog();
+          mData.get(position).startLog();
 
 
 //          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
@@ -181,15 +181,15 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 //          }
         }
         else{
-//          long startTime = mData.get(position).getStartLoggingTime();
-//          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
+          long startTime = mData.get(position).getStartLoggingTime();
+          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
 //          Log.d(SCDCKeys.LogKeys.DEBB, TAG+": stop logging "+mData.get(position).getName()+" ("+String.valueOf(elapsedTime)+" seconds)");
 
 
 //          boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
 //          mData.get(position).endLog(elapsedTime);
 
-//          mData.get(position).endLog(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(), startTime, elapsedTime);
+          mData.get(position).endLog(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(), startTime, elapsedTime);
 
 
 //          labelingOffWaiting();

@@ -41,6 +41,7 @@ public class SharedPrefsHandler {
   private String deviceId;
   private String userinfoUrl;
   private static boolean firstrun = true;
+  private long startLoggingTime;
 
   private SharedPrefsHandler() {
   }
@@ -77,7 +78,6 @@ public class SharedPrefsHandler {
     prefs.edit().putBoolean(SharedPrefs.TOO_MUCH_DATA, isTooMuchData).apply();
     return true;
   }
-
 
   // Funf sensor by each label & alone/together
   public boolean isSensorOn() {
@@ -234,6 +234,18 @@ public class SharedPrefsHandler {
     prefs.edit().putLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX +
             String.valueOf(labelId), startLoggingTime).apply();
   }
+
+
+
+  public void setStartLoggingTime(long startLoggingTime) {
+    prefs.edit().putLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX, startLoggingTime).apply();
+  }
+
+  public long getStartLoggingTime(){
+    return prefs.getLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX ,-1);
+  }
+
+
 
   public long getAccumulatedTime(int labelId){
     return prefs.getLong(SharedPrefs.LABEL_ACCUMULATED_TIME_PREFIX+String.valueOf(labelId), 0);

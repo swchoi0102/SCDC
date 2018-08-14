@@ -391,12 +391,13 @@ public class SCDCPipeline implements Pipeline, DataListener {
     // Add labeling info to data
     // 1) for normal labels
     String[] normalLabelNames = LaunchActivity.normalLabelNames;
-    for (int i = 0; i < normalLabelNames.length; i++) {
+    for (int i = 0; i < normalLabelNames.length; i++){
+//      Log.d(LogKeys.DEBSW, TAG + " " + normalLabelNames[i] + " " + spHandler.getStartLoggingTime(i));
       dataClone.addProperty(normalLabelNames[i],
               !(spHandler.getStartLoggingTime(i) == -1));
-//      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]+String.valueOf(!(spHandler.getStartLoggingTime(i) == -1)));
+////      Log.d(LogKeys.DEBUG, String.valueOf(i)+normalLabelNames[i]+String.valueOf(!(spHandler.getStartLoggingTime(i) == -1)));
     }
-    // 2) for special labels
+//     2) for special labels
     String[] specialLabelNames = LaunchActivity.specialLabelNames;
     for (int i = 0; i < specialLabelNames.length; i++) {
       dataClone.addProperty(specialLabelNames[i],

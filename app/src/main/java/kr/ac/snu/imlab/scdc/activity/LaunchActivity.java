@@ -370,7 +370,9 @@ public class LaunchActivity extends ActionBarActivity
 //            spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), System.currentTimeMillis());
 //            }
 
-            spHandler.setStartLoggingTime(0, System.currentTimeMillis());
+//            spHandler.setStartLoggingTime(0, System.currentTimeMillis());
+
+          spHandler.setStartLoggingTime(System.currentTimeMillis());  // aloneToggleButton 이 눌린 시점
 
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
@@ -393,13 +395,6 @@ public class LaunchActivity extends ActionBarActivity
         else {
           Log.d(LogKeys.DEB, TAG+".AloneButton unchecked!");
 
-//          Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
-//          long startTime = mData.get(mAdapter.getLoggedItem().getId()).getStartLoggingTime();
-//          long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
-//          spHandler.insertSensingTimeInfo(spHandler.getSensorId(), spHandler.getTogetherStatus_Bi(),
-//                      mAdapter.getLoggedItem().getId(), startTime, elapsedTime);
-//          spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), -1L);
-
           Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
           long startTime = mData.get(mAdapter.getLoggedItem().getId()).getStartLoggingTime();
           long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
@@ -407,6 +402,7 @@ public class LaunchActivity extends ActionBarActivity
                   mAdapter.getLoggedItem().getId(), startTime, elapsedTime);
           spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), -1L);
 
+          spHandler.setStartLoggingTime(-1L);
           mAdapter.notifyDataSetChanged();
           mAdapterNone.notifyDataSetChanged();
 
@@ -523,6 +519,7 @@ public class LaunchActivity extends ActionBarActivity
         if (isNetworkConnected()) {
           if (pipeline.getDatabaseHelper() != null) {
             v.setEnabled(false);
+            truncateDataButton.setEnabled(false);
 
             try {
               // Asynchronously synchronize preferences with server
@@ -534,7 +531,7 @@ public class LaunchActivity extends ActionBarActivity
                 // Asynchronously archive and upload dbFile
                 spHandler.saveTempLastIndex();
                 archiveAndUploadDatabase(dbFile);
-                dropAndCreateTable(db, true);
+                dropAndCreateTable(db, true, true);
                 spHandler.rollbackTempLastIndex();
 
                 // Wait 5 seconds for archive to finish, then refresh the UI
@@ -549,8 +546,6 @@ public class LaunchActivity extends ActionBarActivity
 //                    if (!aloneToggleButton.isChecked() && !togetherToggleButton.isChecked()) {
 //                      v.setEnabled(true);
 //                    }
-                                    v.setEnabled(false);
-                                    truncateDataButton.setEnabled(false);
             }
           }, 5000L);
               }
@@ -572,7 +567,7 @@ public class LaunchActivity extends ActionBarActivity
           public void onClick(View v) {
             if (pipeline.getDatabaseHelper() != null) {
               SQLiteDatabase db = pipeline.getWritableDb();
-              dropAndCreateTable(db, true);
+              dropAndCreateTable(db, true, false);
               spHandler.rollbackTempLastIndex();
 
               v.setEnabled(false);
@@ -690,9 +685,12 @@ public class LaunchActivity extends ActionBarActivity
 
         if(spHandler.isSensorOn()){
 
-            if(mAdapter.getLoggedItem()!=null){
+            if(mAdapter.getLoggedItem()!=null && spHandler.getStartLoggingTime() != -1){
 
-                String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
+//                String elapsedTime = TimeUtil.getElapsedTimeUntilNow(mAdapter.getLoggedItem().getStartLoggingTime());
+
+              String elapsedTime = TimeUtil.getElapsedTimeUntilNow(spHandler.getStartLoggingTime());
+
                 int num = Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1));
 
                 if((num < 5) && (num >= 0) && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
@@ -1008,7 +1006,8 @@ public class LaunchActivity extends ActionBarActivity
    * Truncate table of the database of the pipeline.
    */
   private void dropAndCreateTable(final SQLiteDatabase db,
-                                  final boolean showProgress) {
+                                  final boolean showProgress,
+                                  final boolean isUpload) {
     new AsyncTask<SQLiteDatabase, Void, Boolean>() {
 
       private ProgressDialog progressDialog;
@@ -1043,7 +1042,14 @@ public class LaunchActivity extends ActionBarActivity
         dataCountView.setText("Data size: 0.0 MB");
         spHandler.setTooMuchData(false);
         updateLaunchActivityUi();
-        Toast.makeText(getBaseContext(), getString(R.string.truncate_complete_message), Toast.LENGTH_LONG).show();
+        if(isUpload){
+          Toast.makeText(getBaseContext(), getString(R.string.upload_complete_message), Toast.LENGTH_LONG).show();
+        }
+        else{
+          Toast.makeText(getBaseContext(), getString(R.string.truncate_complete_message), Toast.LENGTH_LONG).show();
+        }
+
+
       }
     }.execute(db);
   }
