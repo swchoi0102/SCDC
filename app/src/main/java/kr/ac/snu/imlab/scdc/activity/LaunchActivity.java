@@ -694,7 +694,7 @@ public class LaunchActivity extends ActionBarActivity
                 int num = Integer.parseInt(elapsedTime.substring(0, elapsedTime.length()-1));
 
                 if((num < 5) && (num >= 0) && (elapsedTime.substring(elapsedTime.length()-1).equals("초"))){
-                    timeCountView.setText(String.valueOf(5-num) + "초 후에 데이터 수집이 시작됩니다.");
+                    timeCountView.setText(String.valueOf(5-num) + "초 후에 삐-소리와 함께 데이터 수집이 시작됩니다.");
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
                     dataCountView.setVisibility(TextView.INVISIBLE);  // hide dataCountView
                 }

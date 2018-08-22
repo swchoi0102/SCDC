@@ -85,7 +85,7 @@
     <string name="together_bt">함께입니다</string>
     <string name="disabled">데이터 수집이 준비되면 수집 준비 버튼을 눌러주세요</string>
     <string name="select">시나리오 선택 후에 시작 버튼을 눌러주세요</string>
-    <string name="time_count">" 동안 수집 중입니다"</string>
+    <string name="time_count">" 동안 데이터가 수집되고 있습니다."</string>
     <string name="too_much_data"> "데이터 업로드 혹은 삭제 후에 실험을 수행해주세요"</string>
     <string name="data_save_button">수정</string>
     <string name="data_delete_button">전체 삭제</string>

@@ -35,23 +35,26 @@
         "@schedule": { "interval": 65 }
       },
       "data": [
-        {"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "edu.mit.media.funf.probe.builtin.AudioFeaturesProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
-        {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
-        },
+        <!--{"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",-->
+         <!--"@schedule": {"interval": 60, "duration": 60, "strict": true}-->
+        <!--},-->
         {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
+         "@schedule": {"interval": 60, "duration": 60, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.RotationVectorSensorProbe",
-         "@schedule": {"interval": 60, "duration": 55, "strict": true}
+         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
+         "@schedule": {"interval": 60, "duration": 60, "strict": true}
         },
         {"@type": "edu.mit.media.funf.probe.builtin.TimeOffsetProbe",
          "@schedule": {"interval": 10, "strict": true}
+        },
+        {"@type": "kr.ac.snu.imlab.scdc.service.probe.CorrelatedSensitiveSensorsProbe",
+         "@schedule": {"interval": 60, "duration": 60, "strict": true}
+        },
+        {"@type": "edu.mit.media.funf.probe.builtin.AccelerometerFeaturesProbe",
+         "@schedule": {"interval": 60, "duration": 60, "strict": true}
         }
       ]
     }
@@ -86,7 +89,7 @@
     <string name="together_bt">함께입니다</string>
     <string name="disabled">데이터 수집이 준비되면 수집 준비 버튼을 눌러주세요</string>
     <string name="select">시나리오 선택 후에 시작 버튼을 눌러주세요</string>
-    <string name="time_count">" 동안 수집 중입니다"</string>
+    <string name="time_count">" 동안 데이터가 수집되고 있습니다"</string>
     <string name="too_much_data"> "데이터 업로드 혹은 삭제 후에 실험을 수행해주세요"</string>
     <string name="data_save_button">수정</string>
     <string name="data_delete_button">전체 삭제</string>
