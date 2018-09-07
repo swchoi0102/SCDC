@@ -9,20 +9,20 @@
 
     <!-- Sensor category -->
     <!-- AudioCapture probe -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--<uses-permission android:name="android.permission.RECORD_AUDIO" />-->
 
     <!-- Positioning category -->
     <!-- Bluetooth probe -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!--<uses-permission android:name="android.permission.BLUETOOTH" />-->
+    <!--<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />-->
     <!-- Wifi probe, Hardware Info probe -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />-->
     <!-- Wifi probe -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!--<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />-->
     <!-- Location probe, Cell probe -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
     <!-- Location probe -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
 
     <!-- Social category -->
     <!-- CallLog probe -->
@@ -36,7 +36,7 @@
     <!--<uses-permission android:name="android.permission.READ_HISTORY_BOOKMARKS" />-->
     <!--<uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />-->
     <!-- Running Applications probe -->
-    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!--<uses-permission android:name="android.permission.GET_TASKS" />-->
     <!-- Accounts probe -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- ImageCapture probe -->
