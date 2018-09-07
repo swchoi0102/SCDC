@@ -35,9 +35,6 @@
         "@schedule": { "interval": 65 }
       },
       "data": [
-        <!--{"@type": "edu.mit.media.funf.probe.builtin.ProximitySensorProbe",-->
-         <!--"@schedule": {"interval": 60, "duration": 60, "strict": true}-->
-        <!--},-->
         {"@type": "edu.mit.media.funf.probe.builtin.GyroscopeSensorProbe",
          "@schedule": {"interval": 60, "duration": 60, "strict": true}
         },

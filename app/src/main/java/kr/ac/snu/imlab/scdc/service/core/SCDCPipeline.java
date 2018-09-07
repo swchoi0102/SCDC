@@ -195,8 +195,7 @@ public class SCDCPipeline implements Pipeline, DataListener {
     this.looper = thread.getLooper();
     this.handler = new Handler(looper, callback);
     enabled = true;
-    this.spHandler = SharedPrefsHandler.getInstance(this.manager,
-                     Config.SCDC_PREFS, Context.MODE_PRIVATE);
+    this.spHandler = SharedPrefsHandler.getInstance(this.manager, Config.SCDC_PREFS, Context.MODE_PRIVATE);
 
     for (JsonElement dataRequest : data) {
       manager.requestData(this, dataRequest);

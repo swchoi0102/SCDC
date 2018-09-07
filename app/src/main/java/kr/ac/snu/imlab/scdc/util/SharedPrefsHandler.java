@@ -42,6 +42,7 @@ public class SharedPrefsHandler {
   private String userinfoUrl;
   private static boolean firstrun = true;
   private long startLoggingTime;
+  private String normalLabel;
 
   private SharedPrefsHandler() {
   }
@@ -234,6 +235,21 @@ public class SharedPrefsHandler {
     prefs.edit().putLong(SharedPrefs.LABEL_START_LOGGING_TIME_PREFIX +
             String.valueOf(labelId), startLoggingTime).apply();
   }
+
+//  public void setNormalLabel(String [] normalLabels){
+//
+//    for(int i=0; i<normalLabels.length; i++){
+//      Log.d(LogKeys.DEBSW, String.valueOf(this.getStartLoggingTime(i)));
+//      if(this.getStartLoggingTime(i) != -1){
+//        this.normalLabel = normalLabels[i];
+//      }
+//    }
+//  }
+//
+//  public String getNormalLabel(){
+//    return this.normalLabel;
+//  }
+
 
 
 

@@ -1,5 +1,6 @@
 package kr.ac.snu.imlab.scdc.activity;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -14,8 +15,11 @@ import android.media.ToneGenerator;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -40,7 +44,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import edu.mit.media.funf.config.ConfigUpdater.ConfigUpdateException;
 import edu.mit.media.funf.config.Configurable;
@@ -74,6 +84,8 @@ public class LaunchActivity extends ActionBarActivity
   protected static final String TAG = "LaunchActivity";
   protected static final String TAGG = "editButton";
 
+//  public static final String SAVEPATH = Environment.getExternalStorageDirectory() + "/hashmap/";
+
   @Configurable
   // FIXME: Change below to false when publishing
   public static boolean DEBUGGING = false;
@@ -84,14 +96,13 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of normal labels
   @Configurable
   public static final String[] normalLabelNames = {
-          LabelKeys.MOVING_HAND,
           LabelKeys.STOP_HAND,
-          LabelKeys.MOVING_POCKET,
+          LabelKeys.MOVING_HAND,
           LabelKeys.STOP_POCKET,
-          LabelKeys.MOVING_TABLE,
-          LabelKeys.STOP_TABLE,
-          LabelKeys.MOVING_BAG,
+          LabelKeys.MOVING_POCKET,
           LabelKeys.STOP_BAG,
+          LabelKeys.MOVING_BAG,
+          LabelKeys.STOP_TABLE,
   };
 
   // FIXME: The list of special labels
@@ -103,19 +114,19 @@ public class LaunchActivity extends ActionBarActivity
   // FIXME: The list of 'active' labels
   @Configurable
   public static final String[] activeLabelNames = {
-          LabelKeys.MOVING_HAND,
           LabelKeys.STOP_HAND,
-          LabelKeys.MOVING_POCKET,
+          LabelKeys.MOVING_HAND,
           LabelKeys.STOP_POCKET,
-          LabelKeys.MOVING_TABLE,
-          LabelKeys.STOP_TABLE,
-          LabelKeys.MOVING_BAG,
+          LabelKeys.MOVING_POCKET,
           LabelKeys.STOP_BAG,
+          LabelKeys.MOVING_BAG,
+          LabelKeys.STOP_TABLE,
           LabelKeys.NONE_OF_ABOVE_LABEL
   };
 
   private Handler handler;
   private SharedPrefsHandler spHandler;
+  private HashMap<String, Integer> map_label_cnt;
 
   // Username EditText and Button
   private EditText userName;
@@ -123,6 +134,7 @@ public class LaunchActivity extends ActionBarActivity
   private RadioButton isMaleRadioButton;
   private RadioButton isFemaleRadioButton;
   boolean isEdited = false;
+  private String normalLabel;
 
   // Probe list View
   private ViewGroup mAsLabelView;
@@ -145,6 +157,7 @@ public class LaunchActivity extends ActionBarActivity
   private TextView dataCountView;
   private ImageView receivingDataImageView;
   private TextView timeCountView;
+  private TextView labelCountView;
 
   class AccompanyingStatusViewHolder {
     TextView asLogLabelTv;
@@ -225,6 +238,18 @@ public class LaunchActivity extends ActionBarActivity
     }
   };
 
+  protected void setLabelCountView(HashMap map, String [] labels){
+    labelCountView = (TextView)findViewById(R.id.label_count_view);
+    String labelCountString = "";
+    for(String label : labels){
+      labelCountString += label + ": " + String.valueOf(map.get(label)) + ", ";
+    }
+    labelCountString = labelCountString.replaceAll("null", "0");
+      labelCountString = labelCountString.substring(0, labelCountString.length()-2);
+    Log.d(LogKeys.DEBSW, "labelCountString: " + labelCountString);
+    labelCountView.setText(labelCountString);
+  }
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -234,8 +259,7 @@ public class LaunchActivity extends ActionBarActivity
     setContentView(R.layout.activity_launch);
 
     // Make sure the keyboard only pops up when a user clicks into an EditText
-    this.getWindow().setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     setUserInfo();
 
     // Add a single AccompanyingStatusLabelEntry
@@ -302,6 +326,37 @@ public class LaunchActivity extends ActionBarActivity
 
     // Displays the count of time
     timeCountView = (TextView)findViewById(R.id.timeCountTextView);
+
+    File file = new File(getFilesDir(), "hashmap");
+    if(file.exists() && !file.isDirectory()){
+      ObjectInputStream ois = null;
+      try {
+        ois = new ObjectInputStream(new FileInputStream(file));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      try {
+        map_label_cnt = (HashMap)ois.readObject();
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    else{
+      map_label_cnt = new HashMap<>();
+    }
+
+//    labelCountView = (TextView)findViewById(R.id.label_count_view);
+//    String labelCountString = "";
+//    for(String label : normalLabelNames){
+//          labelCountString += label + " " + String.valueOf(map_label_cnt.get(label)) + " ";
+//    }
+//    Log.d(LogKeys.DEBSW, "labelCountString: " + labelCountString);
+//      labelCountView.setText(labelCountString);
+    setLabelCountView(map_label_cnt, normalLabelNames);
+
+//    mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());
 
     // time count and alone/together button status
     if (spHandler.isSensorOn()){
@@ -376,16 +431,20 @@ public class LaunchActivity extends ActionBarActivity
 
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
 
+            normalLabel = normalLabelNames[mAdapter.getLoggedItem().getId()];  // get normalLabel
+
           // Increment sensorId by 1
           spHandler.setSensorId(spHandler.getSensorId() + 1);
-          Toast.makeText(LaunchActivity.this,
-                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
-                  Toast.LENGTH_SHORT).show();
+          Toast.makeText(LaunchActivity.this, normalLabel + " 데이터 수집이 시작됩니다.", Toast.LENGTH_SHORT).show();
+//          Toast.makeText(LaunchActivity.this,
+//                  SCDCKeys.SharedPrefs.KEY_SENSOR_ID + ": " + spHandler.getSensorId(),
+//                  Toast.LENGTH_SHORT).show();
 
           // Start/Bind SCDCService and unbind SCDCManager instead
           startService(intent);
           bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
           unbindService(scdcManagerConn);
+
 
 //          timeCountView.setText(getResources().getString(R.string.select));
 //          timeCountView.setTextColor(getResources().getColor(R.color.select));
@@ -394,7 +453,6 @@ public class LaunchActivity extends ActionBarActivity
         }
         else {
           Log.d(LogKeys.DEB, TAG+".AloneButton unchecked!");
-
           Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
           long startTime = mData.get(mAdapter.getLoggedItem().getId()).getStartLoggingTime();
           long elapsedTime = TimeUtil.getElapsedTimeUntilNow(startTime, "second");
@@ -428,6 +486,7 @@ public class LaunchActivity extends ActionBarActivity
                   scdcManagerConn, BIND_AUTO_CREATE);
 
           spHandler.setSensorOn(false);
+
         }
 
         spHandler.setAloneOn(isChecked);
@@ -533,6 +592,28 @@ public class LaunchActivity extends ActionBarActivity
                 archiveAndUploadDatabase(dbFile);
                 dropAndCreateTable(db, true, true);
                 spHandler.rollbackTempLastIndex();
+
+//                String label = String.valueOf(mAdapter.getLoggedItem().getId());
+                Log.d(LogKeys.DEBSW, "LaunchActivity/ " + normalLabel);
+                int cnt = map_label_cnt.containsKey(normalLabel) ? map_label_cnt.get(normalLabel) : 0;
+                Log.d(LogKeys.DEBSW, String.valueOf(cnt));
+                map_label_cnt.put(normalLabel, cnt + 1);  // increment count
+
+                String labelCountString = "";
+                for(String label : normalLabelNames){
+                  labelCountString += label + " " + String.valueOf(map_label_cnt.get(label)) + " ";
+                }
+                Log.d(LogKeys.DEBSW, "labelCountString2: " + labelCountString);
+
+                setLabelCountView(map_label_cnt, normalLabelNames);
+
+                File file = new File(getFilesDir(), "hashmap");
+                  ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
+//                FileOutputStream fos = openFileOutput("hashmap", Context.MODE_PRIVATE);
+//                ObjectOutputStream outputStream = new ObjectOutputStream(fos);
+                outputStream.writeObject(map_label_cnt);
+                outputStream.flush();
+                outputStream.close();
 
                 // Wait 5 seconds for archive to finish, then refresh the UI
                 // (Note: this is kind of a hack since archiving is seamless
@@ -707,7 +788,8 @@ public class LaunchActivity extends ActionBarActivity
                 }
                 else if(elapsedTime.substring(elapsedTime.length()-1).equals("초")){
                     elapsedTime = String.valueOf(num-5) + elapsedTime.substring(elapsedTime.length()-1);
-                    timeCountView.setText(elapsedTime+getString(R.string.time_count));
+//                    timeCountView.setText(elapsedTime+getString(R.string.time_count));
+                    timeCountView.setText(elapsedTime+" 동안 " + normalLabel + " 데이터가 수집중입니다.");
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
                     dataCountView.setVisibility(TextView.VISIBLE);  // show dataCountView
                 }
@@ -761,7 +843,6 @@ public class LaunchActivity extends ActionBarActivity
     // Save running status of reminder
 //    spHandler.setReminderRunning(reminderToggleButton.isChecked());
   }
-
 
   @Override
   protected void onDestroy() {
@@ -1228,7 +1309,7 @@ public class LaunchActivity extends ActionBarActivity
             hcu.setUrl(updateIdleUrl);
 //            Log.d(LogKeys.DEBUG, TAG + ".updateConfig()/ url=" + updateIdleUrl);
             newConfig = hcu.getConfig().toString();
-            Log.d(LogKeys.DEBSW, "New config=" + newConfig);
+//            Log.d(LogKeys.DEBSW, "New config=" + newConfig);
             spHandler.setIdleConfig(newConfig);
 
             return true;

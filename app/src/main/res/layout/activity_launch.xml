@@ -181,8 +181,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="13dp"
-                android:layout_marginRight="13dp"
-                android:weightSum="2">
+                android:layout_marginRight="13dp">
+                <!--android:weightSum="2">-->
 
                 <ToggleButton
                     android:id="@+id/aloneToggleButton"
@@ -201,21 +201,37 @@
                     android:textOn="@string/together_bt"
                     android:textSize="13sp"
                     android:visibility="invisible" />
+
+                <GridView
+                    android:id="@+id/label_grid_view_none"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:horizontalSpacing="0dp"
+                    android:numColumns="0"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="0dp"
+                    android:visibility="invisible" />
+
+
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/label_count_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:visibility="visible"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="13dp"/>
 
 
-            <GridView
-                android:id="@+id/label_grid_view_none"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:horizontalSpacing="0dp"
-                android:numColumns="0"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="0dp"
-                android:visibility="invisible" />
+
+
 
         </LinearLayout>
     </ScrollView>
+
+
+
 </LinearLayout>

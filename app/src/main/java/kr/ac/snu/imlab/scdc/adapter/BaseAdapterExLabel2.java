@@ -129,6 +129,7 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 //    viewHolder.labelLogToggleButton.setEnabled(first || second);
 
     viewHolder.labelLogToggleButton.setEnabled(first);
+    viewHolder.labelLogToggleButton.setChecked(!first);
 
     // keep the button checked when this label is being logged
 //    Log.d(SCDCKeys.LogKeys.DEB, TAG+".getView(): set check "+mData.get(position).getName() + second.toString());
@@ -169,7 +170,6 @@ public class BaseAdapterExLabel2 extends BaseAdapter {
 
 //          boolean pastIsActiveLabelOn = spHandler.isActiveLabelOn();
           mData.get(position).startLog();
-
 
 //          boolean currIsActiveLabelOn = spHandler.isActiveLabelOn();
 //          // Update config again only when isActiveLabelOn status gets changed
