@@ -15,6 +15,7 @@ import android.media.ToneGenerator;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -51,6 +52,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import edu.mit.media.funf.config.ConfigUpdater.ConfigUpdateException;
 import edu.mit.media.funf.config.Configurable;
@@ -419,14 +422,6 @@ public class LaunchActivity extends ActionBarActivity
         if (isChecked) {
           Log.d(LogKeys.DEB, TAG+".AloneButton checked!");
 
-//             getLoggedItem이 null이 되지 않도록
-//              Log.d(SCDCKeys.LogKeys.DEBSW, TAG+mAdapter.getLoggedItem());
-//            if(mAdapter.getLoggedItem() != null && spHandler.getStartLoggingTime(mAdapter.getLoggedItem().getId()) == -1){
-//            spHandler.setStartLoggingTime(mAdapter.getLoggedItem().getId(), System.currentTimeMillis());
-//            }
-
-//            spHandler.setStartLoggingTime(0, System.currentTimeMillis());
-
           spHandler.setStartLoggingTime(System.currentTimeMillis());  // aloneToggleButton 이 눌린 시점
 
           Intent intent = new Intent(LaunchActivity.this, SCDCService.class);
@@ -445,6 +440,15 @@ public class LaunchActivity extends ActionBarActivity
           bindService(intent, scdcServiceConn, BIND_AUTO_CREATE); // BIND_IMPORTANT?
           unbindService(scdcManagerConn);
 
+          // enable alongToggleButton for 10seconds to collect ScreenProbe data
+          aloneToggleButton.setEnabled(false);
+          Handler handler = new Handler();
+          handler.postDelayed(new Runnable(){
+            @Override
+            public void run(){
+              aloneToggleButton.setEnabled(true);
+            }
+          }, 12000);
 
 //          timeCountView.setText(getResources().getString(R.string.select));
 //          timeCountView.setTextColor(getResources().getColor(R.color.select));

@@ -777,7 +777,7 @@ public class SharedPrefsHandler {
         username.setText(getUsername());
       }
 
-      progressDialog.dismiss();
+//      progressDialog.dismiss();
       Log.d(LogKeys.DEBUG, "SharedPrefsHandler.GetPrefsFromServerTask" +
                             ".onPostExecute(): get prefs from server complete");
     }
