@@ -154,7 +154,7 @@ public class LaunchActivity extends ActionBarActivity
   private ArrayList<LabelEntry> specialLabelEntries;
 
   // Run Data Collection button
-  private ToggleButton aloneToggleButton, togetherToggleButton;
+  private ToggleButton aloneToggleButton, togetherToggleButton, samsungToggleButton;
 
   private Button archiveButton, truncateDataButton, editDataButton;
   private TextView dataCountView;
@@ -298,6 +298,7 @@ public class LaunchActivity extends ActionBarActivity
 
     aloneToggleButton = (ToggleButton)findViewById(R.id.aloneToggleButton);
     togetherToggleButton = (ToggleButton)findViewById(R.id.togetherToggleButton);
+    samsungToggleButton = (ToggleButton)findViewById(R.id.samsungToggleButton);
 
     mAdapter = new BaseAdapterExLabel2(this, normalLabelEntries);
     mGridView = (GridView)findViewById(R.id.label_grid_view);
@@ -360,6 +361,8 @@ public class LaunchActivity extends ActionBarActivity
     setLabelCountView(map_label_cnt, normalLabelNames);
 
 //    mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());
+
+    samsungToggleButton.setEnabled(false);
 
     // time count and alone/together button status
     if (spHandler.isSensorOn()){
@@ -442,13 +445,25 @@ public class LaunchActivity extends ActionBarActivity
 
           // enable alongToggleButton for 10seconds to collect ScreenProbe data
           aloneToggleButton.setEnabled(false);
-          Handler handler = new Handler();
-          handler.postDelayed(new Runnable(){
-            @Override
-            public void run(){
-              aloneToggleButton.setEnabled(true);
-            }
-          }, 12000);
+//          Handler handler = new Handler();
+//
+//          if(normalLabel.equals(LabelKeys.STOP_BAG) || normalLabel.equals(LabelKeys.MOVING_BAG)){
+//            handler.postDelayed(new Runnable(){
+//              @Override
+//              public void run(){
+//                aloneToggleButton.setEnabled(true);
+//              }
+//            }, 15000);
+//          }
+//          else{
+//            handler.postDelayed(new Runnable(){
+//              @Override
+//              public void run(){
+//                aloneToggleButton.setEnabled(true);
+//              }
+//            }, 13000);
+//          }
+
 
 //          timeCountView.setText(getResources().getString(R.string.select));
 //          timeCountView.setTextColor(getResources().getColor(R.color.select));
@@ -571,6 +586,22 @@ public class LaunchActivity extends ActionBarActivity
         Log.d(LogKeys.DEB, "alone :\t" +String.valueOf(spHandler.isAloneOn()) + "\t"
                 + "togeth :\t" +String.valueOf(spHandler.isTogetherOn()) + "\t"
                 + "sensor :\t" +String.valueOf(spHandler.isSensorOn()));
+      }
+    });
+
+    samsungToggleButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        samsungToggleButton.setEnabled(false);
+
+          Handler handler = new Handler();
+
+          handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+              aloneToggleButton.setEnabled(true);
+            }
+          }, 3000);
       }
     });
 
@@ -789,6 +820,8 @@ public class LaunchActivity extends ActionBarActivity
                     timeCountView.setText("이제 데이터 수집이 시작됩니다.");
                     timeCountView.setTextColor(getResources().getColor(R.color.logging));
                     dataCountView.setVisibility(TextView.INVISIBLE);  // hide dataCountView
+
+                    samsungToggleButton.setEnabled(true);
                 }
                 else if(elapsedTime.substring(elapsedTime.length()-1).equals("초")){
                     elapsedTime = String.valueOf(num-5) + elapsedTime.substring(elapsedTime.length()-1);

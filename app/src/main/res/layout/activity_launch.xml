@@ -178,6 +178,7 @@
             // alone or together
 
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="13dp"
@@ -185,12 +186,29 @@
                 <!--android:weightSum="2">-->
 
                 <ToggleButton
+                    android:id="@+id/samsungToggleButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textOff="수집중지"
+                    android:textOn="수집중지"
+                    android:textSize="13sp" />
+
+                <ToggleButton
                     android:id="@+id/aloneToggleButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textOff="@string/start_bt"
-                    android:textOn="@string/end_bt"
+                    android:textOff="실험시작"
+                    android:textOn="실험종료"
                     android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/label_count_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:visibility="visible"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="13dp"/>
 
                 <ToggleButton
                     android:id="@+id/togetherToggleButton"
@@ -215,18 +233,6 @@
 
 
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/label_count_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:visibility="visible"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="13dp"/>
-
-
-
 
 
         </LinearLayout>
